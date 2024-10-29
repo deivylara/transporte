@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registrar Contadores</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table>
+            {% for form in formset %}
+                <tr>
+                    <td>{{ form.surtidor.label_tag }}</td>
+                    <td>{{ form.surtidor }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.contador_inicial.label_tag }}</td>
+                    <td>{{ form.contador_inicial }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.contador_final.label_tag }}</td>
+                    <td>{{ form.contador_final }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.fecha_hora_final.label_tag }}</td>
+                    <td>{{ form.fecha_hora_final }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.DELETE }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Guardar</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,101 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #0a1e35;
+    color: #fff;
+    padding: 0 20px; /* Añadimos espaciado a los lados */
+}
+
+.login-wrapper {
+    text-align: center;
+    max-width: 400px; /* Ancho máximo del contenedor */
+    width: 100%; /* Ancho completo */
+}
+
+.logo img {
+    width: 80px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #a8d0e6;
+    letter-spacing: 2px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group input {
+    width: calc(100% - 2px); /* Restando 2px al 100% del ancho */
+    padding: 15px;
+    background: rgba(28, 51, 85, 0);
+    border: none; /* Quitamos el borde */
+    border-bottom: 1px solid #a8d0e6; /* Solo borde inferior */
+    border-radius: 0;
+    color: #fff;
+    font-size: 18px;
+    outline: none;
+    margin: 0; /* Aseguramos que no haya margen */
+    box-shadow: none; /* Quitamos cualquier sombra */
+}
+
+.input-group input::placeholder {
+    color: #a8d0e6;
+}
+
+.input-group img {
+    position: absolute;
+    right: 10px; /* Posicionamiento del icono a la derecha */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px; /* Aumentamos el tamaño de la imagen en 10px */
+    height: 35px; /* Aumentamos el tamaño de la imagen en 10px */
+}
+
+
+.input-group input:focus {
+    border-color: #66a1e8;
+}
+
+.button-wrapper {
+    margin-top: 20px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #00b7e0 51%, #32a852);
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #39d062 60%, #00b7e0);
+}
+
+.forgot-password {
+    display: block;
+    color: #a8d0e6;
+    text-decoration: none;
+    margin-top: 10px; /* Ajustamos el margen superior */
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}

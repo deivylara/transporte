@@ -1,0 +1,13 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+
+<h1>Bienvenido, {{ user.username | upper }} </h1>
+
+<div class="logo-container">
+    <img src="{% static 'icons8-charging-64.png' %}" alt="Logo" class="responsive-img">
+</div>
+
+<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores placeat nemo nam molestiae, minus illum magnam voluptatibus deserunt sequi sit, consequatur quae corrupti cum praesentium nihil quaerat. Officiis, architecto quas.</p>
+
+{% endblock %}

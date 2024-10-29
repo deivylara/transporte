@@ -1,0 +1,42 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unidades de Transporte</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/static/styles/listar_unidades.css">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
+</head>
+<body>
+    <div class="container">
+        <h1>Unidades de Transporte</h1>
+        <table class="transport-table">
+            <thead>
+                <tr>
+                    <th>Número de Unidad</th>
+                    <th>Socio</th>
+                    <th>Responsable</th>
+                    <th>Contato</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for unidad in unidades %}
+                <tr>
+                    <td data-label="Número de Unidad">{{ unidad.numero_unidad }}</td>
+                    <td data-label="Socio">{{ unidad.socio_display }}</td>
+                    <td data-label="Responsable">{{ unidad.responsable_display }}</td>
+                    <td data-label="Contacto">{{ unidad.contacto_display }}</td>
+                    <td data-label="Estado">{{ unidad.estado_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a class="add-link" href="{% url 'crear_unidad' %}">AGREGAR</a>
+    </div>
+</body>
+</html>
+{% endblock %}

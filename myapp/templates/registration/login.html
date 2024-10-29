@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Inicio de Sesión </title>
+    <link rel="stylesheet" href="/static/styles/login.css">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
+   
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="logo">
+            <img src="/static/logo_iniciar_sesion.png" alt="Logo inicio">
+        </div>
+        <h2>CLOUD</h2>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" id="" name="username" placeholder="Usuario" required>
+                <img src="/static/user.png" alt="Usuario">
+            </div>
+            <div class="input-group">
+                <input type="password" id="" name="password" placeholder="Contraseña" required>
+                <img src="/static/clave.png" alt="Contraseña">
+            </div>
+            <button type="submit">INICIAR SESIÓN</button>
+        </form>
+        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+    </div>
+</body>
+</html>
+

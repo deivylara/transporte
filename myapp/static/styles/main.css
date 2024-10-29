@@ -1,0 +1,89 @@
+:root {
+    --primary-bg-color: #0a1e35; /* Fondo principal: azul oscuro */
+    --secondary-bg-color: #34495e; /* Fondo secundario: un gris oscuro */
+    --text-color: #ecf0f1; /* Color del texto: blanco suave */
+    --link-color: #1abc9c; /* Color de los enlaces: verde azulado */
+    --link-hover-color: #16a085; /* Color de los enlaces al pasar el cursor: verde azulado oscuro */
+    --border-color: #34495e; /* Color del borde: gris oscuro */
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Color de la sombra */
+    --highlight-color: #3498db; /* Color de resaltado: azul claro */
+}
+
+body {
+    background: var(--primary-bg-color);
+    color: var(--text-color);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.logo-container {
+    background: var(--secondary-bg-color);
+    padding: 20px;
+    text-align: center;
+}
+
+.responsive-img {
+    max-width: 100%;
+    height: auto;
+    display: inline-block;
+}
+
+.navbar {
+    background: var(--secondary-bg-color);
+    padding: 15px 20px;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar ul li {
+    list-style: none;
+}
+
+.navbar ul li a {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 10px 15px;
+    transition: color 0.3s ease, background 0.3s ease;
+}
+
+.navbar ul li a:hover {
+    color: var(--link-hover-color);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px 10px;
+}
+
+/* Media Query para dispositivos pequeños */
+@media (max-width: 768px) {
+    .navbar ul {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .navbar ul li {
+        width: 100%;
+    }
+    
+    .navbar ul li a {
+        display: block;
+        padding: 10px;
+    }
+}
+
+
