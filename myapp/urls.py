@@ -12,4 +12,11 @@ urlpatterns = [
     path('listar_stock/', views.listar_stock, name='listar_stock'),
     path('crear_stock/', views.crear_stock, name='crear_stock'),
     path('crear_contadores_surtidor/', views.crear_contadores_surtidor, name='crear_contadores_surtidor'),
+    path('control_unidades/', views.listar_control_unidades, name='listar_control_unidades'),
+    path('tarifas/', views.listar_tarifas, name='listar_tarifas'),
+    path('metodos/', views.lista_metodos_pago, name= 'lista_metodos_pago'),
+    path('listar_pagos/', views.listar_pagos, name='listar_pagos'),
+    path('CrearControl/', views.crear_control_unidad, name='crear_control_unidad'),
+    path('CrearPagos/', views.crear_pago, name='crear_pago'),
+
 ]

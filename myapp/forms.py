@@ -1,5 +1,5 @@
 from django import forms
-from .models import UnidadTransporte, Stock, ContadorSurtidor
+from .models import UnidadTransporte, Stock, ContadorSurtidor, controlUnidades, pagos
 from django.forms import modelformset_factory
     
     
@@ -33,3 +33,19 @@ ContadorSurtidorFormSet = modelformset_factory(
     extra=2,  # Número inicial de formularios vacíos
     can_delete=True  # Permite eliminar formularios
 )
+
+class ControlUnidadesForm(forms.ModelForm):
+    class Meta:
+        model = controlUnidades
+        fields = ['unidad', 'vuelta']
+
+class PagoForm(forms.ModelForm):
+    class Meta:
+        model = pagos
+        fields = ['id_control', 'id_metodo', 'id_transporte', 'detalle']
+        labels = {
+            'id_control': 'Vuelta',
+            'id_metodo': 'Método de Pago',
+            'id_transporte': 'Unidad de Transporte',
+            'detalle': 'Detalle',
+        }

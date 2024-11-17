@@ -1,0 +1,86 @@
+/* Estilo general */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #0a1e35; /* Fondo principal */
+    color: white; /* Color del texto */
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    color: white; 
+    margin-bottom: 20px;
+}
+
+/* Contenedor principal */
+.crear-control {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #0d2745; /* Fondo del formulario */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Sombra */
+    text-align: center;
+}
+
+/* Estilos del formulario */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaciado entre los elementos */
+}
+
+/* Estilos de los campos */
+form input[type="text"],
+form input[type="email"],
+form input[type="number"],
+form select,
+form textarea {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ffffff; /* Borde verde */
+    border-radius: 5px; /* Bordes redondeados */
+    font-size: 14px;
+    background-color: #0a1e35; /* Fondo de los campos */
+    color: white; /* Texto */
+}
+
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="number"]:focus,
+form select:focus,
+form textarea:focus {
+    border: 2px solid #ffffff; /* Borde más grueso al enfocarse */
+    outline: none;
+}
+
+/* Botón de enviar */
+form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #34C759; /* Fondo del botón */
+    color: white; /* Texto del botón */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+    background-color: #28a745; /* Color al pasar el cursor */
+}
+
+/* Estilo responsivo */
+@media (max-width: 768px) {
+    .crear-control {
+        width: 95%;
+        padding: 15px;
+    }
+
+    form button[type="submit"] {
+        font-size: 14px;
+    }
+}

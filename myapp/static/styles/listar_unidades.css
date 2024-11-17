@@ -23,9 +23,17 @@ body {
     border: 2px solid grey; /* Borde de color gris */
 }
 
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 h1 {
-    text-align: center;
-    color: grey; /* Accento */
+    color: white;
+    margin-left: 30px;  /* Margen izquierdo */
+    font-size: 30px;  /* Ajusta el tamaño según sea necesario */
+    margin-bottom: 0;  /* Asegura que el margen inferior sea cero para alineación */
 }
 
 

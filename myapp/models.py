@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
 
 # Create your models here.
 class Project(models.Model):
@@ -18,20 +19,6 @@ class Task(models.Model):
         return self.title + " - " + self.project.name
     
 
-class UnidadTransporte(models.Model):
-    id_transporte = models.AutoField(primary_key=True)
-    numero_unidad = models.IntegerField(unique=True, null=True, blank=True)
-    socio = models.BooleanField(default=False)
-    responsable = models.TextField(max_length=20, null=True)
-    contacto = models.CharField(max_length=8, null=True)
-    estado = models.BooleanField(default=True)
-
-    class Meta:
-        db_table = 'unidades_transporte'
-        verbose_name_plural = 'Unidades de Transporte'
-
-    def __str__(self):
-        return f'Unidad {self.numero_unidad}'
 
 class Stock(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -110,3 +97,72 @@ class ContadorSurtidor(models.Model):
     class Meta:
         db_table = 'contadores_surtidor'
         verbose_name_plural = 'contadores por surtidor'
+
+class metodo_pago(models.Model):
+    id_metodo = models.AutoField(primary_key=True)
+    tipo = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'metodo_pago'
+        verbose_name_plural = 'metodos de pago'
+
+    def __str__(self):
+        return f' {self.tipo}'
+
+class tarifa(models.Model):
+    id_tarifa = models.AutoField(primary_key=True)
+    nombre_tarifa = models.TextField(max_length=80, default='personalizado')
+    monto = models.TextField(max_length=40, default='0.00')
+
+    class Meta:
+        db_table = 'tarifa_unidades'
+        verbose_name_plural = 'tarifa de unidades'
+    
+    def __str__(self):
+        return f'Tarifa {self.nombre_tarifa } - monto {self.monto}'
+
+class UnidadTransporte(models.Model): 
+    id_transporte = models.AutoField(primary_key=True)
+    numero_unidad = models.IntegerField(unique=True, null=True, blank=True)
+    socio = models.BooleanField(default=False)
+    responsable = models.TextField(max_length=20, null=True)
+    contacto = models.CharField(max_length=8, null=True)
+    id_tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE)
+    estado = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'unidades_transporte'
+        verbose_name_plural = 'Unidades de Transporte'
+
+    def __str__(self):
+        return f'Unidad {self.numero_unidad}'
+
+class controlUnidades(models.Model):
+    id_control = models.AutoField(primary_key=True)
+    unidad = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
+    vuelta = models.DecimalField(max_digits=12, decimal_places=2)
+    fecha_vuelta = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'control_unidades'
+        verbose_name_plural = 'control de unidades'
+
+    def __str__(self):
+        return f'Control {self.id_control} - Unidad {self.unidad.numero_unidad} - Vuelta {self.vuelta}'
+
+class pagos(models.Model):
+    id_pago = models.AutoField(primary_key=True)
+    id_control = models.ForeignKey(controlUnidades, on_delete=models.CASCADE)
+    id_metodo = models.ForeignKey(metodo_pago, on_delete=models.CASCADE)
+    id_transporte = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
+    fecha_pago = models.DateField(default=date.today)
+    detalle = models.TextField(max_length=60, default='sin detalle')
+
+    class Meta:
+        db_table = 'pagos'
+        verbose_name_plural = 'registro de pagos'
+    
+    def __str__(self):
+        return f'pago {self.id_registro} - unidad {self.id_transporte.numero_unidad}'
+    def formatted_fecha_pago(self):
+        return self.fecha_pago.strftime(format='%d/%m/%Y')

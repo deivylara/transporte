@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+
 {% block content %}
 <!DOCTYPE html>
 <html>
@@ -7,18 +8,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="/static/styles/Unidades/crear_unidad.css">
+    <link rel="stylesheet" href="/static/styles/pagos/crear_pagos.css">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
-    <div class="crear-unidad">
-        <h1>Crear Unidad de Transporte</h1>
-        <form method="post">
+    <div class="crear-pago">
+        <h1>Crear Nuevo Pago</h1>
+        <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Guardar</button>
         </form>
+        <br>
+        <a class="volver" href="{% url 'listar_pagos' %}">Volver al listado</a>
     </div>
+
 </body>
 </html>
 {% endblock %}

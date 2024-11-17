@@ -7,18 +7,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="/static/styles/Unidades/crear_unidad.css">
+    <link rel="stylesheet" href="/static/styles/controlUnidades/crear_control.css">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
-    <div class="crear-unidad">
-        <h1>Crear Unidad de Transporte</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Guardar</button>
-        </form>
-    </div>
+  <div class="crear-control">
+    <h1>Crear Nuevo Control de Unidad</h1>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}  
+      <button type="submit">Guardar</button>
+    </form>
+  </div>
 </body>
 </html>
 {% endblock %}

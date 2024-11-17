@@ -1,0 +1,131 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #0a1e35; /* Fondo principal */
+    margin: 0;
+    padding: 0;
+    color: grey; /* Texto principal */
+}
+
+h1 {
+    text-align: center;
+    color: grey; /* Color del título */
+    margin-top: 20px;
+}
+
+/* Contenedor principal */
+.container {
+    width: 70%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #0a1e35;
+    border: 2px solid white; /* Borde gris */
+    border-radius: 8px;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
+/* Estilos de la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: fixed; /* Ajustar ancho fijo */
+}
+
+th, td {
+    border: 1px solid grey; /* Bordes de las celdas */
+    padding: 10px;
+    text-align: center;
+    color: grey; /* Texto de las celdas */
+    font-size: 14px;
+    word-wrap: break-word; /* Ajustar texto largo */
+}
+
+th {
+    background-color: #0a1e35; /* Fondo de encabezados */
+    color: grey; /* Texto de encabezados */
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #0d2745; /* Color para filas pares */
+}
+
+tr:hover {
+    background-color: #b0c4de; /* Fondo al pasar el cursor */
+    color: #0a1e35; /* Cambiar texto al pasar el cursor */
+}
+
+/* Botón de agregar */
+.add-button {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #34C759; /* Fondo del botón */
+    color: white; /* Texto del botón */
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background-color: #28a745; /* Cambio de color al pasar el cursor */
+}
+
+/* Diseño responsive */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        padding: 10px;
+    }
+
+    th, td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .add-button {
+        width: 100%;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    table thead {
+        display: none; /* Ocultar encabezados en pantallas pequeñas */
+    }
+
+    table, tbody, tr, td {
+        display: block;
+        width: 100%;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid grey; /* Bordes para filas individuales */
+        padding: 5px;
+    }
+
+    td {
+        text-align: left; /* Alinear texto a la izquierda */
+        padding-left: 10px;
+        position: relative;
+        border: none; /* Eliminar bordes */
+    }
+
+    td::before {
+        content: attr(data-label); /* Etiqueta de datos */
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 10px;
+        font-weight: bold;
+        color: #b0c4de; /* Texto de encabezados virtuales */
+    }
+}

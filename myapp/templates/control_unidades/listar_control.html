@@ -1,0 +1,40 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Control de Unidades</title>
+    <link rel="stylesheet" href="/static/styles/controlUnidades/listar_control.css">
+</head>
+<body>
+    <div class="header-container">
+        <h1>LISTADO DE CONTROL DE UNIDADES</h1>
+        <a class="add-button" href="{% url 'crear_control_unidad' %}">AGREGAR CONTROL</a>
+    </div> 
+    <div class="container">
+        <table class="control-table">
+            <thead>
+                <tr>
+                    <th>N° CONTROL</th>
+                    <th>NUMERO UNIDAD</th>
+                    <th>VUELTA</th>
+                    <th>FECHA DE VUELTA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for control in controles %}
+                <tr>
+                    <td>{{ control.id_control }}</td>
+                    <td>{{ control.unidad_display }}</td>
+                    <td>{{ control.vuelta_display }}</td>
+                    <td>{{ control.fecha_vuelta |date:"d/m/Y H:i"  }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+{% endblock %}

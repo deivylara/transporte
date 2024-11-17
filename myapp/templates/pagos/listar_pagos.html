@@ -1,0 +1,45 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Pagos</title>
+    <link rel="stylesheet" href="/static/styles/pagos/listar_pagos.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Listado de Pagos</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>N° PAGO</th>
+                    <th>VUELTA</th>
+                    <th>NUMERO DE UNIDAD</th>
+                    <th>NOMBRE TARIFA</th>
+                    <th>METODO DE PAGO</th>
+                    <th>FECHA DE PAGO</th>
+                    <th>DETALLE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in pagos_list %}
+                    <tr>
+                        <td>{{ pago.id_pago }}</td>
+                        <td>{{ pago.vuelta_display }}</td>
+                        <td>{{ pago.numero_unidad_display }}</td>
+                        <td>{{ pago.nombre_tarifa_display }}</td>
+                        <td>{{ pago.metodo_pago_display }}</td>
+                        <td>{{ pago.fecha_pago_display }}</td>
+                        <td>{{ pago.detalle_display }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a class="add-link" href="{% url 'crear_pago' %}">Crear Nuevo Pago</a>
+    </div>
+</body>
+</html>
+{% endblock %}
