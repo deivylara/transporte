@@ -23,9 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-83d*ld14rnea(=s4yx8=jziof*uh8@)5ksy2na!_5fij!x=l_4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
+
 
 
 # Application definition
@@ -37,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myapp'
+    'corsheaders',
+    'myapp',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -69,22 +72,34 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
+STATIC_ROOT = '/path/to/your/static/files/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/path/to/your/media/files/'
+# Configuración de mensajes
 
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
+
+import os
+from dotenv import load_dotenv
+
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tareas',
-        'USER': 'tarea',
-        'PASSWORD': 'Rrp5**e6ed3ad3',
-        'HOST': 'mifacturaperu.com',
-        'PORT': '33507',
+        'NAME': os.environ.get('DB_NAME', 'mydatabase'),
+        'USER': os.environ.get('DB_USER', 'myuser'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'mypassword'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT')
+
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -120,7 +135,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+#STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -130,3 +145,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # VARIABLE DE REDIRECCION DE LOGOUT
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOWED_ORIGINS = [
+    'https://3m.contatrib.com',
+    # Otros orígenes permitidos aquí si es necesario
+]
+CSRF_TRUSTED_ORIGINS = [
+    'https://3m.contatrib.com',
+    # Otros orígenes confiables aquí si es necesario
+]
+
+DATE_FORMAT = 'Y/m/d'
+DATETIME_FORMAT = 'Y/m/d H:i:s'
