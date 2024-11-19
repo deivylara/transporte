@@ -135,7 +135,7 @@ def crear_pago(request):
         form = PagoForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('listar_pagos')  # Redirige a la lista de pagos después de crear
+            return redirect('listar_pagos')
     else:
         form = PagoForm()
 
