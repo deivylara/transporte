@@ -1,0 +1,27 @@
+version: '3.3'
+
+services:
+  web:
+    build: .
+    image: controltest
+    container_name: CONTROLTEST
+    command: python manage.py runserver 0.0.0.0:80
+    networks:
+      - red-erp
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Lima
+      - VIRTUAL_HOST=3m.contatrib.com
+      - LETSENCRYPT_HOST=3m.contatrib.com
+      - LETSENCRYPT_EMAIL=emision01@mifacturaperu.com
+    restart: always
+    volumes:
+      - .:/app
+    expose:
+      - "80"
+
+networks:
+  red-erp:
+    external: true
+
