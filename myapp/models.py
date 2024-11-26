@@ -166,3 +166,32 @@ class pagos(models.Model):
         return f'pago {self.id_registro} - unidad {self.id_transporte.numero_unidad}'
     def formatted_fecha_pago(self):
         return self.fecha_pago.strftime(format='%d/%m/%Y')
+    
+
+
+class Licencia(models.Model):
+    TIPO_LICENCIA_CHOICES = [
+        ('allb', 'Microbuses o minibuses(allb) '),
+        ('allla', 'Omnibuses urbanos(allla)'),
+        ('alllb', 'Omnibuses interurbanos(alllb)'),
+    ]
+
+    numero_licencia = models.CharField(max_length=50, unique=True)  # Número único de licencia
+    nombre = models.CharField(max_length=100)  # Nombre asociado a la licencia
+    dni = models.CharField(max_length=15, unique=True)  # Número de DNI o identificador único
+    fecha_emision = models.DateField()  # Fecha de emisión
+    fecha_expiracion = models.DateField()  # Fecha de expiración
+    tipo_licencia = models.CharField(
+        max_length=60,
+        choices=TIPO_LICENCIA_CHOICES,
+        default='Allb',  # Valor predeterminado
+    )  # Tipo de licencia
+
+    class Meta:
+        db_table = 'licencias'  # Nombre personalizado para la tabla
+        verbose_name = 'Licencia'
+        verbose_name_plural = 'Licencias'
+        ordering = ['fecha_expiracion']  # Orden predeterminado en consultas
+
+    def __str__(self):
+        return f"{self.numero_licencia} - {self.nombre} ({self.get_tipo_licencia_display()})"

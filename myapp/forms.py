@@ -1,10 +1,7 @@
 from django import forms
-from .models import UnidadTransporte, Stock, ContadorSurtidor, controlUnidades, pagos
+from .models import UnidadTransporte, Stock, ContadorSurtidor, controlUnidades, pagos, Licencia
 from django.forms import modelformset_factory
     
-    
-class CreateNewProject(forms.Form):
-    name = forms.CharField(label="nombre del proyecto", max_length=200)
     
 
 class UnidadTransporteForm(forms.ModelForm):
@@ -49,3 +46,8 @@ class PagoForm(forms.ModelForm):
             'id_transporte': 'Unidad de Transporte',
             'detalle': 'Detalle',
         }
+        
+class LicenciaForm(forms.ModelForm):
+    class Meta:
+        model = Licencia
+        fields = ['numero_licencia', 'nombre', 'dni', 'fecha_emision', 'fecha_expiracion', 'tipo_licencia']
