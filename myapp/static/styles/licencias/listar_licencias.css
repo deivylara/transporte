@@ -65,7 +65,7 @@ font-weight: bold; /* Letra más gruesa */
 
 /* Responsive styles */
 @media (max-width: 768px) {
-table.stock thead {
+table.licencia thead {
     display: none;
 }
 
