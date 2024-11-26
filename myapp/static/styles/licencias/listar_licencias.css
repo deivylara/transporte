@@ -1,0 +1,97 @@
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: transparent;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 20px;
+    box-sizing: border-box;
+    overflow-x: auto;
+    border: 2px solid grey;
+}
+
+h1 {
+text-align: center;
+color: grey;
+}
+
+/* Table styles */
+table.licencia {
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+color: grey;
+}
+
+table.licencia th, table.licencia td {
+padding: 12px;
+border: 1px solid grey;
+text-align: left;
+}
+
+table.licencia th {
+background-color: #34495e;
+color: #ecf0f1;
+}
+
+/*table.stock tr:nth-child(even) {
+background-color: grey;
+}*/
+
+table.licencia tr:hover {
+background-color: #b0c4de;
+}
+
+table.licencia td[data-label]::before {
+content: attr(data-label);
+font-weight: bold;
+display: none;
+}
+
+.add-link {
+display: block;
+width: 200px;
+margin: 20px auto;
+padding: 10px;
+background-color: #34C759; /* Accento */
+color: #d3d3d3; /* Fondo principal */
+text-align: center;
+text-decoration: none;
+border-radius: 4px;
+font-weight: bold; /* Letra más gruesa */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+table.stock thead {
+    display: none;
+}
+
+table.licencia tr {
+    display: block;
+    margin-bottom: 20px;
+}
+
+table.licencia td {
+    display: block;
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+}
+
+table.licencia td::before {
+    display: block;
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+table.licencia td[data-label]::before {
+    display: inline-block;
+}
+
+
+}

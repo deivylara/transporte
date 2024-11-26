@@ -1,0 +1,12 @@
+.image-container {
+    text-align: center;
+    margin: 20px auto; /* Centrar también horizontalmente */
+    max-width: 100%; /* Evitar que el contenedor exceda el ancho de la pantalla */
+}
+
+.responsive-image {
+    max-width: 100%; /* Imagen no excederá el ancho de su contenedor */
+    height: auto; /* Mantiene la proporción de la imagen */
+    display: block; /* Para evitar espacios extra si es un elemento inline */
+    margin: 0 auto; /* Centra la imagen dentro de su contenedor */
+}
