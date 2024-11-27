@@ -147,6 +147,12 @@ class controlUnidades(models.Model):
         db_table = 'control_unidades'
         verbose_name_plural = 'control de unidades'
 
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Solo calcular si el objeto es nuevo
+            ultimo_control = controlUnidades.objects.filter(unidad=self.unidad).order_by('-vuelta').first()
+            self.vuelta = (ultimo_control.vuelta + 1) if ultimo_control else 1
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'Control {self.id_control} - Unidad {self.unidad.numero_unidad} - Vuelta {self.vuelta}'
 

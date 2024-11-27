@@ -122,10 +122,21 @@ def crear_control_unidad(request):
     if request.method == 'POST':
         form = ControlUnidadesForm(request.POST)
         if form.is_valid():
-            form.save()  # Guarda el nuevo registro
-            return redirect('listar_control_unidades')  # Redirige a la vista que lista los controles
+            control_unidad = form.save(commit=False)
+            control_unidad.save()  # La lógica de autoincremento está en el modelo
+            return redirect('listar_control_unidades')
     else:
-        form = ControlUnidadesForm()
+        initial_data = {}
+        if 'unidad' in request.GET:
+            unidad_id = request.GET.get('unidad')
+            try:
+                unidad = UnidadTransporte.objects.get(id=unidad_id)
+                ultimo_control = controlUnidades.objects.filter(unidad=unidad).order_by('-vuelta').first()
+                initial_data['vuelta'] = (ultimo_control.vuelta + 1) if ultimo_control else 1
+            except UnidadTransporte.DoesNotExist:
+                pass
+        
+        form = ControlUnidadesForm(initial=initial_data)
     
     return render(request, 'control_unidades/crear_control.html', {'form': form})
 

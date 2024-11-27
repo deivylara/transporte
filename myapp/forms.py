@@ -38,6 +38,9 @@ class ControlUnidadesForm(forms.ModelForm):
     class Meta:
         model = controlUnidades
         fields = ['unidad', 'vuelta']
+        widgets = {
+            'vuelta': forms.TextInput(attrs={'readonly': 'readonly'}),
+        }
 
 class PagoForm(forms.ModelForm):
     class Meta:
