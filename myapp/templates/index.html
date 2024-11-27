@@ -1,13 +1,33 @@
-{% extends 'layouts/base.html' %}
 {% load static %}
 {% block content %}
-
-<h1>Bienvenido, {{ user.username | upper }} </h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="{% static 'styles/index_aplicaciones.css' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
+    <title>Home-Aplicaciones</title>
+</head>
+<h1>Bienvenido, {{ user.username | upper }}</h1>
 
 <div class="logo-container">
-    <img src="{% static 'icons8-charging-64.png' %}" alt="Logo" class="responsive-img">
+    <img src="{% static 'icons8-charging-64.png' %}" alt="Logo de la plataforma" class="responsive-img">
 </div>
 
-<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores placeat nemo nam molestiae, minus illum magnam voluptatibus deserunt sequi sit, consequatur quae corrupti cum praesentium nihil quaerat. Officiis, architecto quas.</p>
+<p>Selecciona una de las opciones para continuar:</p>
+
+<div class="button-container">
+    <!-- Botón para la primera aplicación -->
+    <a href="{% url 'transporte' %}" class="button">
+        <img src="{% static 'autobus.png' %}" alt="Icono de transporte" class="button-icon">
+        TRANSPORTE
+    </a>
+    <!-- Botón para la segunda aplicación -->
+    <a href="{% url 'listar_stock' %}" class="button">
+        <img src="{% static 'grifo1.png' %}" alt="Icono de grifo" class="button-icon">
+        GRIFO
+    </a>
+</div>
+
 
 {% endblock %}

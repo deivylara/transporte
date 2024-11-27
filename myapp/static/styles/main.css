@@ -1,32 +1,19 @@
+/* Variables globales */
 :root {
-    --primary-bg-color: #0a1e35; /* Fondo principal: azul oscuro */
-    --secondary-bg-color: #34495e; /* Fondo secundario: un gris oscuro */
-    --text-color: #ecf0f1; /* Color del texto: blanco suave */
-    --link-color: #1abc9c; /* Color de los enlaces: verde azulado */
-    --link-hover-color: #16a085; /* Color de los enlaces al pasar el cursor: verde azulado oscuro */
-    --border-color: #34495e; /* Color del borde: gris oscuro */
-    --shadow-color: rgba(0, 0, 0, 0.1); /* Color de la sombra */
-    --highlight-color: #3498db; /* Color de resaltado: azul claro */
+    --primary-bg-color: #0a1e35;
+    --secondary-bg-color: #34495e;
+    --text-color: #ecf0f1;
+    --link-hover-color: #16a085;
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
+/* Estilo global */
 body {
     background: var(--primary-bg-color);
     color: var(--text-color);
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-}
-
-.logo-container {
-    background: var(--secondary-bg-color);
-    padding: 20px;
-    text-align: center;
-}
-
-.responsive-img {
-    max-width: 100%;
-    height: auto;
-    display: inline-block;
 }
 
 .navbar {
@@ -36,53 +23,89 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.navbar ul {
+.menu {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.navbar ul li {
-    list-style: none;
+.menu li {
+    margin: 0;
 }
 
-.navbar ul li a {
+.menu li a {
     color: var(--text-color);
     text-decoration: none;
     padding: 10px 15px;
     transition: color 0.3s ease, background 0.3s ease;
 }
 
-.navbar ul li a:hover {
+.menu li a:hover {
     color: var(--link-hover-color);
     background: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
 }
 
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px 10px;
+/* Estilo para el menú hamburguesa */
+.menu-toggle {
+    display: none; /* Oculto en pantallas grandes */
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 25px;
+    cursor: pointer;
 }
 
-/* Media Query para dispositivos pequeños */
+.menu-toggle span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: var(--text-color);
+    border-radius: 5px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Ocultar menú en dispositivos pequeños */
 @media (max-width: 768px) {
-    .navbar ul {
+    .menu {
+        display: none;
         flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .navbar ul li {
         width: 100%;
+        background: var(--secondary-bg-color);
+        position: absolute;
+        top: 60px;
+        left: 0;
+        z-index: 999;
     }
-    
-    .navbar ul li a {
-        display: block;
-        padding: 10px;
+
+    .menu li {
+        text-align: center;
+    }
+
+    .menu.show {
+        display: flex;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translateY(8px);
+    }
+
+    .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translateY(-8px);
     }
 }
 

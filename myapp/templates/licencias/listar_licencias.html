@@ -1,0 +1,43 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Licencias</title>
+    <link rel="stylesheet" href="/static/styles/licencias/listar_licencias.css">
+</head>
+<div class="container">
+    <h1>Licencias</h1>
+    <table class="licencia">
+        <thead>
+            <tr>
+                <th>Numero Licencia</th>
+                <th>Nombre</th>
+                <th>Dni</th>
+                <th>Fecha Emision</th>
+                <th>fecha Expiracion</th>
+                <th>Tipo Licencia</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for licencia in licencias %}
+            <tr>
+                <td data-label="numero_licencia">{{ licencia.numero_licencia }}</td>
+                <td data-label="nombre">{{ licencia.nombre }}</td>
+                <td data-label="Dni">{{ licencia.dni }}</td>
+                <td data-label="fecha_emision">{{ licencia.fecha_emision }}</td>
+                <td data-label="fecha_expiracion">{{ licencia.fecha_expiracion }}</td>
+                <td data-label="tipo_licencia">{{ licencia.tipo_licencia }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </ul>
+</body>
+<a class="add-link" href="{% url 'crear_licencias' %}">AGREGAR LICENCIA</a>
+</html>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.http import HttpResponse
-from .models import Project, UnidadTransporte, Stock, ContadorSurtidor , controlUnidades, tarifa ,metodo_pago, pagos
+from .models import UnidadTransporte, Stock, ContadorSurtidor , controlUnidades, tarifa ,metodo_pago, pagos, Licencia
 from django.shortcuts import render , redirect
-from .forms import CreateNewProject, UnidadTransporteForm, StockForm, ContadorSurtidorFormSet, ControlUnidadesForm, PagoForm
+from .forms import UnidadTransporteForm, StockForm, ContadorSurtidorFormSet, ControlUnidadesForm, PagoForm, LicenciaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 
@@ -12,8 +12,8 @@ def index(request):
     return render(request, 'index.html')
 
 @login_required
-def about(request):
-    return render(request, 'about.html')
+def transporte(request):
+    return render(request, 'transporte.html')
 
 @login_required
 def crear_unidad(request):
@@ -153,6 +153,22 @@ def crear_pago(request):
     return render(request, 'pagos/crear_pagos.html', {'form': form})
 
 @login_required
+def listar_licencias(request):
+    licencias = Licencia.objects.all()
+    return render(request, 'licencias/listar_licencias.html', {'licencias': licencias})
+
+@login_required
+def crear_licencias(request):
+    if request.method == 'POST':
+        form = LicenciaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_licencias')
+    else:
+        form = LicenciaForm()
+    return render(request, 'licencias/crear_licencias.html', {'form': form})
+
+@login_required
 def hello(request, username):
     print(username)
     return HttpResponse("<h1>Hello %s</h1>" % username)
@@ -161,17 +177,3 @@ def hello(request, username):
 def exit(request):
     logout(request)
     return redirect('login')
-
-
-
-
-
-
-
-@login_required
-def projects(request):
-    #projects = list(Project.objects.values())  # get all objects
-    projects = Project.objects.all()
-    return render(request, 'projects/projects.html',{
-        'projects': projects
-    })

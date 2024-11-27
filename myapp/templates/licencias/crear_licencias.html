@@ -1,0 +1,18 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crear Licencia</title>
+</head>
+<body>
+    <h1>Crear Nueva Licencia</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+    </form>
+</body>
+
+{% endblock %}
