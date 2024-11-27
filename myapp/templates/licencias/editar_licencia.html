@@ -1,0 +1,57 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Licencia</title>
+    <link rel="stylesheet" href="/static/styles/licencias/editar_licencia.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Licencia</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div>
+                <label for="numero_licencia">Numero Licencia</label>
+                <input type="text" id="numero_licencia" name="numero_licencia" value="{{ licencia.numero_licencia }}" required>
+            </div>
+            <div>
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" value="{{ licencia.nombre }}" required>
+            </div>
+            <div>
+                <label for="dni">Dni</label>
+                <input type="text" id="dni" name="dni" value="{{ licencia.dni }}" required>
+            </div>
+            <div>
+                <label for="fecha_emision">Fecha Emision</label>
+                <input type="date" id="fecha_emision" name="fecha_emision" value="{{ licencia.fecha_emision|date:"Y-m-d" }}" required>
+            </div>
+            <div>
+                <label for="fecha_expiracion">Fecha Expiracion</label>
+                <input type="date" id="fecha_expiracion" name="fecha_expiracion" value="{{ licencia.fecha_expiracion|date:"Y-m-d" }}" required>
+            </div>
+            <div>
+                <label for="tipo_licencia">Tipo Licencia</label>
+                <input type="text" id="tipo_licencia" name="tipo_licencia" value="{{ licencia.tipo_licencia }}" required>
+            </div>
+            <div>
+                <label for="conductor_unidad">Conductor de Unidad</label>
+                <input type="text" id="conductor_unidad" name="conductor_unidad" value="{{ licencia.numero_unidad }}" required>
+            </div>
+
+            <div>
+                <button type="submit">Guardar cambios</button>
+            </div>
+        </form>
+        <a href="{% url 'listar_licencias' %}">Volver al listado</a>
+    </div>
+</body>
+</html>
+
+
+{% endblock %}
