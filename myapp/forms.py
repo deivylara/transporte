@@ -7,7 +7,7 @@ from django.forms import modelformset_factory
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
-        fields = ['numero_unidad', 'socio', 'responsable', 'contacto',  'estado',]   
+        fields = ['numero_unidad', 'socio', 'responsable', 'contacto',  'estado', 'vencimiento_soat']   
         
 
 
@@ -50,4 +50,4 @@ class PagoForm(forms.ModelForm):
 class LicenciaForm(forms.ModelForm):
     class Meta:
         model = Licencia
-        fields = ['numero_licencia', 'nombre', 'dni', 'fecha_emision', 'fecha_expiracion', 'tipo_licencia']
+        fields = ['numero_licencia', 'nombre', 'dni', 'fecha_emision', 'fecha_expiracion', 'tipo_licencia', 'numero_unidad']
