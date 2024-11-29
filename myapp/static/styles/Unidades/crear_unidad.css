@@ -25,12 +25,13 @@
     gap: 20px; /* Espaciado entre los elementos */
 }
 
-/* Estilos para los inputs */
+/* Estilos para los inputs y selects */
 .crear-unidad input[type="text"],
 .crear-unidad select,
-.crear-unidad textarea {
+.crear-unidad textarea,
+.crear-unidad input[type="date"] {  /* Asegurarse de que input[type="date"] también tenga estos estilos */
     width: 100%;
-    padding: 10px;
+    padding: 12px; /* Mayor padding para mejorar la accesibilidad */
     border: 2px solid #ccc; /* Borde claro */
     border-radius: 20px; /* Bordes redondeados */
     background-color: #0a1e35; /* Fondo oscuro */
@@ -42,7 +43,8 @@
 /* Estilo al enfocarse */
 .crear-unidad input[type="text"]:focus,
 .crear-unidad select:focus,
-.crear-unidad textarea:focus {
+.crear-unidad textarea:focus,
+.crear-unidad input[type="date"]:focus {  /* Agregado para los campos de fecha */
     border: 2px solid #0e6d75e5; /* Borde resaltado */
     outline: none;
     background-color: #123456; /* Fondo más oscuro */
@@ -75,8 +77,18 @@
         font-size: 20px;
     }
 
+    /* Asegurar que los botones y campos se vean bien en pantallas pequeñas */
     .crear-unidad button[type="submit"] {
         font-size: 16px;
         padding: 10px;
+    }
+
+    /* Ajustar inputs en pantallas pequeñas */
+    .crear-unidad input[type="text"],
+    .crear-unidad select,
+    .crear-unidad textarea,
+    .crear-unidad input[type="date"] {
+        font-size: 14px; /* Reducir el tamaño del texto en pantallas pequeñas */
+        padding: 10px;   /* Reducir padding en pantallas pequeñas */
     }
 }
