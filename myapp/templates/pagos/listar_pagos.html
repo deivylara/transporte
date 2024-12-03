@@ -7,11 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Pagos</title>
-    <link rel="stylesheet" href="/static/styles/pagos/listar_pagos.css">
+    <link rel="stylesheet" href="/static/styles/listar_tablas.css">
 </head>
 <body>
+    <div class="header-container">
+        <h1>LISTADO DE PAGOS</h1>
+        <a class="add-button" href="{% url 'crear_pago' %}">Crear Nuevo Pago</a>
+    </div> 
     <div class="container">
-        <h1>Listado de Pagos</h1>
         <table>
             <thead>
                 <tr>
@@ -38,7 +41,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        <a class="add-link" href="{% url 'crear_pago' %}">Crear Nuevo Pago</a>
     </div>
 </body>
 </html>

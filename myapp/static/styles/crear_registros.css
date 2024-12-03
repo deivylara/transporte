@@ -1,0 +1,102 @@
+/* Estilos para el título */
+h1 {
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f94f;
+    color: #ffffff;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+input[type="text"],
+select{
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 3px solid #ccc;
+    border-radius: 20px; 
+    box-sizing: border-box;
+}
+#id_numero_unidad{
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 3px solid #ccc;
+    border-radius: 20px; 
+    box-sizing: border-box;
+}
+textarea{
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 3px solid #ccc;
+    border-radius: 20px;
+    box-sizing: border-box;
+    height: 43px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 40px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: #ccc;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    vertical-align: middle;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #0e6d75e5;
+}
+
+input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    width: 16px; 
+    height: 16px;
+    border-radius: 50%;
+    background-color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 4px;
+    transition: transform 0.3s ease;
+}
+
+input[type="checkbox"]:checked::before {
+    left: 20px;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+button[type="submit"] {
+    padding: 8px 16px;
+    margin-top: 20px;
+    background-color: #073f44e5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+button[type="submit"]:hover {
+    background-color: #678db5;
+}

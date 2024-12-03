@@ -45,6 +45,18 @@ class ControlUnidadesForm(forms.ModelForm):
             'vuelta': forms.TextInput(attrs={'readonly': 'readonly'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        unidad = kwargs.pop('unidad', None)  # Extraemos la unidad pasada como argumento
+        super().__init__(*args, **kwargs)
+        if unidad:  # Si se pasa la unidad, calculamos la vuelta
+            ultimo_control = (
+                controlUnidades.objects.filter(unidad=unidad)
+                .order_by('-vuelta')
+                .first()
+            )
+            self.fields['vuelta'].initial = (ultimo_control.vuelta + 1) if ultimo_control else 1
+
+
 class PagoForm(forms.ModelForm):
     class Meta:
         model = pagos

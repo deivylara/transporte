@@ -7,12 +7,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="/static/styles/Unidades/listar_unidades.css">
+    <link rel="stylesheet" href="/static/styles/listar_tablas.css">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
+    <div class="header-container">
+        <h1>LISTADO DE UNIDADES</h1>
+        <a class="add-button" href="{% url 'crear_unidad' %}">AGREGAR UNIDAD</a>
+    </div> 
     <div class="container">
-        <h1>Unidades de Transporte</h1>
         <table class="unidad">
             <thead>
                 <tr>
@@ -39,7 +42,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        <a class="add-link" href="{% url 'crear_unidad' %}">AGREGAR</a>
     </div>
 </body>
 </html>

@@ -7,11 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Licencias</title>
-    <link rel="stylesheet" href="/static/styles/licencias/listar_licencias.css">
+    <link rel="stylesheet" href="/static/styles/listar_tablas.css">
 </head>
 <body>
+    <div class="header-container">
+        <h1>LISTADO DE LICENCIAS</h1>
+        <a class="add-button" href="{% url 'crear_licencias' %}">AGREGAR LICENCIA</a>
+    </div> 
     <div class="container">
-        <h1>Licencias</h1>
         <table class="licencia">
             <thead>
                 <tr>
@@ -22,7 +25,7 @@
                     <th>Fecha Expiracion</th>
                     <th>Tipo Licencia</th>
                     <th>Conductor de Unidad</th>
-                    <th>Acciones</th> <!-- Nueva columna para las acciones -->
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,14 +39,12 @@
                     <td data-label="tipo_licencia">{{ licencia.tipo_licencia }}</td>
                     <td data-label="conductor_unidad">{{ licencia.numero_unidad }}</td>
                     <td data-label="acciones">
-                        <!-- Botón para editar -->
                         <a href="{% url 'editar_licencia' licencia.id %}" class="edit-btn">Editar</a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <a class="add-link" href="{% url 'crear_licencias' %}">AGREGAR LICENCIA</a>
     </div>
 </body>
 </html>

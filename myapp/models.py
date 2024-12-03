@@ -144,14 +144,18 @@ class controlUnidades(models.Model):
     unidad = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
     vuelta = models.DecimalField(max_digits=12, decimal_places=2)
     fecha_vuelta = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         db_table = 'control_unidades'
         verbose_name_plural = 'control de unidades'
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Solo calcular si el objeto es nuevo
-            ultimo_control = controlUnidades.objects.filter(unidad=self.unidad).order_by('-vuelta').first()
+            ultimo_control = (
+                controlUnidades.objects.filter(unidad=self.unidad)
+                .order_by('-vuelta')
+                .first()
+            )
             self.vuelta = (ultimo_control.vuelta + 1) if ultimo_control else 1
         super().save(*args, **kwargs)
 
