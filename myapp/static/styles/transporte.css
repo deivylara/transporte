@@ -1,7 +1,7 @@
 /* Estilo general del contenedor */
 .container {
     text-align: center;
-    padding: 20px;
+    padding: 40px;
     background-color: #0a1e35; /* Fondo sugerido */
     color: #a3d4f7; /* Color de texto sugerido */
 }
@@ -11,7 +11,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    margin: 20px;
 }
 
 /* Imagen responsiva */

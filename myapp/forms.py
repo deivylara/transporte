@@ -7,13 +7,18 @@ from django.forms import modelformset_factory
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
-        fields = ['numero_unidad', 'socio', 'responsable', 'contacto', 'estado', 'vencimiento_soat']
+        fields = ['numero_unidad', 'id_tarifa', 'socio', 'responsable', 'contacto', 'estado', 'vencimiento_soat']
         widgets = {
             'vencimiento_soat': forms.DateInput(attrs={
                 'type': 'date',  # Muestra el calendario nativo
                 'class': 'form-control',  # Opcional, para aplicar estilos
             }),
+            
+            'id_tarifa': forms.TextInput(attrs={'readonly': 'readonly'})
         }
+        labels ={
+            'id_tarifa' :'Tarifa'
+        } 
         
 
 
