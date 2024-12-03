@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from .models import UnidadTransporte, Stock, ContadorSurtidor , controlUnidades, tarifa ,metodo_pago, pagos, Licencia
-from django.shortcuts import render , redirect
+from django.shortcuts import render , redirect , get_object_or_404
 from .forms import UnidadTransporteForm, StockForm, ContadorSurtidorFormSet, ControlUnidadesForm, PagoForm, LicenciaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -167,6 +167,23 @@ def crear_licencias(request):
     else:
         form = LicenciaForm()
     return render(request, 'licencias/crear_licencias.html', {'form': form})
+
+@login_required
+def editar_licencia(request, id):
+    licencia = get_object_or_404(Licencia, id=id)
+    
+    if request.method == 'POST':
+        licencia.numero_licencia = request.POST.get('numero_licencia')
+        licencia.nombre = request.POST.get('nombre')
+        licencia.dni = request.POST.get('dni')
+        licencia.fecha_emision = request.POST.get('fecha_emision')
+        licencia.fecha_expiracion = request.POST.get('fecha_expiracion')
+        licencia.tipo_licencia = request.POST.get('tipo_licencia')
+        licencia.numero_unidad = request.POST.get('numero_unidad')
+        licencia.save()
+        return redirect('listar_licencias')  # Redirigir al listado de licencias
+
+    return render(request, 'licencias/editar_licencia.html', {'licencia': licencia}, )
 
 @login_required
 def hello(request, username):

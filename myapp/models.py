@@ -129,6 +129,8 @@ class UnidadTransporte(models.Model):
     contacto = models.CharField(max_length=8, null=True)
     id_tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE)
     estado = models.BooleanField(default=True)
+    vencimiento_soat = models.DateField(default="2024-01-01")
+    
 
     class Meta:
         db_table = 'unidades_transporte'
@@ -182,7 +184,7 @@ class Licencia(models.Model):
         ('alllb', 'Omnibuses interurbanos(alllb)'),
     ]
 
-    numero_licencia = models.CharField(max_length=50, unique=True)  # Número único de licencia
+    numero_licencia = models.CharField(max_length=20, unique=True)  # Número único de licencia
     nombre = models.CharField(max_length=100)  # Nombre asociado a la licencia
     dni = models.CharField(max_length=15, unique=True)  # Número de DNI o identificador único
     fecha_emision = models.DateField()  # Fecha de emisión
@@ -192,6 +194,15 @@ class Licencia(models.Model):
         choices=TIPO_LICENCIA_CHOICES,
         default='Allb',  # Valor predeterminado
     )  # Tipo de licencia
+    numero_unidad = models.ForeignKey(
+        UnidadTransporte, 
+        on_delete=models.CASCADE, 
+        related_name='licencias',
+        null=True,
+        blank=True
+        
+        
+    )  # Relación con UnidadTransporte
 
     class Meta:
         db_table = 'licencias'  # Nombre personalizado para la tabla
@@ -201,3 +212,4 @@ class Licencia(models.Model):
 
     def __str__(self):
         return f"{self.numero_licencia} - {self.nombre} ({self.get_tipo_licencia_display()})"
+

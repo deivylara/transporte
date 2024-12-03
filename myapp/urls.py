@@ -19,4 +19,5 @@ urlpatterns = [
     path('CrearPagos/', views.crear_pago, name='crear_pago'),
     path('licencias/', views.listar_licencias, name='listar_licencias'),
     path('crear_licencias/', views.crear_licencias, name='crear_licencias'),
+    path('editar_licencia/<int:id>/', views.editar_licencia, name='editar_licencia'),
 ]

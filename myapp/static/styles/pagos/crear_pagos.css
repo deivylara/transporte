@@ -63,7 +63,7 @@ form button[type="submit"] {
     padding: 10px;
     font-size: 16px;
     font-weight: bold;
-    background-color: #34C759; /* Fondo del botón */
+    background-color: #0e6d75e5; /* Fondo del botón */
     color: white; /* Texto del botón */
     border: none;
     border-radius: 5px;
@@ -80,7 +80,7 @@ form button[type="submit"]:hover {
     display: inline-block;
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #34C759; /* Fondo del enlace */
+    background-color: #0e6d75e5; /* Fondo del enlace */
     color: white; /* Texto del enlace */
     text-decoration: none;
     text-align: center;

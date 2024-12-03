@@ -9,35 +9,44 @@
     <title>Listado de Licencias</title>
     <link rel="stylesheet" href="/static/styles/licencias/listar_licencias.css">
 </head>
-<div class="container">
-    <h1>Licencias</h1>
-    <table class="licencia">
-        <thead>
-            <tr>
-                <th>Numero Licencia</th>
-                <th>Nombre</th>
-                <th>Dni</th>
-                <th>Fecha Emision</th>
-                <th>fecha Expiracion</th>
-                <th>Tipo Licencia</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for licencia in licencias %}
-            <tr>
-                <td data-label="numero_licencia">{{ licencia.numero_licencia }}</td>
-                <td data-label="nombre">{{ licencia.nombre }}</td>
-                <td data-label="Dni">{{ licencia.dni }}</td>
-                <td data-label="fecha_emision">{{ licencia.fecha_emision }}</td>
-                <td data-label="fecha_expiracion">{{ licencia.fecha_expiracion }}</td>
-                <td data-label="tipo_licencia">{{ licencia.tipo_licencia }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+<body>
+    <div class="container">
+        <h1>Licencias</h1>
+        <table class="licencia">
+            <thead>
+                <tr>
+                    <th>Numero Licencia</th>
+                    <th>Nombre</th>
+                    <th>Dni</th>
+                    <th>Fecha Emision</th>
+                    <th>Fecha Expiracion</th>
+                    <th>Tipo Licencia</th>
+                    <th>Conductor de Unidad</th>
+                    <th>Acciones</th> <!-- Nueva columna para las acciones -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for licencia in licencias %}
+                <tr>
+                    <td data-label="numero_licencia">{{ licencia.numero_licencia }}</td>
+                    <td data-label="nombre">{{ licencia.nombre }}</td>
+                    <td data-label="Dni">{{ licencia.dni }}</td>
+                    <td data-label="fecha_emision">{{ licencia.fecha_emision|date:"d/m/Y" }}</td>
+                    <td data-label="fecha_expiracion">{{ licencia.fecha_expiracion|date:"d/m/Y" }}</td>
+                    <td data-label="tipo_licencia">{{ licencia.tipo_licencia }}</td>
+                    <td data-label="conductor_unidad">{{ licencia.numero_unidad }}</td>
+                    <td data-label="acciones">
+                        <!-- Botón para editar -->
+                        <a href="{% url 'editar_licencia' licencia.id %}" class="edit-btn">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
-    </ul>
+        <a class="add-link" href="{% url 'crear_licencias' %}">AGREGAR LICENCIA</a>
+    </div>
 </body>
-<a class="add-link" href="{% url 'crear_licencias' %}">AGREGAR LICENCIA</a>
 </html>
+
 
 {% endblock %}
