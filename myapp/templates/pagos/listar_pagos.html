@@ -12,19 +12,47 @@
 <body>
     <div class="header-container">
         <h1>LISTADO DE PAGOS</h1>
-        <a class="add-button" href="{% url 'crear_pago' %}">Crear Nuevo Pago</a>
+        <a class="add-button" href="{% url 'crear_pago' %}">AGREGAR PAGO</a>
     </div> 
     <div class="container">
         <table>
             <thead>
                 <tr>
-                    <th>N° PAGO</th>
-                    <th>VUELTA</th>
-                    <th>NUMERO DE UNIDAD</th>
-                    <th>NOMBRE TARIFA</th>
-                    <th>METODO DE PAGO</th>
-                    <th>FECHA DE PAGO</th>
-                    <th>DETALLE</th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="numero_pago" id="numero_pago" placeholder="N° PAGO" value="{{ numero_pago }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="vuelta" id="vuelta" placeholder="VUELTA" value="{{ vuelta }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="N° UNIDAD" value="{{ numero_unidad }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="nombre_tarifa" id="nombre_tarifa" placeholder="NOMBRE TARIFA" value="{{ nombre_tarifa }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="metodo_pago" id="metodo_pago" placeholder="METODO DE PAGO" value="{{ metodo_pago }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="date_filterp" id="date_filterp" placeholder="FECHA DE PAGO(MM/AAAA)" value="{{ date_filterp }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="detalle" id="detalle" placeholder="DETALLE" value="{{ detalle }}">
+                        </form>
+                    </th>
                 </tr>
             </thead>
             <tbody>

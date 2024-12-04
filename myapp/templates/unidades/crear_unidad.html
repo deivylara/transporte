@@ -12,12 +12,36 @@
 </head>
 <body>
     <div class="crear-unidad">
-        <h1>Crear Unidad de Transporte</h1>
+        <h1>AGREGAR NUEVA UNIDAD</h1>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const socioField = document.querySelector('input[name="socio"]'); // Campo "socio" tipo checkbox
+                    const tarifaField = document.querySelector('select[name="id_tarifa"]'); // Campo select "id_tarifa"
+
+                    if (socioField && tarifaField) {
+                        const updateTarifa = () => {
+                            const options = tarifaField.options; // Todas las opciones del select
+                            for (let i = 0; i < options.length; i++) {
+                                if (socioField.checked && options[i].text.includes('PREMIUM')) {
+                                    tarifaField.value = options[i].value; // Selecciona "PREMIUM"
+                                    break;
+                                } else if (!socioField.checked && options[i].text.includes('STANDAR')) {
+                                    tarifaField.value = options[i].value; // Selecciona "STANDAR"
+                                    break;
+                                }
+                            }
+                        };
+
+                        updateTarifa(); // Inicializa el valor al cargar la página
+                        socioField.addEventListener('change', updateTarifa); // Cambia cuando se modifica "socio"
+                    }
+                });
+            </script>
             <div class="button-container">
-                <button type="submit">Guardar</button> 
+                <button type="submit">AGREGAR</button> 
             </div>     
         </form>
     </div>

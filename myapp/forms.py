@@ -1,5 +1,5 @@
 from django import forms
-from .models import UnidadTransporte, Stock, ContadorSurtidor, controlUnidades, pagos, Licencia
+from .models import UnidadTransporte, Stock, ContadorSurtidor, controlUnidades, pagos, Licencia,tarifa
 from django.forms import modelformset_factory
     
     
@@ -7,27 +7,35 @@ from django.forms import modelformset_factory
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
-        fields = ['numero_unidad', 'id_tarifa', 'socio', 'responsable', 'contacto', 'estado', 'vencimiento_soat']
+        fields = ['numero_unidad', 'socio',  'id_tarifa','responsable', 'contacto', 'estado', 'vencimiento_soat']
         widgets = {
             'vencimiento_soat': forms.DateInput(attrs={
-                'type': 'date',  # Muestra el calendario nativo
-                'class': 'form-control',  # Opcional, para aplicar estilos
+                'type': 'date',
+                'class': 'form-control',
             }),
-            
-            'id_tarifa': forms.TextInput(attrs={'readonly': 'readonly'})
+            'id_tarifa': forms.Select(attrs={
+                'class': 'form-control',
+                'readonly': 'readonly',
+                'disabled': 'disabled',
+            }),
         }
-        labels ={
-            'id_tarifa' :'Tarifa'
-        } 
+        labels = {
+            'id_tarifa': 'Tarifa',
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        socio = cleaned_data.get('socio')
+        if socio is not None:
+            # Asignar id_tarifa basado en socio
+            tarifa = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
+            cleaned_data['id_tarifa'] = tarifa
+        return cleaned_data
         
-
-
 class StockForm(forms.ModelForm):
     class Meta:
         model = Stock
         fields = ['stock_inicial', 'descarga', 'stock_final']
-
-
 
 class ContadorSurtidorForm(forms.ModelForm):
     class Meta:

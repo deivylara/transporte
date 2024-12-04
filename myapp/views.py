@@ -143,7 +143,7 @@ def listar_tarifas(request):
     for tarif in tarifas:
         tarif.nombre_tarifa_display = tarif.nombre_tarifa  
         tarif.monto_display = f"S/ {float(tarif.monto):,.2f}"
-    return render(request, 'unidades/listar_tarifa.html', {'tarifas': tarifas})  
+    return render(request, 'unidades/listar_tarifa.html', {'tarifas': tarifas}) 
        
 @login_required
 def lista_metodos_pago(request):
@@ -155,12 +155,36 @@ def lista_metodos_pago(request):
 
 @login_required
 def listar_pagos(request):
-    pagos_list = pagos.objects.select_related(
-        'id_control', 
-        'id_control__unidad', 
-        'id_control__unidad__id_tarifa', 
-        'id_metodo'
-    ).all()
+    numero_pago = request.GET.get('numero_pago', '').strip()
+    vuelta = request.GET.get('vuelta', '').strip()
+    numero_unidad = request.GET.get('numero_unidad', '').strip()
+    nombre_tarifa = request.GET.get('nombre_tarifa', '').strip()
+    metodo_pago = request.GET.get('metodo_pago', '').strip()
+    date_filterp = request.GET.get('date_filterp', '').strip()
+    detalle = request.GET.get('detalle', '').strip()
+
+
+    if numero_pago:
+        pagos_list = pagos_list.filter(id_pago__icontains=numero_pago)
+    elif vuelta:
+        pagos_list = pagos_list.filter(id_control__vuelta__icontains=vuelta)
+    elif numero_unidad:
+        pagos_list = pagos_list.filter(id_control__unidad__numero_unidad__icontains=numero_unidad)
+    elif nombre_tarifa:
+        pagos_list = pagos_list.filter(id_control__unidad__id_tarifa__nombre_tarifa__icontains=nombre_tarifa)
+    elif metodo_pago:
+        pagos_list = pagos_list.filter(id_metodo__tipo__icontains=metodo_pago)
+    elif date_filterp:
+        try:
+            month, year = map(int, date_filterp.split('/'))
+            pagos_list = pagos_list.filter(fecha_pago__month=month, fecha_pago__year=year)
+        except ValueError:
+            pass  # Si el formato es incorrecto, no hacer nada
+    elif detalle:
+        pagos_list = pagos_list.filter(detalle__icontains=detalle)
+    
+    else: 
+        pagos_list = pagos.objects.all()
 
     for pago in pagos_list:
         pago.vuelta_display = pago.id_control.vuelta if pago.id_control else "N/A"
@@ -170,7 +194,16 @@ def listar_pagos(request):
         pago.fecha_pago_display = pago.fecha_pago.strftime('%d/%m/%Y') if pago.fecha_pago else "N/A"
         pago.detalle_display = pago.detalle
 
-    return render(request, 'pagos/listar_pagos.html', {'pagos_list': pagos_list})
+    return render(request, 'pagos/listar_pagos.html', {
+        'pagos_list': pagos_list,
+        'numero_pago': numero_pago,
+        'vuelta': vuelta,
+        'numero_unidad': numero_unidad,
+        'nombre_tarifa': nombre_tarifa,
+        'metodo_pago': metodo_pago,
+        'date_filterp': date_filterp,
+        'detalle': detalle
+    })
 
 
 @login_required
