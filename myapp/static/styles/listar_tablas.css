@@ -13,6 +13,24 @@ h1 {
     margin-top: 20px;
 }
 
+/* Estilo para los inputs de búsqueda */
+.search-form input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+.search-form-ruc input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;}
 /* Contenedor principal */
 .container {
     width: 70%;

@@ -19,13 +19,37 @@
         <table class="unidad">
             <thead>
                 <tr>
-                    <th>Número de Unidad</th>
-                    <th>Socio</th>
-                    <th>Responsable</th>
-                    <th>Contato</th>
-                    <th>Tarifa</th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="N° UNIDAD" value="{{ numero_unidad }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="socio" id="socio" placeholder="SOCIO" value="{{ socio }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="responsable" id="responsable" placeholder="RESPONSABLE" value="{{ responsable }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="contacto" id="contacto" placeholder="CONTACTO" value="{{ contacto }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="tarifa" id="tarifa" placeholder="TARIFA" value="{{ tarifa }}">
+                        </form>
+                    </th>
                     <th>Vencimiento Soat </th>
-                    <th>Estado</th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="estado" id="estado" placeholder="ESTADO" value="{{ estado }}">
+                        </form>
+                    </th>
                 </tr>
             </thead>
             <tbody>

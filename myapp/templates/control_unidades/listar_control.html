@@ -17,10 +17,26 @@
         <table class="control-table">
             <thead>
                 <tr>
-                    <th>N° CONTROL</th>
-                    <th>NUMERO UNIDAD</th>
-                    <th>VUELTA</th>
-                    <th>FECHA DE VUELTA</th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+                            <input type="text" name="numero_control" id="numero_control" placeholder="N° CONTROL" value="{{ numero_control }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+                            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="N° UNIDAD" value="{{ numero_unidad }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+                            <input type="text" name="vuelta" id="vuelta" placeholder="VUELTA" value="{{ vuelta }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+                            <input type="text" name="date_filterp" id="date_filterp" placeholder="FECHA VUELTA (MM/AAAA)" value="{{ date_filterp }}">
+                        </form>
+                    </th>
                 </tr>
             </thead>
             <tbody>
