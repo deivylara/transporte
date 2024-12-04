@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
+</head>
+<body>
+    <nav class="navbar">
+        <!-- Botón del menú hamburguesa -->
+        <div class="menu-toggle" id="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Menú -->
+        <ul class="menu">
+            <li><a href="{% url 'grifo' %}">INICIO</a></li>
+            <li><a href="{% url 'listar_stock' %}">STOCK</a></li>
+            <li><a href="{% url 'crear_contadores_surtidor' %}">TURNOS</a></li>
+            <li><a href="{% url 'exit' %}">SALIR</a></li>
+        </ul>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+    <script>
+        // Script para funcionalidad del menú hamburguesa
+        const menuToggle = document.getElementById('menu-toggle');
+        const menu = document.querySelector('.menu');
+
+        menuToggle.addEventListener('click', () => {
+            menu.classList.toggle('show');
+            menuToggle.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
+
+

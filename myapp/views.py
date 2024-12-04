@@ -1,7 +1,7 @@
 from django.http import HttpResponse
-from .models import UnidadTransporte, Stock, ContadorSurtidor , controlUnidades, tarifa ,metodo_pago, pagos, Licencia
+from .models import UnidadTransporte, controlUnidades, tarifa ,metodo_pago, pagos, Licencia
 from django.shortcuts import render , redirect , get_object_or_404
-from .forms import UnidadTransporteForm, StockForm, ContadorSurtidorFormSet, ControlUnidadesForm, PagoForm, LicenciaForm
+from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoForm, LicenciaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 
@@ -25,40 +25,7 @@ def crear_unidad(request):
     else:
         form = UnidadTransporteForm()
     return render(request, 'unidades/crear_unidad.html', {'form': form})
-
-
-@login_required
-def listar_stock(request):
-    stocks = Stock.objects.all()
-    return render(request, 'stock/listar_stock.html', {'stocks': stocks})
-
-
-@login_required
-def crear_stock(request):
-    if request.method == 'POST':
-        form = StockForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_stock')
-    else:
-        form = StockForm()
-    return render(request, 'stock/crear_stock.html', {'form': form})
     
-    
-@login_required       
-def crear_contadores_surtidor(request):
-    if request.method == 'POST':
-        formset = ContadorSurtidorFormSet(request.POST)
-        if formset.is_valid():
-            instances = formset.save(commit=False)
-            for instance in instances:
-                instance.usuario = request.user
-                instance.save()
-            return redirect('success_url')  # Redirige a la URL que desees
-    else:
-        formset = ContadorSurtidorFormSet(queryset=ContadorSurtidor.objects.none())
-
-    return render(request, 'contadores/crear_contadores_surtidor.html', {'formset': formset})
 
 @login_required
 def listar_unidades(request):
