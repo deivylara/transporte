@@ -58,13 +58,13 @@
             <tbody>
                 {% for pago in pagos_list %}
                     <tr>
-                        <td>{{ pago.id_pago }}</td>
-                        <td>{{ pago.vuelta_display }}</td>
-                        <td>{{ pago.numero_unidad_display }}</td>
-                        <td>{{ pago.nombre_tarifa_display }}</td>
-                        <td>{{ pago.metodo_pago_display }}</td>
-                        <td>{{ pago.fecha_pago_display }}</td>
-                        <td>{{ pago.detalle_display }}</td>
+                        <td data-label="Nº PAGO">{{ pago.id_pago }}</td>
+                        <td data-label="VUELTA">{{ pago.vuelta_display }}</td>
+                        <td data-label="Nº UNIDAD">{{ pago.numero_unidad_display }}</td>
+                        <td data-label="NOMBRE TARIFA">{{ pago.nombre_tarifa_display }}</td>
+                        <td data-label="METODO PAGO">{{ pago.metodo_pago_display }}</td>
+                        <td data-label="FECHA PAGO">{{ pago.fecha_pago_display }}</td>
+                        <td data-label="DETALLE">{{ pago.detalle_display }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -1,6 +1,5 @@
 {% extends 'layouts/base.html' %}
 {% block content %}
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,14 +50,14 @@
             <tbody>
                 {% for licencia in licencias %}
                 <tr>
-                    <td data-label="numero_licencia">{{ licencia.numero_licencia }}</td>
-                    <td data-label="nombre">{{ licencia.nombre }}</td>
-                    <td data-label="Dni">{{ licencia.dni }}</td>
-                    <td data-label="fecha_emision">{{ licencia.fecha_emision|date:"d/m/Y" }}</td>
-                    <td data-label="fecha_expiracion">{{ licencia.fecha_expiracion|date:"d/m/Y" }}</td>
-                    <td data-label="tipo_licencia">{{ licencia.tipo_licencia }}</td>
-                    <td data-label="conductor_unidad">{{ licencia.numero_unidad }}</td>
-                    <td data-label="acciones">
+                    <td data-label="NUMERO LICENCIA">{{ licencia.numero_licencia }}</td>
+                    <td data-label="NOMBRE">{{ licencia.nombre }}</td>
+                    <td data-label="DNI">{{ licencia.dni }}</td>
+                    <td data-label="FECHA EMISION">{{ licencia.fecha_emision|date:"d/m/Y" }}</td>
+                    <td data-label="FECHA EXPIRACION">{{ licencia.fecha_expiracion|date:"d/m/Y" }}</td>
+                    <td data-label="TIPO LICENCIA">{{ licencia.tipo_licencia }}</td>
+                    <td data-label="CONDUCTOR UNIDA">{{ licencia.numero_unidad }}</td>
+                    <td data-label="ACCIONES">
                         <a href="{% url 'editar_licencia' licencia.id %}" class="edit-btn">Editar</a>
                     </td>
                 </tr>
@@ -68,6 +67,4 @@
     </div>
 </body>
 </html>
-
-
 {% endblock %}

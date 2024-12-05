@@ -55,13 +55,13 @@
             <tbody>
                 {% for unidad in unidades %}
                 <tr>
-                    <td data-label="Número de Unidad">{{ unidad.numero_unidad }}</td>
-                    <td data-label="Socio">{{ unidad.socio_display }}</td>
-                    <td data-label="Responsable">{{ unidad.responsable_display }}</td>
-                    <td data-label="Contacto">{{ unidad.contacto_display }}</td>
-                    <td data-label="Tarifa">{{ unidad.id_tarifa__nombre_tarifa_display }}</td>
-                    <td data-label="soat Vencimiento">{{ unidad.vencimiento_soat |date:"d/m/Y"  }}</td>
-                    <td data-label="Estado">{{ unidad.estado_display }}</td>
+                    <td data-label="N° UNIDAD">{{ unidad.numero_unidad }}</td>
+                    <td data-label="SOCIO">{{ unidad.socio_display }}</td>
+                    <td data-label="RESPONSABLE">{{ unidad.responsable_display }}</td>
+                    <td data-label="CONTACTO">{{ unidad.contacto_display }}</td>
+                    <td data-label="TARIFA">{{ unidad.id_tarifa__nombre_tarifa_display }}</td>
+                    <td data-label="SOAT VENCIMIENTO">{{ unidad.vencimiento_soat |date:"d/m/Y"  }}</td>
+                    <td data-label="ESTADO">{{ unidad.estado_display }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

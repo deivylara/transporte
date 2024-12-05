@@ -9,9 +9,9 @@ form {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid grey;
     border-radius: 5px;
-    background-color: #f9f9f94f;
+    background-color: #f9f9f929;
     color: grey; /* Texto principal */
     margin-bottom: 30px;
     font-weight: bold;
@@ -30,7 +30,7 @@ select{
     width: 100%;
     padding: 10px;
     margin: 10px 0;
-    border: 3px solid #ccc;
+    border: 3px solid #cccccc82;
     border-radius: 20px; 
     box-sizing: border-box;
 }
@@ -52,7 +52,7 @@ input[type="checkbox"] {
     width: 40px;
     height: 20px;
     border-radius: 10px;
-    background-color: #ccc;
+    background-color: #cccccc72;
     position: relative;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -99,4 +99,71 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
     background-color: #678db5;
+}
+
+/* Consultas de medios para estilos responsivos */
+@media (max-width: 768px) {
+    form {
+        padding: 15px;
+        margin: 15px;
+    }
+
+    input[type="text"], 
+    select, 
+    textarea {
+        font-size: 14px;
+    }
+
+    button[type="submit"] {
+        padding: 10px 12px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    form {
+        border: none;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+        font-size: 12px;
+    }
+
+    button[type="submit"] {
+        padding: 8px 10px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 400px) {
+    h1 {
+        font-size: 20px;
+    }
+
+    button[type="submit"] {
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+
+    input[type="checkbox"] {
+        width: 30px;
+        height: 15px;
+    }
+
+    input[type="checkbox"]::before {
+        width: 12px;
+        height: 12px;
+        left: 3px;
+    }
+
+    input[type="checkbox"]:checked::before {
+        left: 16px;
+    }
 }

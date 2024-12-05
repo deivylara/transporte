@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 {% block content %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +14,7 @@
         <a class="add-button" href="{% url 'crear_control_unidad' %}">AGREGAR CONTROL</a>
     </div> 
     <div class="container">
-        <table class="control-table">
+        <table class="unidad">
             <thead>
                 <tr>
                     <th>
@@ -42,10 +42,10 @@
             <tbody>
                 {% for control in controles %}
                 <tr>
-                    <td>{{ control.id_control }}</td>
-                    <td>{{ control.unidad_display }}</td>
-                    <td>{{ control.vuelta_display }}</td>
-                    <td>{{ control.fecha_vuelta |date:"d/m/Y H:i"  }}</td>
+                    <td data-label="Nº CONTROL">{{ control.id_control }}</td>
+                    <td data-label="Nº UNIDAD">{{ control.unidad_display }}</td>
+                    <td data-label="VUELTA">{{ control.vuelta_display }}</td>
+                    <td data-label="FECHA VUELTA">{{ control.fecha_vuelta |date:"d/m/Y H:i"  }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
