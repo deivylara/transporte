@@ -14,6 +14,41 @@
         <h1>LISTADO DE PAGOS</h1>
         <a class="add-button" href="{% url 'crear_pago' %}">AGREGAR PAGO</a>
     </div> 
+    <div class="filter-container">
+        <select id="filter-select">
+            <option value="">Seleccione un filtro</option>
+            <option value="numero_pago">N° PAGO</option>
+            <option value="vuelta">VUELTA</option>
+            <option value="numero_unidad">N° UNIDAD</option>
+            <option value="nombre_tarifa">NOMBRE TARIFA</option>
+            <option value="metodo_pago">METODO DE PAGO</option>
+            <option value="date_filterp">FECHA DE PAGO(MM/AAAA)</option>
+            <option value="detalle">DETALLE</option>
+        </select>
+    </div>
+    <div class="filters">
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="numero_pago" id="numero_pago" placeholder="N° PAGO" value="{{ numero_pago }}" class="filter-input" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="vuelta" id="vuelta" placeholder="VUELTA" value="{{ vuelta }}" class="filter-input" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="N° UNIDAD" value="{{ numero_unidad }}" class="filter-input" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="nombre_tarifa" id="nombre_tarifa" placeholder="NOMBRE TARIFA" value="{{ nombre_tarifa }}" class="filter-input" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="metodo_pago" id="metodo_pago" placeholder="METODO DE PAGO" value="{{ metodo_pago }}" class="filter-input" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="date_filterp" id="date_filterp" placeholder="FECHA DE PAGO(MM/AAAA)" value="{{ date_filterp }}" class="filter-input" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="detalle" id="detalle" placeholder="DETALLE" value="{{ detalle }}" class="filter-input" style="display: none;">
+        </form>
+    </div>
     <div class="container">
         <table class="unidad">
             <thead>
@@ -70,6 +105,28 @@
             </tbody>
         </table>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterSelect = document.getElementById('filter-select');
+            const filterInputs = document.querySelectorAll('.filter-input');
+        
+            filterSelect.addEventListener('change', function () {
+                // Ocultar todos los inputs de filtro
+                filterInputs.forEach(input => {
+                    input.style.display = 'none';
+                });
+        
+                // Mostrar el input correspondiente al filtro seleccionado
+                const selectedFilter = this.value;
+                if (selectedFilter) {
+                    const selectedInput = document.getElementById(selectedFilter);
+                    if (selectedInput) {
+                        selectedInput.style.display = 'block';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 {% endblock %}

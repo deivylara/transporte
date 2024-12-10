@@ -3,16 +3,45 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Listado de Licencias</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Licencias</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" href="/static/styles/listar_tablas.css">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
     <div class="header-container">
         <h1>LISTADO DE LICENCIAS</h1>
         <a class="add-button" href="{% url 'crear_licencias' %}">AGREGAR LICENCIA</a>
     </div> 
+    <div class="filter-container">
+        <select id="filter-select">
+            <option value="">Seleccione un filtro</option>
+            <option value="numero_licencia">Nº LICENCIA</option>
+            <option value="nombre">NOMBRE</option>
+            <option value="dni">DNI</option>
+            <option value="tipo_licencia">TIPO</option>
+            <option value="date_filterp">EXPIRACION</option>
+        </select>
+    </div>
+    <div class="filters">
+        <form method="GET" action="{% url 'listar_licencias' %}" class="search-form">
+            <input type="text" name="numero_licencia" id="numero_licencia" placeholder="Nº LICENCIA" class="filter-input" value="{{ numero_licencia }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_licencias' %}" class="search-form">
+            <input type="text" name="nombre" id="nombre" placeholder="NOMBRE" class="filter-input" value="{{ nombre }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_licencias' %}" class="search-form">
+            <input type="text" name="dni" id="dni" placeholder="DNI" class="filter-input" value="{{ dni }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_licencias' %}" class="search-form">
+            <input type="text" name="tipo_licencia" id="tipo_licencia" placeholder="TIPO" class="filter-input" value="{{ tipo_licencia }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_licencias' %}" class="search-form">
+            <input type="text" name="date_filterp" id="date_filterp" placeholder="EXPIRACION" class="filter-input" value="{{ date_filterp }}" style="display: none;">
+        </form>
+    </div>
     <div class="container">
         <table class="unidad">
             <thead>
@@ -65,6 +94,28 @@
             </tbody>
         </table>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterSelect = document.getElementById('filter-select');
+            const filterInputs = document.querySelectorAll('.filter-input');
+        
+            filterSelect.addEventListener('change', function () {
+                // Ocultar todos los inputs de filtro
+                filterInputs.forEach(input => {
+                    input.style.display = 'none';
+                });
+        
+                // Mostrar el input correspondiente al filtro seleccionado
+                const selectedFilter = this.value;
+                if (selectedFilter) {
+                    const selectedInput = document.getElementById(selectedFilter);
+                    if (selectedInput) {
+                        selectedInput.style.display = 'block';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 {% endblock %}

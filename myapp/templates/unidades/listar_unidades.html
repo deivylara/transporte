@@ -15,6 +15,37 @@
         <h1>LISTADO DE UNIDADES</h1>
         <a class="add-button" href="{% url 'crear_unidad' %}">AGREGAR UNIDAD</a>
     </div> 
+    <div class="filter-container">
+        <select id="filter-select">
+            <option value="">Seleccione un filtro</option>
+            <option value="numero_unidad">N° UNIDAD</option>
+            <option value="socio">SOCIO</option>
+            <option value="responsable">RESPONSABLE</option>
+            <option value="contacto">CONTACTO</option>
+            <option value="tarifa">TARIFA</option>
+            <option value="estado">ESTADO</option>
+        </select>
+    </div>
+    <div class="filters">
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="N° UNIDAD" class="filter-input" value="{{ numero_unidad }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="socio" id="socio" placeholder="SOCIO" class="filter-input" value="{{ socio }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="responsable" id="responsable" placeholder="RESPONSABLE" class="filter-input" value="{{ responsable }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="contacto" id="contacto" placeholder="CONTACTO" class="filter-input" value="{{ contacto }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="tarifa" id="tarifa" placeholder="TARIFA" class="filter-input" value="{{ tarifa }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="estado" id="estado" placeholder="ESTADO" class="filter-input" value="{{ estado }}" style="display: none;">
+        </form>
+    </div>
     <div class="container">
         <table class="unidad">
             <thead>
@@ -67,6 +98,28 @@
             </tbody>
         </table>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterSelect = document.getElementById('filter-select');
+            const filterInputs = document.querySelectorAll('.filter-input');
+        
+            filterSelect.addEventListener('change', function () {
+                // Ocultar todos los inputs de filtro
+                filterInputs.forEach(input => {
+                    input.style.display = 'none';
+                });
+        
+                // Mostrar el input correspondiente al filtro seleccionado
+                const selectedFilter = this.value;
+                if (selectedFilter) {
+                    const selectedInput = document.getElementById(selectedFilter);
+                    if (selectedInput) {
+                        selectedInput.style.display = 'block';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 {% endblock %}

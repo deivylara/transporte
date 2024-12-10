@@ -13,6 +13,30 @@
         <h1>LISTADO DE CONTROL DE UNIDADES</h1>
         <a class="add-button" href="{% url 'crear_control_unidad' %}">AGREGAR CONTROL</a>
     </div> 
+    <div class="filter-container">
+        <select id="filter-select">
+            <option value="">Seleccione un filtro</option>
+            <option value="numero_control">Nº CONTROL</option>
+            <option value="numero_unidad">Nº UNIDAD</option>
+            <option value="vuelta">VUELTA</option>
+            <option value="date_filterp">FECHA VUELTA</option>
+        </select>
+    </div>
+
+    <div class="filters">
+        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+            <input type="text" name="numero_control" id="numero_control" placeholder="Nº CONTROL" class="filter-input" value="{{ numero_control }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="Nº UNIDAD" class="filter-input" value="{{ numero_unidad }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+            <input type="text" name="vuelta" id="vuelta" placeholder="VUELTA" class="filter-input" value="{{ vuelta }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+            <input type="text" name="date_filterp" id="date_filterp" placeholder="FECHA VUELTA (MM/AAAA)" class="filter-input" value="{{ date_filterp }}" style="display: none;">
+        </form>
+    </div>
     <div class="container">
         <table class="unidad">
             <thead>
@@ -51,6 +75,28 @@
             </tbody>
         </table>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterSelect = document.getElementById('filter-select');
+            const filterInputs = document.querySelectorAll('.filter-input');
+        
+            filterSelect.addEventListener('change', function () {
+                // Ocultar todos los inputs de filtro
+                filterInputs.forEach(input => {
+                    input.style.display = 'none';
+                });
+        
+                // Mostrar el input correspondiente al filtro seleccionado
+                const selectedFilter = this.value;
+                if (selectedFilter) {
+                    const selectedInput = document.getElementById(selectedFilter);
+                    if (selectedInput) {
+                        selectedInput.style.display = 'block';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 {% endblock %}
