@@ -33,7 +33,7 @@ h1 {
     transition: border-color 0.3s;}
 /* Contenedor principal */
 .container {
-    width: 70%;
+    width: 80%;
     margin: 20px auto;
     padding: 20px;
     background-color: #0a1e35;
@@ -102,45 +102,30 @@ tr:hover {
 /* Diseño responsive */
 @media (max-width: 768px) {
     .container {
-        width: 95%;
-        overflow-x: hidden; /* Ocultar scroll horizontal */
+        margin-top: 70px; /* Espacio suficiente para el formulario fijo */
     }
-
-    table thead {
+    .unidad thead {
         display: none; /* Ocultar encabezados */
     }
 
-    tbody, tr, td{
+    .unidad tr{
         display: block; /* Mostrar elementos como bloques */
-        width: 96%;
+        margin-bottom: 20px;
     }
 
-    tr {
-        margin-bottom: 15px;
-        border: 1px solid grey; /* Bordes para las filas individuales */
-        padding: 5px;
-        width: 100%;
+    .unidad td{
+        display: block;
+        text-align: right;
+        border-bottom: 1px solid #ddd;
     }
 
-    td {
-        text-align: right; /* Alinear la información a la derecha */
-        padding-left: 120px;
-        padding-right: 5px; /* Reducir el padding a la derecha */
-        position: relative;
-        border: none; /* Eliminar bordes */
-        width: 520px;
-    }
 
-    td::before {
-        content: attr(data-label); /* Añadir encabezado virtual */
-        position: absolute;
-        left: 0;
-        width: 40%;
-        padding-left: 10px;
+    .unidad td::before {
+        content: attr(data-label);
+        float: left;
         font-weight: bold;
-        color: #b0c4de; /* Color del encabezado virtual */
-        text-align: left;
     }
+
 
     .add-button {
         width: 60%; /* Reducir ancho del botón */
@@ -149,39 +134,29 @@ tr:hover {
 }
 
 @media (max-width: 480px) {
-    table thead {
-        display: none; /* Ocultar encabezados en pantallas pequeñas */
+    .container {
+        margin-top: 70px; /* Espacio suficiente para el formulario fijo */
+    }
+    .unidad thead {
+        display: none; /* Ocultar encabezados */
     }
 
-    tbody, tr , td{
+    .unidad tr{
         display: block;
-        width: 96%;
+        margin-bottom: 20px;
     }
 
-    tr {
-        margin-bottom: 15px;
-        border: 1px solid grey; /* Bordes para filas individuales */
-        padding: 5px;
-        width: 100%;
+    .unidad td{
+        display: block;
+        text-align: right;
+        border-bottom: 1px solid #ddd;
     }
 
-    td {
-        text-align: right; /* Alinear la información a la derecha */
-        padding-left: 120px;
-        padding-right: 5px; /* Reducir el padding a la derecha */
-        position: relative;
-        border: none; /* Eliminar bordes */
-        width: 210px;
-    }
-
-    td::before {
-        content: attr(data-label); /* Usar los encabezados virtuales de las celdas */
-        position: absolute;
-        left: 0;
-        width: 40%; /* Asegurarse de que el contenido ocupe todo el ancho */
-        padding-left: 10px;
+    .unidad td::before {
+        content: attr(data-label);
+        float: left;
         font-weight: bold;
-        color: #b0c4de; /* Color de los encabezados virtuales */
-        text-align: left; /* Alineación de los títulos a la izquierda */
+        color: rgb(208, 208, 208);
     }
+
 }
