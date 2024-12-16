@@ -7,16 +7,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="/static/styles/controlUnidades/crear_control.css">
+    <link rel="stylesheet" href="/static/styles/crear_registros.css">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
   <div class="crear-control">
-    <h1>Crear Nuevo Control de Unidad</h1>
+    <h1>AGREGAR CONTROL UNIDAD</h1>
     <form method="POST">
       {% csrf_token %}
       {{ form.as_p }}  
-      <button type="submit">Guardar</button>
+      <div class="button-container">
+        <button type="submit">AGREGAR</button> 
+      </div>     
     </form>
   </div>
 </body>

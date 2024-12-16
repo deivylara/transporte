@@ -7,40 +7,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="/static/styles/Unidades/listar_unidades.css">
+    <link rel="stylesheet" href="/static/styles/listar_tablas.css">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
+    <div class="header-container">
+        <h1>LISTADO DE UNIDADES</h1>
+        <a class="add-button" href="{% url 'crear_unidad' %}">AGREGAR UNIDAD</a>
+    </div> 
+    <div class="filter-container">
+        <select id="filter-select">
+            <option value="">Seleccione un filtro</option>
+            <option value="numero_unidad">N° UNIDAD</option>
+            <option value="socio">SOCIO</option>
+            <option value="responsable">RESPONSABLE</option>
+            <option value="contacto">CONTACTO</option>
+            <option value="tarifa">TARIFA</option>
+            <option value="estado">ESTADO</option>
+        </select>
+    </div>
+    <div class="filters">
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="N° UNIDAD" class="filter-input" value="{{ numero_unidad }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="socio" id="socio" placeholder="SOCIO" class="filter-input" value="{{ socio }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="responsable" id="responsable" placeholder="RESPONSABLE" class="filter-input" value="{{ responsable }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="contacto" id="contacto" placeholder="CONTACTO" class="filter-input" value="{{ contacto }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="tarifa" id="tarifa" placeholder="TARIFA" class="filter-input" value="{{ tarifa }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+            <input type="text" name="estado" id="estado" placeholder="ESTADO" class="filter-input" value="{{ estado }}" style="display: none;">
+        </form>
+    </div>
     <div class="container">
-        <h1>Unidades de Transporte</h1>
         <table class="unidad">
             <thead>
                 <tr>
-                    <th>Número de Unidad</th>
-                    <th>Socio</th>
-                    <th>Responsable</th>
-                    <th>Contato</th>
-                    <th>Tarifa</th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="N° UNIDAD" value="{{ numero_unidad }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="socio" id="socio" placeholder="SOCIO" value="{{ socio }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="responsable" id="responsable" placeholder="RESPONSABLE" value="{{ responsable }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="contacto" id="contacto" placeholder="CONTACTO" value="{{ contacto }}">
+                        </form>
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="tarifa" id="tarifa" placeholder="TARIFA" value="{{ tarifa }}">
+                        </form>
+                    </th>
                     <th>Vencimiento Soat </th>
-                    <th>Estado</th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
+                            <input type="text" name="estado" id="estado" placeholder="ESTADO" value="{{ estado }}">
+                        </form>
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 {% for unidad in unidades %}
                 <tr>
-                    <td data-label="Número de Unidad">{{ unidad.numero_unidad }}</td>
-                    <td data-label="Socio">{{ unidad.socio_display }}</td>
-                    <td data-label="Responsable">{{ unidad.responsable_display }}</td>
-                    <td data-label="Contacto">{{ unidad.contacto_display }}</td>
-                    <td data-label="Tarifa">{{ unidad.id_tarifa__nombre_tarifa_display }}</td>
-                    <td data-label="soat Vencimiento">{{ unidad.vencimiento_soat |date:"d/m/Y"  }}</td>
-                    <td data-label="Estado">{{ unidad.estado_display }}</td>
+                    <td data-label="N° UNIDAD">{{ unidad.numero_unidad }}</td>
+                    <td data-label="SOCIO">{{ unidad.socio_display }}</td>
+                    <td data-label="RESPONSABLE">{{ unidad.responsable_display }}</td>
+                    <td data-label="CONTACTO">{{ unidad.contacto_display }}</td>
+                    <td data-label="TARIFA">{{ unidad.id_tarifa__nombre_tarifa_display }}</td>
+                    <td data-label="SOAT VENCIMIENTO">{{ unidad.vencimiento_soat |date:"d/m/Y"  }}</td>
+                    <td data-label="ESTADO">{{ unidad.estado_display }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <a class="add-link" href="{% url 'crear_unidad' %}">AGREGAR</a>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterSelect = document.getElementById('filter-select');
+            const filterInputs = document.querySelectorAll('.filter-input');
+        
+            filterSelect.addEventListener('change', function () {
+                // Ocultar todos los inputs de filtro
+                filterInputs.forEach(input => {
+                    input.style.display = 'none';
+                });
+        
+                // Mostrar el input correspondiente al filtro seleccionado
+                const selectedFilter = this.value;
+                if (selectedFilter) {
+                    const selectedInput = document.getElementById(selectedFilter);
+                    if (selectedInput) {
+                        selectedInput.style.display = 'block';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 {% endblock %}

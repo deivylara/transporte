@@ -4,15 +4,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Crear Licencia</title>
+    <title>agregar licencias</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/static/styles/crear_registros.css">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
-    <h1>Crear Nueva Licencia</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Guardar</button>
-    </form>
+    <div class="crear-licencia">
+        <h1>AGREGAR NUEVA LICENCIA</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="button-container">
+                <button type="submit">AGREGAR</button> 
+            </div>  
+        </form>
+    </div>
 </body>
-
+</html>
 {% endblock %}

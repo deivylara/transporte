@@ -9,10 +9,28 @@ body {
 
 h1 {
     text-align: center;
-    color: grey; /* Color del título */
+    color: grey;
     margin-top: 20px;
 }
 
+/* Estilo para los inputs de búsqueda */
+.search-form input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+.search-form-ruc input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;}
 /* Contenedor principal */
 .container {
     width: 70%;
@@ -77,21 +95,55 @@ tr:hover {
 .add-button:hover {
     background-color: #28a745; /* Cambio de color al pasar el cursor */
 }
+.edit-btn{
+    color: gray;
+}
 
 /* Diseño responsive */
 @media (max-width: 768px) {
     .container {
         width: 95%;
-        padding: 10px;
+        overflow-x: hidden; /* Ocultar scroll horizontal */
     }
 
-    th, td {
-        padding: 8px;
-        font-size: 12px;
+    table thead {
+        display: none; /* Ocultar encabezados */
+    }
+
+    tbody, tr, td{
+        display: block; /* Mostrar elementos como bloques */
+        width: 96%;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid grey; /* Bordes para las filas individuales */
+        padding: 5px;
+        width: 100%;
+    }
+
+    td {
+        text-align: right; /* Alinear la información a la derecha */
+        padding-left: 120px;
+        padding-right: 5px; /* Reducir el padding a la derecha */
+        position: relative;
+        border: none; /* Eliminar bordes */
+        width: 520px;
+    }
+
+    td::before {
+        content: attr(data-label); /* Añadir encabezado virtual */
+        position: absolute;
+        left: 0;
+        width: 40%;
+        padding-left: 10px;
+        font-weight: bold;
+        color: #b0c4de; /* Color del encabezado virtual */
+        text-align: left;
     }
 
     .add-button {
-        width: 100%;
+        width: 60%; /* Reducir ancho del botón */
         font-size: 14px;
     }
 }
@@ -101,31 +153,35 @@ tr:hover {
         display: none; /* Ocultar encabezados en pantallas pequeñas */
     }
 
-    table, tbody, tr, td {
+    tbody, tr , td{
         display: block;
-        width: 100%;
+        width: 96%;
     }
 
     tr {
         margin-bottom: 15px;
         border: 1px solid grey; /* Bordes para filas individuales */
         padding: 5px;
+        width: 100%;
     }
 
     td {
-        text-align: left; /* Alinear texto a la izquierda */
-        padding-left: 10px;
+        text-align: right; /* Alinear la información a la derecha */
+        padding-left: 120px;
+        padding-right: 5px; /* Reducir el padding a la derecha */
         position: relative;
         border: none; /* Eliminar bordes */
+        width: 210px;
     }
 
     td::before {
-        content: attr(data-label); /* Etiqueta de datos */
+        content: attr(data-label); /* Usar los encabezados virtuales de las celdas */
         position: absolute;
         left: 0;
-        width: 50%;
+        width: 40%; /* Asegurarse de que el contenido ocupe todo el ancho */
         padding-left: 10px;
         font-weight: bold;
-        color: #b0c4de; /* Texto de encabezados virtuales */
+        color: #b0c4de; /* Color de los encabezados virtuales */
+        text-align: left; /* Alineación de los títulos a la izquierda */
     }
 }

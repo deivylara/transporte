@@ -1,0 +1,43 @@
+{% extends 'layouts/base2.html' %}
+
+{% block content %}
+<head>
+    <title>Historico de Stock</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/static/styles/listar_tablas_grifo.css">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
+</head>
+<body>
+    <div class="header-container">
+        <h1>LISTADO DE STOCK</h1>
+        <a class="add-button" href="{% url 'crear_stock' %}">AGREGAR STOCK</a>
+    </div> 
+    <div class="container">
+        <h1>Historico de Stock</h1>
+        <table class="unidad">
+            <thead>
+                <tr>
+                    <th>FECHA HORA</th>
+                    <th>STOCK INICIAL</th>
+                    <th>DESCARGA</th>
+                    <th>STOCK FINAL</th>
+                    <th>DIFERENCIAS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in stocks %}
+                <tr>
+                    <td data-label="FECHA">{{ stock.timestamp }}</td>
+                    <td data-label="STOCK INICIAL">{{ stock.stock_inicial }}</td>
+                    <td data-label="DESCARGA">{{ stock.descarga }}</td>
+                    <td data-label="STOCK FINAL">{{ stock.stock_final }}</td>
+                    <td data-label="DIFERENCIAS">{{ stock.diferencias }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+{% endblock %}

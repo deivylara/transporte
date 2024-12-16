@@ -18,86 +18,6 @@ class Task(models.Model):
     def __str__(self): 
         return self.title + " - " + self.project.name
     
-
-
-class Stock(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
-    stock_inicial = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_final = models.DecimalField(max_digits=10, decimal_places=2)
-    descarga = models.DecimalField(max_digits=10, decimal_places=2)
-    diferencias = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-
-    class Meta:
-        db_table = 'stock'
-        verbose_name_plural = 'stocks'
-
-    def save(self, *args, **kwargs):
-        # Calcular diferencias
-        suma_inicial_descarga = self.stock_inicial + self.descarga
-        self.diferencias = suma_inicial_descarga - self.stock_final
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return (f"Record at {self.timestamp} - Initial: {self.stock_inicial}, "
-                f"Final: {self.stock_final}, Descarga: {self.descarga}, "
-                f"Diferencias: {self.diferencias}")
-
-
-class Surtidor(models.Model):
-    nombre = models.CharField(max_length=50, unique=True)
-    descripcion = models.TextField(null=True, blank=True)
-
-    class Meta:
-        db_table = 'surtidores'
-        verbose_name_plural = 'surtidores'
-
-    def __str__(self):
-        return self.nombre
-    
-    
-    
-class Turno(models.Model):
-    DIA_NOCHE_CHOICES = [
-        ('D', 'Día'),
-        ('N', 'Noche'),
-    ]
-    
-    nombre = models.CharField(max_length=1, choices=DIA_NOCHE_CHOICES)
-
-    class Meta:
-        db_table = 'turnos'
-        verbose_name_plural = 'turnos'
-
-    def __str__(self):
-        return dict(self.DIA_NOCHE_CHOICES).get(self.nombre)
-
-
-class Surtidor(models.Model):
-    nombre = models.CharField(max_length=50, unique=True)
-    descripcion = models.TextField(null=True, blank=True)
-
-    class Meta:
-        db_table = 'surtidores'
-        verbose_name_plural = 'surtidores'
-
-    def __str__(self):
-        return self.nombre
-
-
-class ContadorSurtidor(models.Model):
-    turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
-    surtidor = models.ForeignKey(Surtidor, on_delete=models.CASCADE)
-    contador_inicial = models.DecimalField(max_digits=10, decimal_places=2)
-    contador_final = models.DecimalField(max_digits=10, decimal_places=2)
-    diferencias = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    fecha_hora_inicio = models.DateTimeField(auto_now_add=True)
-    fecha_hora_final = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        db_table = 'contadores_surtidor'
-        verbose_name_plural = 'contadores por surtidor'
-
 class metodo_pago(models.Model):
     id_metodo = models.AutoField(primary_key=True)
     tipo = models.CharField(max_length=50)
@@ -127,7 +47,7 @@ class UnidadTransporte(models.Model):
     socio = models.BooleanField(default=False)
     responsable = models.TextField(max_length=20, null=True)
     contacto = models.CharField(max_length=8, null=True)
-    id_tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE)
+    id_tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE, default=True)
     estado = models.BooleanField(default=True)
     vencimiento_soat = models.DateField(default="2024-01-01")
     
@@ -144,10 +64,20 @@ class controlUnidades(models.Model):
     unidad = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
     vuelta = models.DecimalField(max_digits=12, decimal_places=2)
     fecha_vuelta = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         db_table = 'control_unidades'
         verbose_name_plural = 'control de unidades'
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Solo calcular si el objeto es nuevo
+            ultimo_control = (
+                controlUnidades.objects.filter(unidad=self.unidad)
+                .order_by('-vuelta')
+                .first()
+            )
+            self.vuelta = (ultimo_control.vuelta + 1) if ultimo_control else 1
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Control {self.id_control} - Unidad {self.unidad.numero_unidad} - Vuelta {self.vuelta}'
@@ -178,16 +108,16 @@ class Licencia(models.Model):
         ('alllb', 'Omnibuses interurbanos(alllb)'),
     ]
 
-    numero_licencia = models.CharField(max_length=20, unique=True)  # Número único de licencia
-    nombre = models.CharField(max_length=100)  # Nombre asociado a la licencia
-    dni = models.CharField(max_length=15, unique=True)  # Número de DNI o identificador único
-    fecha_emision = models.DateField()  # Fecha de emisión
-    fecha_expiracion = models.DateField()  # Fecha de expiración
+    numero_licencia = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=100)
+    dni = models.CharField(max_length=15, unique=True)
+    fecha_emision = models.DateField()
+    fecha_expiracion = models.DateField()
     tipo_licencia = models.CharField(
         max_length=60,
         choices=TIPO_LICENCIA_CHOICES,
-        default='Allb',  # Valor predeterminado
-    )  # Tipo de licencia
+        default='Allb', 
+    ) 
     numero_unidad = models.ForeignKey(
         UnidadTransporte, 
         on_delete=models.CASCADE, 
@@ -196,13 +126,13 @@ class Licencia(models.Model):
         blank=True
         
         
-    )  # Relación con UnidadTransporte
+    )
 
     class Meta:
-        db_table = 'licencias'  # Nombre personalizado para la tabla
+        db_table = 'licencias'
         verbose_name = 'Licencia'
         verbose_name_plural = 'Licencias'
-        ordering = ['fecha_expiracion']  # Orden predeterminado en consultas
+        ordering = ['fecha_expiracion']
 
     def __str__(self):
         return f"{self.numero_licencia} - {self.nombre} ({self.get_tipo_licencia_display()})"
