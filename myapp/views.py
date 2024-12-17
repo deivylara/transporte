@@ -4,7 +4,7 @@ from django.shortcuts import render , redirect , get_object_or_404
 from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoForm, LicenciaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-
+from django.utils import timezone
 # Create your views here.
 
 @login_required

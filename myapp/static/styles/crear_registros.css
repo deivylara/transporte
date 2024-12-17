@@ -101,6 +101,36 @@ button[type="submit"]:hover {
     background-color: #678db5;
 }
 
+
+
+.custom-date-input {
+    box-sizing: border-box; /* Asegura que padding y border no aumenten el ancho total */
+    background-color: #f7faff; /* Color de fondo */
+    border: 2px solid rgb(204, 204, 204); /* Borde personalizado */
+    color: #0a1e35; /* Color del texto */
+    padding: 10px; /* Espaciado interno */
+    font-size: 16px; /* Tamaño de letra */
+    border-radius: 20px; /* Bordes redondeados */
+    width: 100%; /* Ocupa el ancho disponible */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
+}
+
+.custom-date-input:focus {
+    outline: none; /* Eliminar el borde azul predeterminado */
+    border-color: #0078d4; /* Borde en foco */
+    box-shadow: 0 0 5px rgba(0, 120, 212, 0.5); /* Sombra azul */
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator {
+    cursor: pointer; /* Cambiar el cursor al icono del calendario */
+    filter: invert(35%) sepia(20%) saturate(500%) hue-rotate(190deg);
+}
+
+
+
+
+
+
 /* Consultas de medios para estilos responsivos */
 @media (max-width: 768px) {
     form {
