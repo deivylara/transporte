@@ -1,7 +1,7 @@
 from django import forms
 from .models import UnidadTransporte, controlUnidades, pagos, Licencia,tarifa
 from django.forms import modelformset_factory
-
+from datetime import date
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
@@ -9,8 +9,9 @@ class UnidadTransporteForm(forms.ModelForm):
         widgets = {
             'vencimiento_soat': forms.DateInput(attrs={
                 'type': 'date',
-                'class': 'form-control',
-            }),
+                'class': 'custom-date-input',
+                'placeholder': 'Selecciona una fecha'}),
+            
             'id_tarifa': forms.Select(attrs={
                 'class': 'form-control',
                 'readonly': 'readonly',
@@ -65,3 +66,17 @@ class LicenciaForm(forms.ModelForm):
     class Meta:
         model = Licencia
         fields = ['numero_licencia', 'nombre', 'dni', 'fecha_emision', 'fecha_expiracion', 'tipo_licencia', 'numero_unidad']
+        widgets = {
+            'fecha_emision': forms.DateInput(attrs={
+              'type': 'date',
+              'class': 'custom-date-input',
+              'placeholder': 'Selecciona una fecha',
+            }),
+
+            'fecha_expiracion': forms.DateInput(attrs={
+              'type': 'date',
+              'class': 'custom-date-input',
+              'placeholder': 'Selecciona una fecha',
+              
+            }),  
+        }

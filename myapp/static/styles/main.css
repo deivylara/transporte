@@ -86,6 +86,7 @@ body {
 
     .menu li {
         text-align: center;
+        padding: 10px;
     }
 
     .menu.show {

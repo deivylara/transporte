@@ -50,6 +50,7 @@ h1 {
 /* Contenedor principal */
 .container {
     width: 80%;
+    width: 80%;
     margin: 20px auto;
     padding: 20px;
     background-color: #0a1e35;
@@ -120,6 +121,7 @@ table.unidad tr:hover {
         justify-content: center;
     }
 
+
     .add-button {
         width: 50%;
         text-align: center;
@@ -134,7 +136,41 @@ table.unidad tr:hover {
         width: 20%; /* Ocupa todo el ancho */
         margin-bottom: 10px;
     }
-}
+    .filter-container {
+        display: block; /* Mostrar en dispositivos pequeños */
+        margin: 10px 0;
+        text-align: center;
+    }
+    
+    #filter-select {
+        width: 80%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+    /* Estilo para los inputs de búsqueda */
+    .search-form input[type="text"] {
+        width: 80%;
+        padding: 12px;
+        margin: 4px 0;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: border-color 0.3s;
+    }
+    .search-form-ruc input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        margin: 4px 0;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: border-color 0.3s;}
+    }
 
 @media (max-width: 480px) {
     table.unidad thead {
@@ -143,7 +179,8 @@ table.unidad tr:hover {
 
     table.unidad, table.unidad tbody, table.unidad tr, table.unidad td {
         display: block;
-        width: 100%;
+        text-align: right;
+        border-bottom: 1px solid #ddd;
     }
 
     table.unidad tr {

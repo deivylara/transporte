@@ -4,7 +4,7 @@ from django.shortcuts import render , redirect , get_object_or_404
 from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoForm, LicenciaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-
+from django.utils import timezone
 # Create your views here.
 
 @login_required
@@ -130,7 +130,8 @@ def listar_pagos(request):
     date_filterp = request.GET.get('date_filterp', '').strip()
     detalle = request.GET.get('detalle', '').strip()
 
-
+    
+    pagos_list = pagos.objects.all()
     if numero_pago:
         pagos_list = pagos_list.filter(id_pago__icontains=numero_pago)
     elif vuelta:
@@ -146,7 +147,7 @@ def listar_pagos(request):
             month, year = map(int, date_filterp.split('/'))
             pagos_list = pagos_list.filter(fecha_pago__month=month, fecha_pago__year=year)
         except ValueError:
-            pass  # Si el formato es incorrecto, no hacer nada
+            pass
     elif detalle:
         pagos_list = pagos_list.filter(detalle__icontains=detalle)
     

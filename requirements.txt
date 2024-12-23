@@ -1,3 +1,4 @@
 Django==5.0.6
 mysqlclient==2.2.3
 python-dotenv==1.0.0
+XlsxWriter==3.2.0
