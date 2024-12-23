@@ -13,77 +13,28 @@ h1 {
     margin-top: 20px;
 }
 
-/* Estilo para los inputs de búsqueda */
-.search-form input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    margin: 4px 0;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: border-color 0.3s;
-}
-.search-form-ruc input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    margin: 4px 0;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: border-color 0.3s;}
-/* Contenedor principal */
-.container {
-    width: 70%;
-    margin: 20px auto;
+/* Contenedor del encabezado */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 20px;
     background-color: #0a1e35;
-    border: 2px solid white; /* Borde gris */
-    border-radius: 8px;
-    box-sizing: border-box;
-    overflow-x: auto;
+    border-bottom: 2px solid white;
 }
 
-/* Estilos de la tabla */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    table-layout: fixed; /* Ajustar ancho fijo */
-}
-
-th, td {
-    border: 1px solid grey; /* Bordes de las celdas */
-    padding: 10px;
+.header-container h1 {
+    margin: 0;
+    color: white;
+    font-size: 24px;
+    flex-grow: 1;
     text-align: center;
-    color: grey; /* Texto de las celdas */
-    font-size: 14px;
-    word-wrap: break-word; /* Ajustar texto largo */
 }
 
-th {
-    background-color: #0a1e35; /* Fondo de encabezados */
-    color: grey; /* Texto de encabezados */
-    font-weight: bold;
-}
-
-tr:nth-child(even) {
-    background-color: #0d2745; /* Color para filas pares */
-}
-
-tr:hover {
-    background-color: #b0c4de; /* Fondo al pasar el cursor */
-    color: #0a1e35; /* Cambiar texto al pasar el cursor */
-}
-
-/* Botón de agregar */
 .add-button {
-    display: block;
-    width: 200px;
-    margin: 20px auto;
-    padding: 10px;
     background-color: #0e6d75e5; /* Fondo del botón */
     color: white; /* Texto del botón */
-    text-align: center;
+    padding: 10px 20px;
     text-decoration: none;
     border: none;
     border-radius: 5px;
@@ -96,54 +47,136 @@ tr:hover {
     background-color: #28a745; /* Cambio de color al pasar el cursor */
 }
 
-/* Diseño responsive */
+/* Contenedor principal */
+.container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #0a1e35;
+    border: 2px solid white; /* Borde gris */
+    border-radius: 8px;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
+/* Estilos para la tabla */
+table.unidad {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: fixed; /* Ajustar ancho fijo */
+}
+
+table.unidad th, table.unidad td {
+    border: 1px solid grey; /* Bordes de las celdas */
+    padding: 10px;
+    text-align: center;
+    color: grey; /* Texto de las celdas */
+    font-size: 14px;
+    word-wrap: break-word; /* Ajustar texto largo */
+}
+
+table.unidad th {
+    background-color: #0a1e35; /* Fondo de encabezados */
+    color: white; /* Texto de encabezados */
+    font-weight: bold;
+}
+
+table.unidad tr:nth-child(even) {
+    background-color: #0d2745; /* Color para filas pares */
+}
+
+table.unidad tr:hover {
+    background-color: #b0c4de; /* Fondo al pasar el cursor */
+    color: #0a1e35; /* Cambiar texto al pasar el cursor */
+}
+
+/* Estilo para los inputs de búsqueda */
+.search-form input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+.search-form input[type="text"]:focus {
+    border-color: #28a745;
+    outline: none;
+}
+
+/* Media queries para diseño responsive */
 @media (max-width: 768px) {
     .container {
-        width: 95%;
+        width: 80%;
         padding: 10px;
+        margin: 10px auto;
     }
 
-    th, td {
-        padding: 8px;
-        font-size: 12px;
+    .header-container {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .add-button {
-        width: 100%;
-        font-size: 14px;
+        width: 50%;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    table.unidad th, table.unidad td {
+        padding: 8px;
+    }
+    /* Mostrar filtros en bloque para pantallas pequeñas */
+    .search-form input[type="text"] {
+        width: 20%; /* Ocupa todo el ancho */
+        margin-bottom: 10px;
     }
 }
 
 @media (max-width: 480px) {
-    table thead {
-        display: none; /* Ocultar encabezados en pantallas pequeñas */
+    table.unidad thead {
+        display: none;
     }
 
-    table, tbody, tr, td {
+    table.unidad, table.unidad tbody, table.unidad tr, table.unidad td {
         display: block;
         width: 100%;
     }
 
-    tr {
+    table.unidad tr {
         margin-bottom: 15px;
-        border: 1px solid grey; /* Bordes para filas individuales */
-        padding: 5px;
+        border: 1px solid #5a738e;
+        padding: 3px;
     }
 
-    td {
-        text-align: left; /* Alinear texto a la izquierda */
+    table.unidad td {
+        text-align: left;
         padding-left: 10px;
         position: relative;
-        border: none; /* Eliminar bordes */
+        border: none;
     }
 
-    td::before {
-        content: attr(data-label); /* Etiqueta de datos */
+    table.unidad td::before {
+        content: attr(data-label);
         position: absolute;
         left: 0;
         width: 50%;
         padding-left: 10px;
         font-weight: bold;
-        color: #b0c4de; /* Texto de encabezados virtuales */
+        text-align: left;
+        color: #b0c4de;
+    }
+
+    /* Mostrar filtros al inicio */
+    .search-form {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .search-form input[type="text"] {
+        width: 100%; /* Asegurar que los filtros ocupen todo el ancho */
     }
 }
