@@ -44,13 +44,14 @@ class tarifa(models.Model):
 class UnidadTransporte(models.Model): 
     id_transporte = models.AutoField(primary_key=True)
     numero_unidad = models.IntegerField(unique=True, null=True, blank=True)
+    placa = models.CharField(max_length=8,unique=True, null=True)
     socio = models.BooleanField(default=False)
     responsable = models.TextField(max_length=20, null=True)
     contacto = models.CharField(max_length=8, null=True)
     id_tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE, default=True)
     estado = models.BooleanField(default=True)
     vencimiento_soat = models.DateField(default=date.today)
-    
+    vencimiento_civm = models.DateField(default=date.today)
 
     class Meta:
         db_table = 'unidades_transporte'
@@ -64,24 +65,31 @@ class controlUnidades(models.Model):
     unidad = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
     vuelta = models.DecimalField(max_digits=12, decimal_places=2)
     fecha_vuelta = models.DateTimeField(auto_now_add=True)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         db_table = 'control_unidades'
         verbose_name_plural = 'control de unidades'
 
+    def calcular_siguiente_vuelta(self):
+        ultimo_control = (
+            controlUnidades.objects.filter(unidad=self.unidad)
+            .order_by('-vuelta')
+            .first()
+        )
+        return (ultimo_control.vuelta + 1) if ultimo_control else 1
+
     def save(self, *args, **kwargs):
-        if not self.pk:  # Solo calcular si el objeto es nuevo
-            ultimo_control = (
-                controlUnidades.objects.filter(unidad=self.unidad)
-                .order_by('-vuelta')
-                .first()
-            )
-            self.vuelta = (ultimo_control.vuelta + 1) if ultimo_control else 1
+        if not self.pk:
+            self.vuelta = self.calcular_siguiente_vuelta()
+        if not self.usuario:
+            from django.contrib.auth import get_user_model
+            self.usuario = get_user_model().objects.get(id=kwargs.get('user_id'))
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Control {self.id_control} - Unidad {self.unidad.numero_unidad} - Vuelta {self.vuelta}'
-
+    
 class pagos(models.Model):
     id_pago = models.AutoField(primary_key=True)
     id_control = models.ForeignKey(controlUnidades, on_delete=models.CASCADE)

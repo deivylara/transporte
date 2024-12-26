@@ -18,25 +18,25 @@
             {{ form.as_p }}
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
-                    const socioField = document.querySelector('input[name="socio"]'); // Campo "socio" tipo checkbox
-                    const tarifaField = document.querySelector('select[name="id_tarifa"]'); // Campo select "id_tarifa"
+                    const socioField = document.querySelector('input[name="socio"]');
+                    const tarifaField = document.querySelector('select[name="id_tarifa"]');
 
                     if (socioField && tarifaField) {
                         const updateTarifa = () => {
-                            const options = tarifaField.options; // Todas las opciones del select
+                            const options = tarifaField.options;
                             for (let i = 0; i < options.length; i++) {
                                 if (socioField.checked && options[i].text.includes('PREMIUM')) {
-                                    tarifaField.value = options[i].value; // Selecciona "PREMIUM"
+                                    tarifaField.value = options[i].value;
                                     break;
                                 } else if (!socioField.checked && options[i].text.includes('STANDAR')) {
-                                    tarifaField.value = options[i].value; // Selecciona "STANDAR"
+                                    tarifaField.value = options[i].value;
                                     break;
                                 }
                             }
                         };
 
-                        updateTarifa(); // Inicializa el valor al cargar la página
-                        socioField.addEventListener('change', updateTarifa); // Cambia cuando se modifica "socio"
+                        updateTarifa();
+                        socioField.addEventListener('change', updateTarifa);
                     }
                 });
             </script>

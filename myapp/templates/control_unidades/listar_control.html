@@ -20,6 +20,7 @@
             <option value="numero_unidad">Nº UNIDAD</option>
             <option value="vuelta">VUELTA</option>
             <option value="date_filterp">FECHA VUELTA</option>
+            <option value="usuario">USUARIO</option>
         </select>
     </div>
 
@@ -35,6 +36,9 @@
         </form>
         <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
             <input type="text" name="date_filterp" id="date_filterp" placeholder="FECHA VUELTA (MM/AAAA)" class="filter-input" value="{{ date_filterp }}" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+            <input type="text" name="usuario" id="usuario" placeholder="USUARIO" class="filter-input" value="{{ usuario }}" style="display: none;">
         </form>
     </div>
     <div class="container">
@@ -61,6 +65,11 @@
                             <input type="text" name="date_filterp" id="date_filterp" placeholder="FECHA VUELTA (MM/AAAA)" value="{{ date_filterp }}">
                         </form>
                     </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
+                            <input type="text" name="usuario" id="usuario" placeholder="USUARIO" value="{{ usuario }}">
+                        </form>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -70,6 +79,7 @@
                     <td data-label="Nº UNIDAD">{{ control.unidad_display }}</td>
                     <td data-label="VUELTA">{{ control.vuelta_display }}</td>
                     <td data-label="FECHA VUELTA">{{ control.fecha_vuelta |date:"d/m/Y H:i"  }}</td>
+                    <td data-label="USUARIO">{{ control.usuario }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
