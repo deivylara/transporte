@@ -1,17 +1,18 @@
 from django import forms
-from .models import UnidadTransporte, controlUnidades, pagos, Licencia,tarifa
+from .models import UnidadTransporte, controlUnidades, pagos, Licencia, tarifa
 from django.forms import modelformset_factory
 from datetime import date
+
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
-        fields = ['numero_unidad', 'socio',  'id_tarifa','responsable', 'contacto', 'estado', 'vencimiento_soat']
+        fields = ['numero_unidad', 'socio', 'id_tarifa', 'responsable', 'contacto', 'estado', 'vencimiento_soat']
         widgets = {
             'vencimiento_soat': forms.DateInput(attrs={
                 'type': 'date',
                 'class': 'custom-date-input',
-                'placeholder': 'Selecciona una fecha'}),
-            
+                'placeholder': 'Selecciona una fecha'
+            }),
             'id_tarifa': forms.Select(attrs={
                 'class': 'form-control',
                 'readonly': 'readonly',
@@ -23,13 +24,31 @@ class UnidadTransporteForm(forms.ModelForm):
         }
 
     def clean(self):
+        # Obtener datos limpios del formulario
         cleaned_data = super().clean()
         socio = cleaned_data.get('socio')
-        if socio is not None:
-            # Asignar id_tarifa basado en socio
-            tarifa = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
-            cleaned_data['id_tarifa'] = tarifa
+
+        # Verificar que socio no sea None o vacío
+        if not socio:
+            self.add_error('socio', "El campo 'socio' es obligatorio.")
+            return cleaned_data
+
+        # Determinar el nombre de la tarifa según el socio
+        nombre_tarifa = "PREMIUM" if socio else "STANDAR"
+
+        # Consultar el modelo tarifa para obtener el objeto correspondiente
+        tarifa_obj = tarifa.objects.filter(nombre_tarifa=nombre_tarifa).first()
+
+        if tarifa_obj:
+            # Asignar la tarifa encontrada al campo id_tarifa
+            cleaned_data['id_tarifa'] = tarifa_obj
+        else:
+            # Agregar error si no se encuentra la tarifa
+            self.add_error('id_tarifa', f"No se encontró una tarifa con el nombre '{nombre_tarifa}'.")
+
         return cleaned_data
+
+
 
 class ControlUnidadesForm(forms.ModelForm):
     class Meta:
