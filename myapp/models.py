@@ -49,7 +49,7 @@ class UnidadTransporte(models.Model):
     contacto = models.CharField(max_length=8, null=True)
     id_tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE, default=True)
     estado = models.BooleanField(default=True)
-    vencimiento_soat = models.DateField(default="2024-01-01")
+    vencimiento_soat = models.DateField(default=date.today)
     
 
     class Meta:
@@ -111,8 +111,8 @@ class Licencia(models.Model):
     numero_licencia = models.CharField(max_length=20, unique=True)
     nombre = models.CharField(max_length=100)
     dni = models.CharField(max_length=15, unique=True)
-    fecha_emision = models.DateField()
-    fecha_expiracion = models.DateField()
+    fecha_emision = models.DateField(default=date.today)
+    fecha_expiracion = models.DateField(default= date.today().replace(year=date.today().year + 5))
     tipo_licencia = models.CharField(
         max_length=60,
         choices=TIPO_LICENCIA_CHOICES,
