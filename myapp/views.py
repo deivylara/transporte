@@ -31,6 +31,7 @@ def crear_unidad(request):
 def listar_unidades(request):
     numero_unidad = request.GET.get('numero_unidad', '').strip()
     socio = request.GET.get('socio', '').strip()
+    placa = request.GET.get('placa', '').strip()
     responsable = request.GET.get('responsable','').strip()
     contacto = request.GET.get('contacto','').strip()
     tarifa = request.GET.get('tarifa','').strip()
@@ -40,6 +41,8 @@ def listar_unidades(request):
         unidades = UnidadTransporte.objects.filter(numero_unidad__icontains=numero_unidad)
     elif socio:
         unidades = UnidadTransporte.objects.filter(socio=True if socio.lower() == 'si' else False)
+    elif placa:
+        unidad = UnidadTransporte.objects.filter(placa__icontains=placa)
     elif responsable:
         unidades = UnidadTransporte.objects.filter(responsable__icontains=responsable)
     elif contacto:
@@ -54,6 +57,7 @@ def listar_unidades(request):
 
     for unidad in unidades:
         unidad.socio_display = "Sí" if unidad.socio else "No"
+        unidad.placa_display = unidad.placa
         unidad.responsable_display = unidad.responsable
         unidad.contacto_display = unidad.contacto
         unidad.id_tarifa__nombre_tarifa_display = unidad.id_tarifa.nombre_tarifa
@@ -63,6 +67,7 @@ def listar_unidades(request):
         'unidades': unidades,
         'numero_unidad': numero_unidad,
         'socio': socio,
+        'placa': placa,
         'responsable': responsable,
         'contacto': contacto,
         'tarifa': tarifa,
@@ -75,6 +80,7 @@ def listar_control_unidades(request):
     numero_unidad = request.GET.get('numero_unidad', '').strip()
     vuelta = request.GET.get('vuelta', '').strip()
     date_filterp = request.GET.get('date_filterp', '').strip()
+    usuario = request.GET.get('usuario','').strip()
 
     if numero_control:
         controles = controlUnidades.objects.filter(numero_control__icontains=numero_control)
@@ -87,7 +93,9 @@ def listar_control_unidades(request):
             month, year = map(int, date_filterp.split('/'))
             controles = controles.filter(fecha_vuelta__month=month, fecha_vuelta__year=year)
         except ValueError:
-            pass 
+            pass
+    elif usuario:
+        controles = controlUnidades.objects.filter(usuario__icontains = usuario)
     else: 
         controles = controlUnidades.objects.all()
         
@@ -95,13 +103,15 @@ def listar_control_unidades(request):
         control.unidad_display = control.unidad.numero_unidad
         control.vuelta_display = control.vuelta
         control.fecha_vuelta_display = control.fecha_vuelta.strftime('%d/%m/%Y')
+        control.usuario_display = control.usuario
 
     return render(request, 'control_unidades/listar_control.html', {
         'controles': controles,
         'numero_control': numero_control,
         'numero_unidad': numero_unidad,
         'vuelta': vuelta,
-        'date_filterp': date_filterp
+        'date_filterp': date_filterp,
+        'usuario': usuario
     })
 
 @login_required       
@@ -177,10 +187,10 @@ def listar_pagos(request):
 @login_required
 def crear_control_unidad(request):
     if request.method == 'POST':
-        form = ControlUnidadesForm(request.POST)
+        form = ControlUnidadesForm(request.POST, user=request.user)
         if form.is_valid():
             control_unidad = form.save(commit=False)
-            control_unidad.save()  # La lógica de autoincremento está en el modelo
+            control_unidad.save()
             return redirect('listar_control_unidades')
     else:
         initial_data = {}
@@ -193,7 +203,7 @@ def crear_control_unidad(request):
             except UnidadTransporte.DoesNotExist:
                 pass
         
-        form = ControlUnidadesForm(initial=initial_data)
+        form = ControlUnidadesForm(initial=initial_data, user=request.user)
     
     return render(request, 'control_unidades/crear_control.html', {'form': form})
 

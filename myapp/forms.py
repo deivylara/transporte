@@ -5,20 +5,26 @@ from datetime import date
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
-        fields = ['numero_unidad', 'socio', 'id_tarifa', 'responsable', 'contacto', 'estado', 'vencimiento_soat']
+        fields = ['numero_unidad', 'socio', 'id_tarifa', 'placa', 'responsable', 'contacto', 'estado', 'vencimiento_soat', 'vencimiento_civm']
         widgets = {
             'vencimiento_soat': forms.DateInput(attrs={
                 'type': 'date',
                 'class': 'custom-date-input',
                 'placeholder': 'Selecciona una fecha'
             }),
+            'vencimiento_civm': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'custom-date-input',
+                'placeholder': 'Selecciona una fecha'
+            }),
             'id_tarifa': forms.Select(attrs={
                 'class': 'form-control',
-                'disabled': 'disabled',  # Deshabilitar campo en el formulario
+                'disabled': 'disabled',
             }),
         }
         labels = {
             'id_tarifa': 'Tarifa',
+            'responsable' : 'Locador'
         }
 
     def __init__(self, *args, **kwargs):
@@ -29,16 +35,13 @@ class UnidadTransporteForm(forms.ModelForm):
         cleaned_data = super().clean()
         socio = cleaned_data.get('socio')
         if socio is not None:
-            # Buscar la tarifa adecuada según el socio
             tarifa_asignada = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
             if not tarifa_asignada:
                 raise forms.ValidationError("No se encontró una tarifa válida para el socio.")
-            # Asignar automáticamente la tarifa en el cleaned_data
             cleaned_data['id_tarifa'] = tarifa_asignada
         return cleaned_data
 
     def save(self, commit=True):
-        # Sobrescribir save para asegurarnos de que la tarifa se asigne correctamente
         instance = super().save(commit=False)
         socio = self.cleaned_data.get('socio')
         instance.id_tarifa = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
@@ -51,19 +54,34 @@ class ControlUnidadesForm(forms.ModelForm):
         model = controlUnidades
         fields = ['unidad', 'vuelta']
         widgets = {
-            'vuelta': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'vuelta': forms.Select(attrs={'class': 'form-control', 'disabled': 'disabled'}),
+            'unidad': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
-        unidad = kwargs.pop('unidad', None)  # Extraemos la unidad pasada como argumento
+        self.user = kwargs.pop('user', None)  # Obtiene el usuario de los kwargs
         super().__init__(*args, **kwargs)
-        if unidad:  # Si se pasa la unidad, calculamos la vuelta
-            ultimo_control = (
-                controlUnidades.objects.filter(unidad=unidad)
-                .order_by('-vuelta')
-                .first()
-            )
-            self.fields['vuelta'].initial = (ultimo_control.vuelta + 1) if ultimo_control else 1
+        self.fields['vuelta'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        unidad = cleaned_data.get('unidad')
+        if unidad is not None:
+            siguiente_vuelta = controlUnidades(unidad=unidad).calcular_siguiente_vuelta()
+            cleaned_data['vuelta'] = siguiente_vuelta
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.user:
+            instance.usuario = self.user  # Asigna el usuario actual al campo usuario
+        unidad = self.cleaned_data.get('unidad')
+        if unidad is not None:
+            siguiente_vuelta = controlUnidades(unidad=unidad).calcular_siguiente_vuelta()
+            instance.vuelta = siguiente_vuelta
+        if commit:
+            instance.save()
+        return instance
 
 
 class PagoForm(forms.ModelForm):
