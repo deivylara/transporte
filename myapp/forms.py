@@ -5,31 +5,46 @@ from datetime import date
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
-        fields = ['numero_unidad', 'socio',  'id_tarifa','responsable', 'contacto', 'estado', 'vencimiento_soat']
+        fields = ['numero_unidad', 'socio', 'id_tarifa', 'responsable', 'contacto', 'estado', 'vencimiento_soat']
         widgets = {
             'vencimiento_soat': forms.DateInput(attrs={
                 'type': 'date',
                 'class': 'custom-date-input',
-                'placeholder': 'Selecciona una fecha'}),
-            
+                'placeholder': 'Selecciona una fecha'
+            }),
             'id_tarifa': forms.Select(attrs={
                 'class': 'form-control',
-                'readonly': 'readonly',
-                'disabled': 'disabled',
+                'disabled': 'disabled',  # Deshabilitar campo en el formulario
             }),
         }
         labels = {
             'id_tarifa': 'Tarifa',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_tarifa'].required = False
+
     def clean(self):
         cleaned_data = super().clean()
         socio = cleaned_data.get('socio')
         if socio is not None:
-            # Asignar id_tarifa basado en socio
-            tarifa = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
-            cleaned_data['id_tarifa'] = tarifa
+            # Buscar la tarifa adecuada según el socio
+            tarifa_asignada = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
+            if not tarifa_asignada:
+                raise forms.ValidationError("No se encontró una tarifa válida para el socio.")
+            # Asignar automáticamente la tarifa en el cleaned_data
+            cleaned_data['id_tarifa'] = tarifa_asignada
         return cleaned_data
+
+    def save(self, commit=True):
+        # Sobrescribir save para asegurarnos de que la tarifa se asigne correctamente
+        instance = super().save(commit=False)
+        socio = self.cleaned_data.get('socio')
+        instance.id_tarifa = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
+        if commit:
+            instance.save()
+        return instance
 
 class ControlUnidadesForm(forms.ModelForm):
     class Meta:
