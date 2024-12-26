@@ -217,14 +217,15 @@ def listar_licencias(request):
     tipo_licencia = request.GET.get('tipo_licencia', '').strip()
     date_filterp = request.GET.get('date_filterp', '').strip()
 
+    licencias = Licencia.objects.all()
     if numero_licencia:
-        licencias = Licencia.objects.filter(numero_licencia__icontains=numero_licencia)
+        licencias = licencias.filter(numero_licencia__icontains=numero_licencia)
     elif nombre:
-        licencias = Licencia.objects.filter(nombre__icontains=nombre)
+        licencias = licencias.filter(nombre__icontains=nombre)
     elif dni:
-        licencias = Licencia.objects.filter(dni__icontains=dni)
+        licencias = licencias.filter(dni__icontains=dni)
     elif tipo_licencia:
-        licencias = Licencia.objects.filter(tipo_licencia__icontains=tipo_licencia)
+        licencias = licencias.filter(tipo_licencia__icontains=tipo_licencia)
     if date_filterp:
         try:
             month, year = map(int, date_filterp.split('/'))

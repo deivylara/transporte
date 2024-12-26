@@ -72,7 +72,7 @@ tr:nth-child(even) {
 
 tr:hover {
     background-color: #b0c4de; /* Fondo al pasar el cursor */
-    color: #0a1e35; /* Cambiar texto al pasar el cursor */
+    color: #000000; /* Cambiar texto al pasar el cursor */
 }
 
 /* Botón de agregar */
@@ -127,6 +127,7 @@ tr:hover {
         display: block;
         text-align: right;
         border-bottom: 1px solid #ddd;
+        color: #c0c0c0;
     }
 
 
@@ -135,8 +136,9 @@ tr:hover {
         float: left;
         font-weight: bold;
     }
-
-
+    tr:hover {
+        background-color: #3170c3; /* Fondo al pasar el cursor */
+    }
     .add-button {
         width: 60%; /* Reducir ancho del botón */
         font-size: 14px;
@@ -193,7 +195,8 @@ tr:hover {
     .unidad td{
         display: block;
         text-align: right;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid #2d2d2d;
+        color: #c0c0c0;
     }
 
     .unidad td::before {
@@ -206,6 +209,9 @@ tr:hover {
         display: block; /* Mostrar en dispositivos pequeños */
         margin: 10px 0;
         text-align: center;
+    }
+    tr:hover {
+        background-color: #3170c3; /* Fondo al pasar el cursor */
     }
     
     #filter-select {
