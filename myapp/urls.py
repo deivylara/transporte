@@ -17,4 +17,5 @@ urlpatterns = [
     path('licencias/', views.listar_licencias, name='listar_licencias'),
     path('crear_licencias/', views.crear_licencias, name='crear_licencias'),
     path('editar_licencia/<int:id>/', views.editar_licencia, name='editar_licencia'),
+    path('unidades/exportar/', views.exportar_unidades_excel, name='exportar_unidades_excel'),
 ]

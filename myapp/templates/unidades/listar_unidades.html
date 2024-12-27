@@ -15,6 +15,12 @@
         <h1>LISTADO DE UNIDADES</h1>
         <a class="add-button" href="{% url 'crear_unidad' %}">AGREGAR UNIDAD</a>
     </div> 
+    <div class="right-aligned">
+        <a href="{% url 'exportar_unidades_excel' %}?numero_unidad={{ numero_unidad }}&socio={{ socio }}&placa={{ placa }}&responsable={{ responsable }}&contacto={{ contacto }}&tarifa={{ tarifa }}&estado={{ estado }}" 
+           class="btn btn-success">
+            Exportar a Excel
+        </a>
+    </div>
     <div class="filter-container">
         <select id="filter-select">
             <option value="">Seleccione un filtro</option>
@@ -93,6 +99,7 @@
                     </th>
                 </tr>
             </thead>
+        
             <tbody>
                 {% for unidad in unidades %}
                 <tr>

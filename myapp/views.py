@@ -5,6 +5,7 @@ from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoForm, Licencia
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.utils import timezone
+import xlsxwriter
 # Create your views here.
 
 @login_required
@@ -73,6 +74,113 @@ def listar_unidades(request):
         'tarifa': tarifa,
         'estado': estado,
     })
+
+
+
+
+def exportar_unidades_excel(request):
+    numero_unidad = request.GET.get('numero_unidad', '').strip()
+    socio = request.GET.get('socio', '').strip()
+    placa = request.GET.get('placa', '').strip()
+    responsable = request.GET.get('responsable', '').strip()
+    contacto = request.GET.get('contacto', '').strip()
+    tarifa = request.GET.get('tarifa', '').strip()
+    estado = request.GET.get('estado', '').strip()
+
+    if numero_unidad:
+        unidades = UnidadTransporte.objects.filter(numero_unidad__icontains=numero_unidad)
+    elif socio:
+        unidades = UnidadTransporte.objects.filter(socio=True if socio.lower() == 'si' else False)
+    elif placa:
+        unidades = UnidadTransporte.objects.filter(placa__icontains=placa)
+    elif responsable:
+        unidades = UnidadTransporte.objects.filter(responsable__icontains=responsable)
+    elif contacto:
+        unidades = UnidadTransporte.objects.filter(contacto__icontains=contacto)
+    elif tarifa:
+        unidades = UnidadTransporte.objects.filter(id_tarifa__nombre_tarifa__icontains=tarifa)
+    elif estado:
+        unidades = UnidadTransporte.objects.filter(estado=True if estado.lower() == 'activo' else False)
+    else:
+        unidades = UnidadTransporte.objects.all()
+
+    # Configura la respuesta HTTP para un archivo Excel
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="Reporte_unidades.xlsx"'
+
+    # Crea un archivo Excel en memoria
+    workbook = xlsxwriter.Workbook(response, {'in_memory': True})
+    worksheet = workbook.add_worksheet("Unidades")
+
+    # Define el formato del título
+    title_format = workbook.add_format({
+        'bold': True,
+        'font_size': 14,
+        'align': 'center',
+        'valign': 'vcenter',
+        'bg_color': '#4F81BD',  # Fondo azul oscuro
+        'font_color': 'white',  # Texto blanco
+        'border': 1,            # Borde
+    })
+
+    # Define el formato del encabezado
+    header_format = workbook.add_format({
+        'bold': True,
+        'bg_color': '#D9E1F2',  # Fondo azul claro
+        'border': 1,            # Borde
+        'align': 'center',      # Centrar horizontalmente
+        'valign': 'vcenter',    # Centrar verticalmente
+    })
+
+    # Define el formato para las celdas de datos con bordes
+    cell_format = workbook.add_format({
+        'border': 1,            # Borde
+        'align': 'left',        # Alineación izquierda
+        'valign': 'vcenter',    # Centrar verticalmente
+    })
+
+    # Define encabezados
+    headers = ['Número Unidad', 'Socio', 'Placa', 'Responsable', 'Contacto', 'Tarifa', 'Estado']
+    column_widths = [len(header) for header in headers]  # Inicializa el ancho con el largo del encabezado
+
+    # Añade el título (combinando celdas)
+    title_text = "Reporte Unidades de Transporte"
+    worksheet.merge_range(0, 0, 0, len(headers) - 1, title_text, title_format)
+
+    # Escribe los encabezados con formato
+    for col_num, header in enumerate(headers):
+        worksheet.write(1, col_num, header, header_format)
+
+    # Llena el Excel con datos y actualiza el ancho de las columnas
+    for row_num, unidad in enumerate(unidades, start=2):  # Inicia en la fila 2 (después del título y encabezados)
+        data = [
+            unidad.numero_unidad,
+            "Sí" if unidad.socio else "No",
+            unidad.placa,
+            unidad.responsable,
+            unidad.contacto,
+            unidad.id_tarifa.nombre_tarifa if unidad.id_tarifa else "",
+            "ACTIVO" if unidad.estado else "SUSPENDIDO",
+        ]
+        for col_num, value in enumerate(data):
+            worksheet.write(row_num, col_num, value, cell_format)
+            # Actualiza el ancho máximo de la columna
+            if value is not None:
+                column_widths[col_num] = max(column_widths[col_num], len(str(value)))
+
+    # Ajusta el ancho de las columnas
+    for col_num, width in enumerate(column_widths):
+        worksheet.set_column(col_num, col_num, width + 2)  # Añade un margen extra
+
+    # Añade autofiltros
+    worksheet.autofilter(1, 0, len(unidades) + 1, len(headers) - 1)
+
+    workbook.close()
+    return response
+
+
+
+
 
 @login_required       
 def listar_control_unidades(request):
