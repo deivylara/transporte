@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.utils import timezone
 import xlsxwriter
+from io import BytesIO
 # Create your views here.
 
 @login_required
@@ -79,80 +80,71 @@ def listar_unidades(request):
 
 
 def exportar_unidades_excel(request):
+    # Obtén y valida los parámetros de entrada
     numero_unidad = request.GET.get('numero_unidad', '').strip()
-    socio = request.GET.get('socio', '').strip()
+    socio = request.GET.get('socio', '').strip().lower()
     placa = request.GET.get('placa', '').strip()
     responsable = request.GET.get('responsable', '').strip()
     contacto = request.GET.get('contacto', '').strip()
     tarifa = request.GET.get('tarifa', '').strip()
-    estado = request.GET.get('estado', '').strip()
+    estado = request.GET.get('estado', '').strip().lower()
 
+    # Validación de valores específicos
+    socio = socio if socio in ['si', 'no'] else ''
+    estado = estado if estado in ['activo', 'suspendido'] else ''
+
+    # Construcción de filtros dinámicos
+    filters = {}
     if numero_unidad:
-        unidades = UnidadTransporte.objects.filter(numero_unidad__icontains=numero_unidad)
-    elif socio:
-        unidades = UnidadTransporte.objects.filter(socio=True if socio.lower() == 'si' else False)
-    elif placa:
-        unidades = UnidadTransporte.objects.filter(placa__icontains=placa)
-    elif responsable:
-        unidades = UnidadTransporte.objects.filter(responsable__icontains=responsable)
-    elif contacto:
-        unidades = UnidadTransporte.objects.filter(contacto__icontains=contacto)
-    elif tarifa:
-        unidades = UnidadTransporte.objects.filter(id_tarifa__nombre_tarifa__icontains=tarifa)
-    elif estado:
-        unidades = UnidadTransporte.objects.filter(estado=True if estado.lower() == 'activo' else False)
-    else:
-        unidades = UnidadTransporte.objects.all()
+        filters['numero_unidad__icontains'] = numero_unidad
+    if socio:
+        filters['socio'] = socio == 'si'
+    if placa:
+        filters['placa__icontains'] = placa
+    if responsable:
+        filters['responsable__icontains'] = responsable
+    if contacto:
+        filters['contacto__icontains'] = contacto
+    if tarifa:
+        filters['id_tarifa__nombre_tarifa__icontains'] = tarifa
+    if estado:
+        filters['estado'] = estado == 'activo'
+
+    # Obtén las unidades según los filtros o todos los registros si no hay filtros
+    unidades = UnidadTransporte.objects.filter(**filters) if filters else UnidadTransporte.objects.all()
 
     # Configura la respuesta HTTP para un archivo Excel
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="Reporte_unidades.xlsx"'
-
-    # Crea un archivo Excel en memoria
-    workbook = xlsxwriter.Workbook(response, {'in_memory': True})
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
     worksheet = workbook.add_worksheet("Unidades")
 
-    # Define el formato del título
+    # Formatos del Excel
     title_format = workbook.add_format({
-        'bold': True,
-        'font_size': 14,
-        'align': 'center',
-        'valign': 'vcenter',
-        'bg_color': '#4F81BD',  # Fondo azul oscuro
-        'font_color': 'white',  # Texto blanco
-        'border': 1,            # Borde
+        'bold': True, 'font_size': 14, 'align': 'center', 'valign': 'vcenter',
+        'bg_color': '#4F81BD', 'font_color': 'white', 'border': 1
     })
-
-    # Define el formato del encabezado
     header_format = workbook.add_format({
-        'bold': True,
-        'bg_color': '#D9E1F2',  # Fondo azul claro
-        'border': 1,            # Borde
-        'align': 'center',      # Centrar horizontalmente
-        'valign': 'vcenter',    # Centrar verticalmente
+        'bold': True, 'bg_color': '#D9E1F2', 'border': 1,
+        'align': 'center', 'valign': 'vcenter'
     })
-
-    # Define el formato para las celdas de datos con bordes
     cell_format = workbook.add_format({
-        'border': 1,            # Borde
-        'align': 'left',        # Alineación izquierda
-        'valign': 'vcenter',    # Centrar verticalmente
+        'border': 1, 'align': 'left', 'valign': 'vcenter'
     })
 
-    # Define encabezados
-    headers = ['Número Unidad', 'Socio', 'Placa', 'Responsable', 'Contacto', 'Tarifa', 'Estado']
-    column_widths = [len(header) for header in headers]  # Inicializa el ancho con el largo del encabezado
+    # Define encabezados y anchos de columnas
+    headers = ['Número Unidad', 'Socio', 'Placa', 'Responsable', 'Contacto', 
+               'Tarifa', 'Estado', 'Vencimiento SOAT', 'Vencimiento CIVM']
+    column_widths = [len(header) for header in headers]
 
-    # Añade el título (combinando celdas)
-    title_text = "Reporte Unidades de Transporte"
-    worksheet.merge_range(0, 0, 0, len(headers) - 1, title_text, title_format)
+    # Título del reporte
+    worksheet.merge_range(0, 0, 0, len(headers) - 1, "Reporte Unidades de Transporte", title_format)
 
-    # Escribe los encabezados con formato
+    # Encabezados
     for col_num, header in enumerate(headers):
         worksheet.write(1, col_num, header, header_format)
 
-    # Llena el Excel con datos y actualiza el ancho de las columnas
-    for row_num, unidad in enumerate(unidades, start=2):  # Inicia en la fila 2 (después del título y encabezados)
+    # Escribir datos y ajustar anchos de columna
+    for row_num, unidad in enumerate(unidades, start=2):
         data = [
             unidad.numero_unidad,
             "Sí" if unidad.socio else "No",
@@ -161,23 +153,28 @@ def exportar_unidades_excel(request):
             unidad.contacto,
             unidad.id_tarifa.nombre_tarifa if unidad.id_tarifa else "",
             "ACTIVO" if unidad.estado else "SUSPENDIDO",
+            unidad.vencimiento_soat.strftime('%Y-%m-%d') if unidad.vencimiento_soat else "",
+            unidad.vencimiento_civm.strftime('%Y-%m-%d') if unidad.vencimiento_civm else ""
         ]
         for col_num, value in enumerate(data):
             worksheet.write(row_num, col_num, value, cell_format)
-            # Actualiza el ancho máximo de la columna
-            if value is not None:
+            if value:
                 column_widths[col_num] = max(column_widths[col_num], len(str(value)))
 
-    # Ajusta el ancho de las columnas
+    # Ajustar anchos de columna
     for col_num, width in enumerate(column_widths):
-        worksheet.set_column(col_num, col_num, width + 2)  # Añade un margen extra
+        worksheet.set_column(col_num, col_num, width + 2)
 
-    # Añade autofiltros
+    # Autofiltro
     worksheet.autofilter(1, 0, len(unidades) + 1, len(headers) - 1)
 
+    # Cierra el workbook y genera la respuesta
     workbook.close()
-    return response
+    output.seek(0)
 
+    response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="Reporte_unidades.xlsx"'
+    return response
 
 
 
@@ -361,6 +358,81 @@ def listar_licencias(request):
         'tipo_licencia': tipo_licencia,
         'date_filterp': date_filterp,
     })
+def exportar_licencias_excel(request):
+    numero_licencia = request.GET.get('numero_licencia', '').strip()
+    nombre = request.GET.get('nombre', '').strip()
+    dni = request.GET.get('dni', '').strip()
+    tipo_licencia = request.GET.get('tipo_licencia', '').strip()
+    date_filterp = request.GET.get('date_filterp', '').strip()
+
+    licencias = Licencia.objects.all()
+    if numero_licencia:
+        licencias = licencias.filter(numero_licencia__icontains=numero_licencia)
+    if nombre:
+        licencias = licencias.filter(nombre__icontains=nombre)
+    if dni:
+        licencias = licencias.filter(dni__icontains=dni)
+    if tipo_licencia:
+        licencias = licencias.filter(tipo_licencia__icontains=tipo_licencia)
+    if date_filterp:
+        try:
+            month, year = map(int, date_filterp.split('/'))
+            licencias = licencias.filter(fecha_expiracion__month=month, fecha_expiracion__year=year)
+        except ValueError:
+            pass
+
+    # Crear un archivo Excel en memoria
+    output = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    output['Content-Disposition'] = 'attachment; filename="Reporte-licencias.xlsx"'
+
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+    worksheet = workbook.add_worksheet()
+
+    # Formatos
+    title_format = workbook.add_format({
+        'bold': True, 'font_size': 14, 'align': 'center', 'valign': 'vcenter',
+        'bg_color': '#4F81BD', 'font_color': 'white', 'border': 1
+    })
+    header_format = workbook.add_format({
+        'bold': True, 'bg_color': '#D9E1F2', 'border': 1,
+        'align': 'center', 'valign': 'vcenter'
+    })
+    cell_format = workbook.add_format({
+        'border': 1, 'align': 'left', 'valign': 'vcenter'
+    })
+
+    # Encabezados
+    headers = ['Número de Licencia', 'Nombre', 'DNI', 'Tipo de Licencia', 'Fecha de Expiración']
+
+    # Título del reporte
+    worksheet.merge_range(0, 0, 0, len(headers) - 1, "Reporte de Licencias", title_format)
+
+    # Escribir encabezados
+    for col_num, header in enumerate(headers):
+        worksheet.write(1, col_num, header, header_format)
+
+    # Agregar datos
+    for row_num, licencia in enumerate(licencias, start=2):
+        worksheet.write(row_num, 0, licencia.numero_licencia, cell_format)
+        worksheet.write(row_num, 1, licencia.nombre, cell_format)
+        worksheet.write(row_num, 2, licencia.dni, cell_format)
+        worksheet.write(row_num, 3, licencia.tipo_licencia, cell_format)
+        worksheet.write(row_num, 4, licencia.fecha_expiracion.strftime('%d/%m/%Y') if licencia.fecha_expiracion else '', cell_format)
+
+    # Aplicar autofiltro
+    worksheet.autofilter(1, 0, row_num, len(headers) - 1)
+
+    # Ajustar ancho de columnas
+    column_widths = [20, 30, 15, 25, 20]
+    for i, width in enumerate(column_widths):
+        worksheet.set_column(i, i, width)
+
+    workbook.close()
+    return output
+
+
+
+
 
 @login_required
 def crear_licencias(request):

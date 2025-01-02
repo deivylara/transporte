@@ -64,6 +64,10 @@ class ControlUnidadesForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)  # Obtiene el usuario de los kwargs
         super().__init__(*args, **kwargs)
         self.fields['vuelta'].required = False
+        # Filtrar el campo 'unidad' para mostrar solo unidades activas o suspendidas
+        self.fields['unidad'].queryset = UnidadTransporte.objects.filter(
+            estado__in=[True]  # Ajusta el filtro según tus necesidades
+        )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -86,6 +90,7 @@ class ControlUnidadesForm(forms.ModelForm):
         return instance
 
 
+
 class PagoForm(forms.ModelForm):
     class Meta:
         model = pagos
@@ -96,6 +101,13 @@ class PagoForm(forms.ModelForm):
             'id_transporte': 'Unidad de Transporte',
             'detalle': 'Detalle',
         }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtrar id_transporte por estado True (activo) o False (suspendido)
+        self.fields['id_transporte'].queryset = UnidadTransporte.objects.filter(
+            estado__in=[True]  
+        )
         
 class LicenciaForm(forms.ModelForm):
     class Meta:
