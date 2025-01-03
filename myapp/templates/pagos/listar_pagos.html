@@ -88,6 +88,11 @@
                             <input type="text" name="detalle" id="detalle" placeholder="DETALLE" value="{{ detalle }}">
                         </form>
                     </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="usuario" id="usuario" placeholder="USUARIO" class="filter-input" value="{{ usuario }}">
+                        </form>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -100,6 +105,7 @@
                         <td data-label="METODO PAGO">{{ pago.metodo_pago_display }}</td>
                         <td data-label="FECHA PAGO">{{ pago.fecha_pago_display }}</td>
                         <td data-label="DETALLE">{{ pago.detalle_display }}</td>
+                        <td data-label="USUARIO">{{ pago.usuario_display }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -94,11 +94,11 @@ class ControlUnidadesForm(forms.ModelForm):
 class PagoForm(forms.ModelForm):
     class Meta:
         model = pagos
-        fields = ['id_control', 'id_metodo', 'id_transporte', 'detalle']
+        fields = ['id_transporte','id_control', 'id_metodo', 'detalle']
         labels = {
+            'id_transporte': 'Unidad de Transporte',
             'id_control': 'Vuelta',
             'id_metodo': 'Método de Pago',
-            'id_transporte': 'Unidad de Transporte',
             'detalle': 'Detalle',
         }
         

@@ -244,9 +244,10 @@ def listar_pagos(request):
     metodo_pago = request.GET.get('metodo_pago', '').strip()
     date_filterp = request.GET.get('date_filterp', '').strip()
     detalle = request.GET.get('detalle', '').strip()
+    usuario = request.GET.get('usuario', '').strip()
 
-    
     pagos_list = pagos.objects.all()
+
     if numero_pago:
         pagos_list = pagos_list.filter(id_pago__icontains=numero_pago)
     elif vuelta:
@@ -265,9 +266,8 @@ def listar_pagos(request):
             pass
     elif detalle:
         pagos_list = pagos_list.filter(detalle__icontains=detalle)
-    
-    else: 
-        pagos_list = pagos.objects.all()
+    elif usuario:
+        pagos_list = pagos_list.filter(usuario__username__icontains=usuario)  # Filtra por nombre de usuario
 
     for pago in pagos_list:
         pago.vuelta_display = pago.id_control.vuelta if pago.id_control else "N/A"
@@ -276,6 +276,7 @@ def listar_pagos(request):
         pago.metodo_pago_display = pago.id_metodo.tipo if pago.id_metodo else "N/A"
         pago.fecha_pago_display = pago.fecha_pago.strftime('%d/%m/%Y') if pago.fecha_pago else "N/A"
         pago.detalle_display = pago.detalle
+        pago.usuario_display = pago.usuario.username if pago.usuario else "N/A"  # Muestra el nombre de usuario
 
     return render(request, 'pagos/listar_pagos.html', {
         'pagos_list': pagos_list,
@@ -285,8 +286,10 @@ def listar_pagos(request):
         'nombre_tarifa': nombre_tarifa,
         'metodo_pago': metodo_pago,
         'date_filterp': date_filterp,
-        'detalle': detalle
+        'detalle': detalle,
+        'usuario': usuario
     })
+
 
 
 @login_required
@@ -317,11 +320,12 @@ def crear_pago(request):
     if request.method == 'POST':
         form = PagoForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('listar_pagos')
+            pago = form.save(commit=False)  # Crea el objeto pero no lo guarda todavía
+            pago.usuario = request.user     # Asigna el usuario actual
+            pago.save()                     # Guarda el objeto con el usuario asignado
+            return redirect('listar_pagos')  # Redirige a la lista de pagos o donde prefieras
     else:
         form = PagoForm()
-
     return render(request, 'pagos/crear_pagos.html', {'form': form})
 
 @login_required
@@ -358,6 +362,7 @@ def listar_licencias(request):
         'tipo_licencia': tipo_licencia,
         'date_filterp': date_filterp,
     })
+    
 def exportar_licencias_excel(request):
     numero_licencia = request.GET.get('numero_licencia', '').strip()
     nombre = request.GET.get('nombre', '').strip()

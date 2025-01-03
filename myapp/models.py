@@ -97,7 +97,8 @@ class pagos(models.Model):
     id_transporte = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
     fecha_pago = models.DateField(default=date.today)
     detalle = models.TextField(max_length=60, default='sin detalle')
-
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    
     class Meta:
         db_table = 'pagos'
         verbose_name_plural = 'registro de pagos'
