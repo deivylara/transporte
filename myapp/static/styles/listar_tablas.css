@@ -13,77 +13,28 @@ h1 {
     margin-top: 20px;
 }
 
-/* Estilo para los inputs de búsqueda */
-.search-form input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    margin: 4px 0;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: border-color 0.3s;
-}
-.search-form-ruc input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    margin: 4px 0;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: border-color 0.3s;}
-/* Contenedor principal */
-.container {
-    width: 80%;
-    margin: 20px auto;
+/* Contenedor del encabezado */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 20px;
     background-color: #0a1e35;
-    border: 2px solid white; /* Borde gris */
-    border-radius: 8px;
-    box-sizing: border-box;
-    overflow-x: auto;
+    border-bottom: 2px solid white;
 }
 
-/* Estilos de la tabla */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    table-layout: fixed; /* Ajustar ancho fijo */
-}
-
-th, td {
-    border: 1px solid grey; /* Bordes de las celdas */
-    padding: 10px;
+.header-container h1 {
+    margin: 0;
+    color: white;
+    font-size: 24px;
+    flex-grow: 1;
     text-align: center;
-    color: grey; /* Texto de las celdas */
-    font-size: 14px;
-    word-wrap: break-word; /* Ajustar texto largo */
 }
 
-th {
-    background-color: #0a1e35; /* Fondo de encabezados */
-    color: grey; /* Texto de encabezados */
-    font-weight: bold;
-}
-
-tr:nth-child(even) {
-    background-color: #0d2745; /* Color para filas pares */
-}
-
-tr:hover {
-    background-color: #b0c4de; /* Fondo al pasar el cursor */
-    color: #000000; /* Cambiar texto al pasar el cursor */
-}
-
-/* Botón de agregar */
 .add-button {
-    display: block;
-    width: 200px;
-    margin: 20px auto;
-    padding: 10px;
     background-color: #0e6d75e5; /* Fondo del botón */
     color: white; /* Texto del botón */
-    text-align: center;
+    padding: 10px 20px;
     text-decoration: none;
     border: none;
     border-radius: 5px;
@@ -95,87 +46,96 @@ tr:hover {
 .add-button:hover {
     background-color: #28a745; /* Cambio de color al pasar el cursor */
 }
-.edit-btn{
-    color: gray;
+
+/* Contenedor principal */
+.container {
+    width: 80%;
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #0a1e35;
+    border: 2px solid white; /* Borde gris */
+    border-radius: 8px;
+    box-sizing: border-box;
+    overflow-x: auto;
 }
 
-.filter-container {
-    display: none; /* Ocultar todo el contenedor */
+/* Estilos para la tabla */
+table.unidad {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: fixed; /* Ajustar ancho fijo */
 }
-#filter-select {
-    width: 80%;
+
+table.unidad th, table.unidad td {
+    border: 1px solid grey; /* Bordes de las celdas */
     padding: 10px;
-    font-size: 16px;
+    text-align: center;
+    color: grey; /* Texto de las celdas */
+    font-size: 14px;
+    word-wrap: break-word; /* Ajustar texto largo */
+}
+
+table.unidad th {
+    background-color: #0a1e35; /* Fondo de encabezados */
+    color: white; /* Texto de encabezados */
+    font-weight: bold;
+}
+
+table.unidad tr:nth-child(even) {
+    background-color: #0d2745; /* Color para filas pares */
+}
+
+table.unidad tr:hover {
+    background-color: #b0c4de; /* Fondo al pasar el cursor */
+    color: #000000; /* Cambiar texto al pasar el cursor */
+}
+
+/* Estilo para los inputs de búsqueda */
+.search-form input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
+    transition: border-color 0.3s;
 }
 
-
-
-/* Estilo del botón */
-.btn-success {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #28a745;
-    border: 1px solid #28a745;
-    border-radius: 5px;
-    text-decoration: none;
-    text-align: center;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    max-width: 100%;
-    box-sizing: border-box;
-
+.search-form input[type="text"]:focus {
+    border-color: #28a745;
+    outline: none;
 }
 
-.btn-success:hover {
-    background-color: #218838;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.btn-success:active {
-    background-color: #1e7e34;
-    box-shadow: none;
-}
-
-
-
-/* Diseño responsive */
-
+/* Media queries para diseño responsive */
 @media (max-width: 768px) {
     .container {
-        margin-top: 30px; /* Espacio suficiente para el formulario fijo */
-    }
-    .unidad thead {
-        display: none; /* Ocultar encabezados */
-    }
-
-    .unidad tr{
-        display: block; /* Mostrar elementos como bloques */
-        margin-bottom: 20px;
+        width: 80%;
+        padding: 10px;
+        margin: 10px auto;
     }
 
-    .unidad td{
-        display: block;
-        text-align: right;
-        border-bottom: 1px solid #ddd;
-        color: #c0c0c0;
-    }
-
-
-    .unidad td::before {
-        content: attr(data-label);
-        float: left;
-        font-weight: bold;
+    .header-container {
+        flex-wrap: wrap;
+        justify-content: center;
     }
     tr:hover {
         background-color: #3170c3; /* Fondo al pasar el cursor */
     }
     .add-button {
-        width: 60%; /* Reducir ancho del botón */
-        font-size: 14px;
+        width: 50%;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    table.unidad th, table.unidad td {
+        padding: 8px;
+    }
+    /* Mostrar filtros en bloque para pantallas pequeñas */
+    .search-form input[type="text"] {
+        width: 20%; /* Ocupa todo el ancho */
+        margin-bottom: 10px;
     }
     .filter-container {
         display: block; /* Mostrar en dispositivos pequeños */
@@ -222,74 +182,47 @@ tr:hover {
     }
 
 @media (max-width: 480px) {
-    .container {
-        margin-top: 30px; /* Espacio suficiente para el formulario fijo */
-    }
-    .unidad thead {
-        display: none; /* Ocultar encabezados */
+    table.unidad thead {
+        display: none;
     }
 
-    .unidad tr{
-        display: block;
-        margin-bottom: 20px;
-    }
-
-    .unidad td{
+    table.unidad, table.unidad tbody, table.unidad tr, table.unidad td {
         display: block;
         text-align: right;
-        border-bottom: 1px solid #2d2d2d;
-        color: #c0c0c0;
+        border-bottom: 1px solid #ddd;
     }
 
-    .unidad td::before {
+    table.unidad tr {
+        margin-bottom: 15px;
+        border: 1px solid #5a738e;
+        padding: 3px;
+    }
+
+    table.unidad td {
+        text-align: left;
+        padding-left: 10px;
+        position: relative;
+        border: none;
+    }
+
+    table.unidad td::before {
         content: attr(data-label);
-        float: left;
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 10px;
         font-weight: bold;
-        color: rgb(208, 208, 208);
+        text-align: left;
+        color: #b0c4de;
     }
-    .filter-container {
-        display: block; /* Mostrar en dispositivos pequeños */
-        margin: 10px 0;
-        text-align: center;
+
+    /* Mostrar filtros al inicio */
+    .search-form {
+        display: block;
+        margin-bottom: 10px;
     }
-    tr:hover {
-        background-color: #3170c3; /* Fondo al pasar el cursor */
-    }
-    
-    #filter-select {
-        width: 80%;
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-    
-    /* Estilo para los inputs de búsqueda */
+
     .search-form input[type="text"] {
-        width: 80%;
-        padding: 12px;
-        margin: 20px auto;
-        box-sizing: border-box;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        transition: border-color 0.3s;
-        
+        width: 100%; /* Asegurar que los filtros ocupen todo el ancho */
     }
-    .search-form-ruc input[type="text"] {
-        width: 100%;
-        padding: 12px;
-        margin: 4px 0;
-        box-sizing: border-box;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        transition: border-color 0.3s;
-    }
-    .right-aligned {
-        justify-content: center; /* Asegura que se mantenga centrado */
-    }
-
-    .btn-success {
-        width: 100%; /* Hace el botón más grande en pantallas muy pequeñas */
-    }
-
 }
