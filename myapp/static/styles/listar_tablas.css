@@ -89,7 +89,7 @@ table.unidad tr:nth-child(even) {
 
 table.unidad tr:hover {
     background-color: #b0c4de; /* Fondo al pasar el cursor */
-    color: #0a1e35; /* Cambiar texto al pasar el cursor */
+    color: #000000; /* Cambiar texto al pasar el cursor */
 }
 
 /* Estilo para los inputs de búsqueda */
@@ -120,8 +120,9 @@ table.unidad tr:hover {
         flex-wrap: wrap;
         justify-content: center;
     }
-
-
+    tr:hover {
+        background-color: #3170c3; /* Fondo al pasar el cursor */
+    }
     .add-button {
         width: 50%;
         text-align: center;
