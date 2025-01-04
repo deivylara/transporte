@@ -77,6 +77,7 @@
                             <input type="text" name="usuario" id="usuario" placeholder="USUARIO" value="{{ usuario }}">
                         </form>
                     </th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
 
@@ -88,6 +89,7 @@
                     <td data-label="VUELTA">{{ control.vuelta_display }}</td>
                     <td data-label="FECHA VUELTA">{{ control.fecha_vuelta |date:"d/m/Y H:i"  }}</td>
                     <td data-label="USUARIO">{{ control.usuario }}</td>
+                    <td data-label="EDITAR"><button type="button"><a class="link-registros" href="{% url 'editar_control_unidad' control.id_control %}">Editar</a></button></td>
                 </tr>
                 {% endfor %}
             </tbody>

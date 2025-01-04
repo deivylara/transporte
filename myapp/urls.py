@@ -19,4 +19,7 @@ urlpatterns = [
     path('editar_licencia/<int:id>/', views.editar_licencia, name='editar_licencia'),
     path('unidades/exportar/', views.exportar_unidades_excel, name='exportar_unidades_excel'),
     path('licencias/exportar/', views.exportar_licencias_excel, name='exportar_licencias_excel'),
+    path('unidades/editar/<int:id_transporte>/', views.editar_unidad, name='editar_unidad'),
+    path('control_unidades/editar/<int:id_control>/', views.editar_control_unidad, name='editar_control_unidad'),
+    path('pagos/editar/<int:id_pago>/', views.editar_pago, name='editar_pago'),
 ]

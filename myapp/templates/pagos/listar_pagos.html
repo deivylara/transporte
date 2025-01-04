@@ -99,6 +99,7 @@
                             <input type="text" name="usuario" id="usuario" placeholder="USUARIO" class="filter-input" value="{{ usuario }}">
                         </form>
                     </th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -112,6 +113,7 @@
                         <td data-label="FECHA PAGO">{{ pago.fecha_pago_display }}</td>
                         <td data-label="DETALLE">{{ pago.detalle_display }}</td>
                         <td data-label="USUARIO">{{ pago.usuario_display }}</td>
+                        <td data-label="EDITAR"><button type="button"><a class="link-registros" href="{% url 'editar_pago' pago.id_pago %}">Editar</a></button></td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -97,6 +97,7 @@
                             <input type="text" name="estado" id="estado" placeholder="ESTADO" value="{{ estado }}">
                         </form>
                     </th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
         
@@ -112,6 +113,7 @@
                     <td data-label="SOAT VENCIMIENTO">{{ unidad.vencimiento_soat |date:"d/m/Y"  }}</td>
                     <td data-label="CIVM VENCIMIENTO">{{ unidad.vencimiento_civm |date:"d/m/Y"  }}</td>
                     <td data-label="ESTADO">{{ unidad.estado_display }}</td>
+                    <td data-label="EDITAR"><button type="button"><a class="link-registros" href="{% url 'editar_unidad' unidad.id_transporte %}">Editar</a></button></td>
                 </tr>
                 {% endfor %}
             </tbody>

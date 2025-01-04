@@ -1,0 +1,24 @@
+{% extends 'layouts/base.html' %}s
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UAsompatible" content="IE=edge">
+    <link rel="stylesheet" href="/static/styles/editar_informacion.css">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
+    <title>Editar Unidad de Transporte</title>
+</head>
+<body>
+    <h1>Editar Unidad de Transporte</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar Cambios</button>
+        <button type="submit"><a href="{% url 'listar_unidades' %}">Volver al listado</a></button>
+    </form>
+</body>
+</html>
+{% endblock %}
