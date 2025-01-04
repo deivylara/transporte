@@ -13,13 +13,14 @@
 <body>
     <div class="header-container">
         <h1>LISTADO DE LICENCIAS</h1>
-        <a class="add-button" href="{% url 'crear_licencias' %}">AGREGAR LICENCIA</a>
-    </div> 
-    <div class="right-aligned">
-        <a href="{% url 'exportar_licencias_excel' %}?numero_licencia={{ numero_licencia }}&nombre={{ nombre }}&dni={{ dni }}&tipo_licencia={{ tipo_licencia }}&date_filterp={{ date_filterp }}" 
-   class="btn btn-success">
-    Exportar a Excel
-</a>
+        <div class="dropdown">
+            <button class="dropdown-toggle" id="dropdownButton">Opciones</button>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a class="menu-item" href="{% url 'crear_licencias' %}">AGREGAR LICENCIA</a>
+                <a class="menu-item" href="{% url 'exportar_licencias_excel' %}?numero_licencia={{ numero_licencia }}&nombre={{ nombre }}&dni={{ dni }}&tipo_licencia={{ tipo_licencia }}&date_filterp={{ date_filterp }}">Exportar a Excel</a>
+            </div>
+        </div>
+    </div>
     <div class="filter-container">
         <select id="filter-select">
             <option value="">Seleccione un filtro</option>
@@ -100,17 +101,28 @@
         </table>
     </div>
     <script>
+                const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+    
+        dropdownButton.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('show');
+        });
+    
+        window.addEventListener('click', (e) => {
+            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             const filterSelect = document.getElementById('filter-select');
             const filterInputs = document.querySelectorAll('.filter-input');
         
             filterSelect.addEventListener('change', function () {
-                // Ocultar todos los inputs de filtro
                 filterInputs.forEach(input => {
                     input.style.display = 'none';
                 });
         
-                // Mostrar el input correspondiente al filtro seleccionado
                 const selectedFilter = this.value;
                 if (selectedFilter) {
                     const selectedInput = document.getElementById(selectedFilter);
