@@ -3,6 +3,8 @@ from .models import UnidadTransporte, controlUnidades, pagos, Licencia, tarifa
 from django.forms import modelformset_factory
 from datetime import date
 
+#SECCION UNIDADES DE TRANSPORTE
+
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
@@ -50,6 +52,17 @@ class UnidadTransporteForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+    
+class editarUnidad(forms.ModelForm):
+    class Meta:
+        model = UnidadTransporte
+        fields = ['numero_unidad', 'placa', 'socio', 'id_tarifa', 'responsable', 'contacto','estado', 'vencimiento_soat', 'vencimiento_civm']
+        widgets = {
+            'vencimiento_soat': forms.DateInput(attrs={'type': 'date'}),
+            'vencimiento_civm': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+#SECCION CONTROL DE UNIDADES
 
 class ControlUnidadesForm(forms.ModelForm):
     class Meta:
@@ -80,7 +93,7 @@ class ControlUnidadesForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         if self.user:
-            instance.usuario = self.user  # Asigna el usuario actual al campo usuario
+            instance.usuario = self.user
         unidad = self.cleaned_data.get('unidad')
         if unidad is not None:
             siguiente_vuelta = controlUnidades(unidad=unidad).calcular_siguiente_vuelta()
@@ -89,7 +102,12 @@ class ControlUnidadesForm(forms.ModelForm):
             instance.save()
         return instance
 
+class editaControl(forms.ModelForm):
+    class Meta:
+        model = controlUnidades
+        fields = ['unidad', 'vuelta', 'usuario']
 
+#SECCION PAGOS
 
 class PagoForm(forms.ModelForm):
     class Meta:
@@ -104,10 +122,17 @@ class PagoForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Filtrar id_transporte por estado True (activo) o False (suspendido)
         self.fields['id_transporte'].queryset = UnidadTransporte.objects.filter(
             estado__in=[True]  
         )
+
+class EditarPagoForm(forms.ModelForm):
+    class Meta:
+        model = pagos
+        fields = ['id_control', 'id_metodo', 'id_transporte', 'fecha_pago', 'detalle', 'usuario']
+        widgets = {
+            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
+        }
         
 class LicenciaForm(forms.ModelForm):
     class Meta:

@@ -1,11 +1,12 @@
 from django.http import HttpResponse
 from .models import UnidadTransporte, controlUnidades, tarifa ,metodo_pago, pagos, Licencia
 from django.shortcuts import render , redirect , get_object_or_404
-from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoForm, LicenciaForm
+from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoForm, LicenciaForm, editarUnidad, editaControl, EditarPagoForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.utils import timezone
 import xlsxwriter
+from django.contrib import messages
 from io import BytesIO
 # Create your views here.
 
@@ -28,6 +29,7 @@ def crear_unidad(request):
         form = UnidadTransporteForm()
     return render(request, 'unidades/crear_unidad.html', {'form': form})
     
+#SECCION UNIDADES DE TRANSPORTE
 
 @login_required
 def listar_unidades(request):
@@ -76,9 +78,20 @@ def listar_unidades(request):
         'estado': estado,
     })
 
+@login_required
+def editar_unidad(request, id_transporte):
+    unidad = get_object_or_404(UnidadTransporte, id_transporte=id_transporte)
+    if request.method == 'POST':
+        form = editarUnidad(request.POST, instance=unidad)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_unidades')
+    else:
+        form = editarUnidad(instance=unidad)
+    return render(request, 'unidades/editar_unidad.html', {'form': form, 'unidad': unidad})
 
 
-
+@login_required       
 def exportar_unidades_excel(request):
     # Obtén y valida los parámetros de entrada
     numero_unidad = request.GET.get('numero_unidad', '').strip()
@@ -177,7 +190,7 @@ def exportar_unidades_excel(request):
     return response
 
 
-
+# SECCION CONTROL UNIDADES
 
 @login_required       
 def listar_control_unidades(request):
@@ -219,6 +232,45 @@ def listar_control_unidades(request):
         'usuario': usuario
     })
 
+
+@login_required
+def crear_control_unidad(request):
+    if request.method == 'POST':
+        form = ControlUnidadesForm(request.POST, user=request.user)
+        if form.is_valid():
+            control_unidad = form.save(commit=False)
+            control_unidad.save()
+            return redirect('listar_control_unidades')
+    else:
+        initial_data = {}
+        if 'unidad' in request.GET:
+            unidad_id = request.GET.get('unidad')
+            try:
+                unidad = UnidadTransporte.objects.get(id=unidad_id)
+                ultimo_control = controlUnidades.objects.filter(unidad=unidad).order_by('-vuelta').first()
+                initial_data['vuelta'] = (ultimo_control.vuelta + 1) if ultimo_control else 1
+            except UnidadTransporte.DoesNotExist:
+                pass
+        
+        form = ControlUnidadesForm(initial=initial_data, user=request.user)
+    
+    return render(request, 'control_unidades/crear_control.html', {'form': form})
+
+@login_required       
+def editar_control_unidad(request, id_control):
+    control = get_object_or_404(controlUnidades, id_control=id_control)
+    if request.method == 'POST':
+        form = editaControl(request.POST, instance=control)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_control_unidades')
+    else:
+        form = editaControl(instance=control)
+    return render(request, 'control_unidades/editar_control.html', {'form': form, 'control': control})
+
+
+#SECCION TARIFAS
+
 @login_required       
 def listar_tarifas(request):
     tarifas = tarifa.objects.all()
@@ -226,6 +278,8 @@ def listar_tarifas(request):
         tarif.nombre_tarifa_display = tarif.nombre_tarifa  
         tarif.monto_display = f"S/ {float(tarif.monto):,.2f}"
     return render(request, 'unidades/listar_tarifa.html', {'tarifas': tarifas}) 
+
+#SECCION METODOS DE PAGO
        
 @login_required
 def lista_metodos_pago(request):
@@ -234,6 +288,8 @@ def lista_metodos_pago(request):
         metodo.id_metodo_display = metodo.id_metodo
         metodo.tipo_display = metodo.tipo
     return render(request, 'RegistrosCertificado/listar_metodos_pago.html', {'listar_metodos_pago':listar_metodos_pago})
+
+# SECCION PAGOS
 
 @login_required
 def listar_pagos(request):
@@ -290,43 +346,37 @@ def listar_pagos(request):
         'usuario': usuario
     })
 
-
-
-@login_required
-def crear_control_unidad(request):
-    if request.method == 'POST':
-        form = ControlUnidadesForm(request.POST, user=request.user)
-        if form.is_valid():
-            control_unidad = form.save(commit=False)
-            control_unidad.save()
-            return redirect('listar_control_unidades')
-    else:
-        initial_data = {}
-        if 'unidad' in request.GET:
-            unidad_id = request.GET.get('unidad')
-            try:
-                unidad = UnidadTransporte.objects.get(id=unidad_id)
-                ultimo_control = controlUnidades.objects.filter(unidad=unidad).order_by('-vuelta').first()
-                initial_data['vuelta'] = (ultimo_control.vuelta + 1) if ultimo_control else 1
-            except UnidadTransporte.DoesNotExist:
-                pass
-        
-        form = ControlUnidadesForm(initial=initial_data, user=request.user)
-    
-    return render(request, 'control_unidades/crear_control.html', {'form': form})
-
 @login_required
 def crear_pago(request):
     if request.method == 'POST':
         form = PagoForm(request.POST)
         if form.is_valid():
-            pago = form.save(commit=False)  # Crea el objeto pero no lo guarda todavía
-            pago.usuario = request.user     # Asigna el usuario actual
-            pago.save()                     # Guarda el objeto con el usuario asignado
-            return redirect('listar_pagos')  # Redirige a la lista de pagos o donde prefieras
+            pago = form.save(commit=False)
+            pago.usuario = request.user
+            pago.save()
+            return redirect('listar_pagos')
     else:
         form = PagoForm()
     return render(request, 'pagos/crear_pagos.html', {'form': form})
+
+@login_required
+def editar_pago(request, id_pago):
+    pago = get_object_or_404(pagos, id_pago=id_pago)
+
+    if request.method == 'POST':
+        form = EditarPagoForm(request.POST, instance=pago)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'El pago se actualizó correctamente.')
+            return redirect('listar_pagos')
+        else:
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
+    else:
+        form = EditarPagoForm(instance=pago)
+
+    return render(request, 'pagos/editar_pago.html', {'form': form, 'pago': pago})
+
+# SECCION LICENCIAS
 
 @login_required
 def listar_licencias(request):

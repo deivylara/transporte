@@ -13,13 +13,13 @@
 <body>
     <div class="header-container">
         <h1>LISTADO DE UNIDADES</h1>
-        <a class="add-button" href="{% url 'crear_unidad' %}">AGREGAR UNIDAD</a>
-    </div> 
-    <div class="right-aligned">
-        <a href="{% url 'exportar_unidades_excel' %}?numero_unidad={{ numero_unidad }}&socio={{ socio }}&placa={{ placa }}&responsable={{ responsable }}&contacto={{ contacto }}&tarifa={{ tarifa }}&estado={{ estado }}" 
-           class="btn btn-success">
-            Exportar a Excel
-        </a>
+        <div class="dropdown">
+            <button class="dropdown-toggle" id="dropdownButton">Opciones</button>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a class="menu-item" href="{% url 'crear_unidad' %}">AGREGAR UNIDAD</a>
+                <a class="menu-item" href="{% url 'exportar_unidades_excel' %}?numero_unidad={{ numero_unidad }}&socio={{ socio }}&placa={{ placa }}&responsable={{ responsable }}&contacto={{ contacto }}&tarifa={{ tarifa }}&estado={{ estado }}">Exportar a Excel</a>
+            </div>
+        </div>
     </div>
     <div class="filter-container">
         <select id="filter-select">
@@ -97,6 +97,7 @@
                             <input type="text" name="estado" id="estado" placeholder="ESTADO" value="{{ estado }}">
                         </form>
                     </th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
         
@@ -112,12 +113,26 @@
                     <td data-label="SOAT VENCIMIENTO">{{ unidad.vencimiento_soat |date:"d/m/Y"  }}</td>
                     <td data-label="CIVM VENCIMIENTO">{{ unidad.vencimiento_civm |date:"d/m/Y"  }}</td>
                     <td data-label="ESTADO">{{ unidad.estado_display }}</td>
+                    <td data-label="EDITAR"><button type="button"><a class="link-registros" href="{% url 'editar_unidad' unidad.id_transporte %}">Editar</a></button></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     <script>
+        const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+    
+        dropdownButton.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('show');
+        });
+    
+        window.addEventListener('click', (e) => {
+            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             const filterSelect = document.getElementById('filter-select');
             const filterInputs = document.querySelectorAll('.filter-input');

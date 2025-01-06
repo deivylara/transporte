@@ -3,16 +3,23 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Listado de Control de Unidades</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Control de Unidades</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" href="/static/styles/listar_tablas.css">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
     <div class="header-container">
         <h1>LISTADO CONTROL DE UNIDADES</h1>
-        <a class="add-button" href="{% url 'crear_control_unidad' %}">AGREGAR CONTROL</a>
-    </div> 
+        <div class="dropdown">
+            <button class="dropdown-toggle" id="dropdownButton">Opciones</button>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a class="menu-item" href="{% url 'crear_control_unidad' %}">AGREGAR CONTROL</a>
+            </div>
+        </div>
+    </div>
     <div class="filter-container">
         <select id="filter-select">
             <option value="">Seleccione un filtro</option>
@@ -70,8 +77,10 @@
                             <input type="text" name="usuario" id="usuario" placeholder="USUARIO" value="{{ usuario }}">
                         </form>
                     </th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for control in controles %}
                 <tr>
@@ -80,23 +89,35 @@
                     <td data-label="VUELTA">{{ control.vuelta_display }}</td>
                     <td data-label="FECHA VUELTA">{{ control.fecha_vuelta |date:"d/m/Y H:i"  }}</td>
                     <td data-label="USUARIO">{{ control.usuario }}</td>
+                    <td data-label="EDITAR"><button type="button"><a class="link-registros" href="{% url 'editar_control_unidad' control.id_control %}">Editar</a></button></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     <script>
+        const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+    
+        dropdownButton.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('show');
+        });
+    
+        window.addEventListener('click', (e) => {
+            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             const filterSelect = document.getElementById('filter-select');
             const filterInputs = document.querySelectorAll('.filter-input');
         
             filterSelect.addEventListener('change', function () {
-                // Ocultar todos los inputs de filtro
                 filterInputs.forEach(input => {
                     input.style.display = 'none';
                 });
         
-                // Mostrar el input correspondiente al filtro seleccionado
                 const selectedFilter = this.value;
                 if (selectedFilter) {
                     const selectedInput = document.getElementById(selectedFilter);

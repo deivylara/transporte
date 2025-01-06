@@ -7,12 +7,6 @@ body {
     color: grey; /* Texto principal */
 }
 
-h1 {
-    text-align: center;
-    color: grey;
-    margin-top: 20px;
-}
-
 /* Contenedor del encabezado */
 .header-container {
     display: flex;
@@ -20,7 +14,6 @@ h1 {
     align-items: center;
     padding: 20px;
     background-color: #0a1e35;
-    border-bottom: 2px solid white;
 }
 
 .header-container h1 {
@@ -29,6 +22,56 @@ h1 {
     font-size: 24px;
     flex-grow: 1;
     text-align: center;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    background-color: #0e6d75e5;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 60px;
+    margin-top: 30px;
+}
+
+.dropdown-toggle:hover {
+    background-color: #135055e5;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #0e6c75;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 1;
+    min-width: 100px;
+    margin-top: 5px;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu .menu-item {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    border-radius: 5px;
+    gap: 5px;
+}
+
+.dropdown-menu .menu-item:hover {
+    background-color: #2a4c4faf;
 }
 
 .add-button {
@@ -45,6 +88,21 @@ h1 {
 
 .add-button:hover {
     background-color: #28a745; /* Cambio de color al pasar el cursor */
+}
+
+button{
+    background-color: #0e6d75e5;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.link-registros {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
 }
 
 /* Contenedor principal */
@@ -107,7 +165,9 @@ table.unidad tr:hover {
     border-color: #28a745;
     outline: none;
 }
-
+.filter-container{
+    display: none;
+}
 /* Media queries para diseño responsive */
 @media (max-width: 768px) {
     .container {
