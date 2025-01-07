@@ -168,6 +168,9 @@ table.unidad tr:hover {
 .filter-container{
     display: none;
 }
+
+
+
 /* Media queries para diseño responsive */
 @media (max-width: 768px) {
     .container {

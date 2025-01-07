@@ -8,6 +8,8 @@ from django.utils import timezone
 import xlsxwriter
 from django.contrib import messages
 from io import BytesIO
+from datetime import datetime
+from datetime import date
 # Create your views here.
 
 @login_required
@@ -197,26 +199,37 @@ def listar_control_unidades(request):
     numero_control = request.GET.get('numero_control', '').strip()
     numero_unidad = request.GET.get('numero_unidad', '').strip()
     vuelta = request.GET.get('vuelta', '').strip()
-    date_filterp = request.GET.get('date_filterp', '').strip()
-    usuario = request.GET.get('usuario','').strip()
+    date_filterp_desde = request.GET.get('date_filterp_desde', '').strip()
+    date_filterp_hasta = request.GET.get('date_filterp_hasta', '').strip()
+    usuario = request.GET.get('usuario', '').strip()
 
+    # Fecha actual como predeterminada
+    today = datetime.now().date()
+    if not date_filterp_desde:
+        date_filterp_desde = today.strftime('%Y-%m-%d')
+    if not date_filterp_hasta:
+        date_filterp_hasta = today.strftime('%Y-%m-%d')
+
+    controles = controlUnidades.objects.all()
+
+    # Filtros dinámicos
     if numero_control:
-        controles = controlUnidades.objects.filter(numero_control__icontains=numero_control)
-    elif numero_unidad:
-        controles = controlUnidades.objects.filter(unidad__numero_unidad__icontains=numero_unidad)
-    elif vuelta:
-        controles = controlUnidades.objects.filter(vuelta__icontains=vuelta)
-    elif date_filterp:
+        controles = controles.filter(numero_control__icontains=numero_control)
+    if numero_unidad:
+        controles = controles.filter(unidad__numero_unidad__icontains=numero_unidad)
+    if vuelta:
+        controles = controles.filter(vuelta__icontains=vuelta)
+    if usuario:
+        controles = controles.filter(usuario__icontains=usuario)
+    if date_filterp_desde and date_filterp_hasta:
         try:
-            month, year = map(int, date_filterp.split('/'))
-            controles = controles.filter(fecha_vuelta__month=month, fecha_vuelta__year=year)
+            date_from = datetime.strptime(date_filterp_desde, '%Y-%m-%d').date()
+            date_to = datetime.strptime(date_filterp_hasta, '%Y-%m-%d').date()
+            controles = controles.filter(fecha_vuelta__date__gte=date_from, fecha_vuelta__date__lte=date_to)
         except ValueError:
             pass
-    elif usuario:
-        controles = controlUnidades.objects.filter(usuario__icontains = usuario)
-    else: 
-        controles = controlUnidades.objects.all()
-        
+
+    # Preparar datos adicionales para el template
     for control in controles:
         control.unidad_display = control.unidad.numero_unidad
         control.vuelta_display = control.vuelta
@@ -228,10 +241,10 @@ def listar_control_unidades(request):
         'numero_control': numero_control,
         'numero_unidad': numero_unidad,
         'vuelta': vuelta,
-        'date_filterp': date_filterp,
-        'usuario': usuario
+        'date_filterp_desde': date_filterp_desde,
+        'date_filterp_hasta': date_filterp_hasta,
+        'usuario': usuario,
     })
-
 
 @login_required
 def crear_control_unidad(request):
@@ -291,48 +304,62 @@ def lista_metodos_pago(request):
 
 # SECCION PAGOS
 
-@login_required
 def listar_pagos(request):
+    from datetime import date
+
+    # Filtros
     numero_pago = request.GET.get('numero_pago', '').strip()
     vuelta = request.GET.get('vuelta', '').strip()
     numero_unidad = request.GET.get('numero_unidad', '').strip()
     nombre_tarifa = request.GET.get('nombre_tarifa', '').strip()
     metodo_pago = request.GET.get('metodo_pago', '').strip()
-    date_filterp = request.GET.get('date_filterp', '').strip()
+    date_filterp_desde = request.GET.get('date_filterp_desde', date.today().strftime('%Y-%m-%d'))
+    date_filterp_hasta = request.GET.get('date_filterp_hasta', date.today().strftime('%Y-%m-%d'))
     detalle = request.GET.get('detalle', '').strip()
     usuario = request.GET.get('usuario', '').strip()
 
-    pagos_list = pagos.objects.all()
+    # Consulta base
+    pagos_list = pagos.objects.select_related(
+        'id_control__unidad', 
+        'id_control__unidad__id_tarifa', 
+        'id_metodo', 
+        'usuario'
+    ).all()
 
+    # Aplicar filtros
     if numero_pago:
         pagos_list = pagos_list.filter(id_pago__icontains=numero_pago)
-    elif vuelta:
+    if vuelta:
         pagos_list = pagos_list.filter(id_control__vuelta__icontains=vuelta)
-    elif numero_unidad:
+    if numero_unidad:
         pagos_list = pagos_list.filter(id_control__unidad__numero_unidad__icontains=numero_unidad)
-    elif nombre_tarifa:
+    if nombre_tarifa:
         pagos_list = pagos_list.filter(id_control__unidad__id_tarifa__nombre_tarifa__icontains=nombre_tarifa)
-    elif metodo_pago:
+    if metodo_pago:
         pagos_list = pagos_list.filter(id_metodo__tipo__icontains=metodo_pago)
-    elif date_filterp:
-        try:
-            month, year = map(int, date_filterp.split('/'))
-            pagos_list = pagos_list.filter(fecha_pago__month=month, fecha_pago__year=year)
-        except ValueError:
-            pass
-    elif detalle:
+    if detalle:
         pagos_list = pagos_list.filter(detalle__icontains=detalle)
-    elif usuario:
-        pagos_list = pagos_list.filter(usuario__username__icontains=usuario)  # Filtra por nombre de usuario
+    if usuario:
+        pagos_list = pagos_list.filter(usuario__username__icontains=usuario)
+    
+    # Filtro por rango de fechas
+    if date_filterp_desde and date_filterp_hasta:
+        try:
+            pagos_list = pagos_list.filter(
+                fecha_pago__range=[date_filterp_desde, date_filterp_hasta]
+            )
+        except ValueError:
+            pass  # Manejo de error en caso de fechas no válidas
 
+    # Agregar datos relacionados al objeto
     for pago in pagos_list:
         pago.vuelta_display = pago.id_control.vuelta if pago.id_control else "N/A"
         pago.numero_unidad_display = pago.id_control.unidad.numero_unidad if pago.id_control and pago.id_control.unidad else "N/A"
         pago.nombre_tarifa_display = pago.id_control.unidad.id_tarifa.nombre_tarifa if pago.id_control and pago.id_control.unidad and pago.id_control.unidad.id_tarifa else "N/A"
         pago.metodo_pago_display = pago.id_metodo.tipo if pago.id_metodo else "N/A"
-        pago.fecha_pago_display = pago.fecha_pago.strftime('%d/%m/%Y') if pago.fecha_pago else "N/A"
         pago.detalle_display = pago.detalle
-        pago.usuario_display = pago.usuario.username if pago.usuario else "N/A"  # Muestra el nombre de usuario
+        pago.usuario_display = pago.usuario.username if pago.usuario else "N/A"
+        pago.fecha_pago_display = pago.fecha_pago.strftime('%d/%m/%Y') if pago.fecha_pago else "N/A"  # Formato de fecha
 
     return render(request, 'pagos/listar_pagos.html', {
         'pagos_list': pagos_list,
@@ -341,10 +368,13 @@ def listar_pagos(request):
         'numero_unidad': numero_unidad,
         'nombre_tarifa': nombre_tarifa,
         'metodo_pago': metodo_pago,
-        'date_filterp': date_filterp,
+        'date_filterp_desde': date_filterp_desde,
+        'date_filterp_hasta': date_filterp_hasta,
         'detalle': detalle,
-        'usuario': usuario
+        'usuario': usuario,
+        'today': date.today().strftime('%Y-%m-%d'),
     })
+
 
 @login_required
 def crear_pago(request):

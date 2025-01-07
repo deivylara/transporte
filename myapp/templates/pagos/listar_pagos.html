@@ -20,6 +20,14 @@
             </div>
         </div>
     </div>
+    <form id="date-filter-form">
+        <label for="date_filterp_desde">Desde:</label>
+        <input type="date" id="date_filterp_desde" name="date_filterp_desde" value="{{ date_filterp_desde|default:today }}">
+        
+        <label for="date_filterp_hasta">Hasta:</label>
+        <input type="date" id="date_filterp_hasta" name="date_filterp_hasta" value="{{ date_filterp_hasta|default:today }}">
+    </form>
+    
     <div class="filter-container">
         <select id="filter-select">
             <option value="">Seleccione un filtro</option>
@@ -152,6 +160,43 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const desdeInput = document.getElementById('date_filterp_desde');
+            const hastaInput = document.getElementById('date_filterp_hasta');
+        
+            const fetchAndUpdateTable = () => {
+                const desde = desdeInput.value;
+                const hasta = hastaInput.value;
+        
+                // Construye la URL con los parámetros
+                const url = `{% url 'listar_pagos' %}?date_filterp_desde=${desde}&date_filterp_hasta=${hasta}`;
+        
+                // Realiza la solicitud
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error en la solicitud: ' + response.statusText);
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        // Extrae y reemplaza el contenido de la tabla
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newContent = doc.querySelector('.container').innerHTML;
+                        document.querySelector('.container').innerHTML = newContent;
+                    })
+                    .catch(error => console.error('Error al actualizar los datos:', error));
+            };
+        
+            // Agrega el evento de cambio a los inputs
+            [desdeInput, hastaInput].forEach(input => {
+                input.addEventListener('change', fetchAndUpdateTable);
+            });
+        });
+        </script>
+        
 </body>
 </html>
 {% endblock %}

@@ -20,34 +20,16 @@
             </div>
         </div>
     </div>
-    <div class="filter-container">
-        <select id="filter-select">
-            <option value="">Seleccione un filtro</option>
-            <option value="numero_control">Nº CONTROL</option>
-            <option value="numero_unidad">Nº UNIDAD</option>
-            <option value="vuelta">VUELTA</option>
-            <option value="date_filterp">FECHA VUELTA</option>
-            <option value="usuario">USUARIO</option>
-        </select>
-    </div>
 
-    <div class="filters">
-        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
-            <input type="text" name="numero_control" id="numero_control" placeholder="Nº CONTROL" class="filter-input" value="{{ numero_control }}" style="display: none;">
-        </form>
-        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
-            <input type="text" name="numero_unidad" id="numero_unidad" placeholder="Nº UNIDAD" class="filter-input" value="{{ numero_unidad }}" style="display: none;">
-        </form>
-        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
-            <input type="text" name="vuelta" id="vuelta" placeholder="VUELTA" class="filter-input" value="{{ vuelta }}" style="display: none;">
-        </form>
-        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
-            <input type="text" name="date_filterp" id="date_filterp" placeholder="FECHA VUELTA (MM/AAAA)" class="filter-input" value="{{ date_filterp }}" style="display: none;">
-        </form>
-        <form method="GET" action="{% url 'listar_control_unidades' %}" class="search-form">
-            <input type="text" name="usuario" id="usuario" placeholder="USUARIO" class="filter-input" value="{{ usuario }}" style="display: none;">
-        </form>
-    </div>
+    <form id="date-filter-form">
+        <label for="date_filterp_desde">Desde:</label>
+        <input type="date" id="date_filterp_desde" name="date_filterp_desde" value="{{ date_filterp_desde }}">
+    
+        <label for="date_filterp_hasta">Hasta:</label>
+        <input type="date" id="date_filterp_hasta" name="date_filterp_hasta" value="{{ date_filterp_hasta }}">
+    </form>
+   
+
     <div class="container">
         <table class="unidad">
             <thead>
@@ -87,7 +69,7 @@
                     <td data-label="Nº CONTROL">{{ control.id_control }}</td>
                     <td data-label="Nº UNIDAD">{{ control.unidad_display }}</td>
                     <td data-label="VUELTA">{{ control.vuelta_display }}</td>
-                    <td data-label="FECHA VUELTA">{{ control.fecha_vuelta |date:"d/m/Y H:i"  }}</td>
+                    <td data-label="FECHA VUELTA">{{ control.fecha_vuelta|date:"d/m/Y H:i" }}</td>
                     <td data-label="USUARIO">{{ control.usuario }}</td>
                     <td data-label="EDITAR"><button type="button"><a class="link-registros" href="{% url 'editar_control_unidad' control.id_control %}">Editar</a></button></td>
                 </tr>
@@ -95,6 +77,7 @@
             </tbody>
         </table>
     </div>
+
     <script>
         const dropdownButton = document.getElementById('dropdownButton');
         const dropdownMenu = document.getElementById('dropdownMenu');
@@ -128,6 +111,39 @@
             });
         });
     </script>
+    
+
+    <script> 
+    document.addEventListener('DOMContentLoaded', () => {
+    const desdeInput = document.getElementById('date_filterp_desde');
+    const hastaInput = document.getElementById('date_filterp_hasta');
+
+    const fetchAndUpdateTable = () => {
+        const desde = desdeInput.value;
+        const hasta = hastaInput.value;
+
+        fetch(`{% url 'listar_control_unidades' %}?date_filterp_desde=${desde}&date_filterp_hasta=${hasta}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newTable = doc.querySelector('.container').innerHTML;
+                document.querySelector('.container').innerHTML = newTable;
+            })
+            .catch(error => console.error('Error al actualizar los datos:', error));
+    };
+
+    [desdeInput, hastaInput].forEach(input => {
+        input.addEventListener('change', fetchAndUpdateTable);
+    });
+});
+    </script>
 </body>
 </html>
+
 {% endblock %}
