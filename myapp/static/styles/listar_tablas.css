@@ -206,7 +206,7 @@ table.unidad tr:hover {
 /* Media queries para diseño responsive */
 @media (max-width: 768px) {
     .container {
-        width: 50%;
+        width: 90%;
         padding: 10px;
         margin: 10px auto;
     }
