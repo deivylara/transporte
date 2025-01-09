@@ -105,6 +105,38 @@ button{
     text-decoration: none;
 }
 
+/* General Styles for the Form */
+#date-filter-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Label Styling */
+#date-filter-form label {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+#date-filter-form input[type="date"] {
+    font-size: 14px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    outline: none;
+}
+
+#date-filter-form input[type="date"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+
 /* Contenedor principal */
 .container {
     width: 80%;
@@ -174,9 +206,20 @@ table.unidad tr:hover {
 /* Media queries para diseño responsive */
 @media (max-width: 768px) {
     .container {
-        width: 80%;
+        width: 50%;
         padding: 10px;
         margin: 10px auto;
+    }
+    #date-filter-form {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    #date-filter-form label,
+    #date-filter-form input[type="date"] {
+        width: 50%;
+        text-align: center;
     }
 
     .header-container {
@@ -262,8 +305,8 @@ table.unidad tr:hover {
     }
 
     table.unidad td {
-        text-align: left;
-        padding-left: 10px;
+        text-align: right;
+        padding-left: 100px;
         position: relative;
         border: none;
     }
