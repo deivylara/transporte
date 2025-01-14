@@ -48,7 +48,6 @@ class UnidadTransporte(models.Model):
     socio = models.BooleanField(default=False)
     responsable = models.TextField(max_length=20, null=True)
     contacto = models.CharField(max_length=8, null=True)
-    id_tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE, default=True)
     estado = models.BooleanField(default=True)
     vencimiento_soat = models.DateField(default=date.today)
     vencimiento_civm = models.DateField(default=date.today)

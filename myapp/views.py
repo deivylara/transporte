@@ -40,7 +40,6 @@ def listar_unidades(request):
     placa = request.GET.get('placa', '').strip()
     responsable = request.GET.get('responsable','').strip()
     contacto = request.GET.get('contacto','').strip()
-    tarifa = request.GET.get('tarifa','').strip()
     estado = request.GET.get('estado', '').strip()
 
     if numero_unidad:
@@ -53,8 +52,6 @@ def listar_unidades(request):
         unidades = UnidadTransporte.objects.filter(responsable__icontains=responsable)
     elif contacto:
         unidades = UnidadTransporte.objects.filter(contacto__icontains=contacto)
-    elif tarifa:
-        unidades = UnidadTransporte.objects.filter(id_tarifa__nombre_tarifa__icontains=tarifa)
     elif estado:
         unidades = UnidadTransporte.objects.filter(estado=True if estado.lower() == 'activo' else False)
         
@@ -66,7 +63,6 @@ def listar_unidades(request):
         unidad.placa_display = unidad.placa
         unidad.responsable_display = unidad.responsable
         unidad.contacto_display = unidad.contacto
-        unidad.id_tarifa__nombre_tarifa_display = unidad.id_tarifa.nombre_tarifa
         unidad.estado_display = "ACTIVO" if unidad.estado else "SUSPENDIDO"
     
     return render(request, 'unidades/listar_unidades.html', {
@@ -101,7 +97,6 @@ def exportar_unidades_excel(request):
     placa = request.GET.get('placa', '').strip()
     responsable = request.GET.get('responsable', '').strip()
     contacto = request.GET.get('contacto', '').strip()
-    tarifa = request.GET.get('tarifa', '').strip()
     estado = request.GET.get('estado', '').strip().lower()
 
     # Validación de valores específicos
@@ -120,8 +115,6 @@ def exportar_unidades_excel(request):
         filters['responsable__icontains'] = responsable
     if contacto:
         filters['contacto__icontains'] = contacto
-    if tarifa:
-        filters['id_tarifa__nombre_tarifa__icontains'] = tarifa
     if estado:
         filters['estado'] = estado == 'activo'
 
@@ -147,8 +140,7 @@ def exportar_unidades_excel(request):
     })
 
     # Define encabezados y anchos de columnas
-    headers = ['Número Unidad', 'Socio', 'Placa', 'Responsable', 'Contacto', 
-               'Tarifa', 'Estado', 'Vencimiento SOAT', 'Vencimiento CIVM']
+    headers = ['Número Unidad', 'Socio', 'Placa', 'Responsable', 'Contacto', 'Estado', 'Vencimiento SOAT', 'Vencimiento CIVM']
     column_widths = [len(header) for header in headers]
 
     # Título del reporte
@@ -166,7 +158,6 @@ def exportar_unidades_excel(request):
             unidad.placa,
             unidad.responsable,
             unidad.contacto,
-            unidad.id_tarifa.nombre_tarifa if unidad.id_tarifa else "",
             "ACTIVO" if unidad.estado else "SUSPENDIDO",
             unidad.vencimiento_soat.strftime('%Y-%m-%d') if unidad.vencimiento_soat else "",
             unidad.vencimiento_civm.strftime('%Y-%m-%d') if unidad.vencimiento_civm else ""

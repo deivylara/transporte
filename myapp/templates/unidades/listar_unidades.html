@@ -28,8 +28,7 @@
             <option value="socio">SOCIO</option>
             <option value="placa">PLACA</option>
             <option value="responsable">RESPONSABLE</option>
-            <option value="contacto">CONTACTO</option>
-            <option value="tarifa">TARIFA</option>
+            <option value="contacto">CONTACTO</option>ddA,<div class=""></div>
             <option value="estado">ESTADO</option>
         </select>
     </div>
@@ -48,9 +47,6 @@
         </form>
         <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
             <input type="text" name="contacto" id="contacto" placeholder="CONTACTO" class="filter-input" value="{{ contacto }}" style="display: none;">
-        </form>
-        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
-            <input type="text" name="tarifa" id="tarifa" placeholder="TARIFA" class="filter-input" value="{{ tarifa }}" style="display: none;">
         </form>
         <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
             <input type="text" name="estado" id="estado" placeholder="ESTADO" class="filter-input" value="{{ estado }}" style="display: none;">
@@ -85,11 +81,6 @@
                             <input type="text" name="contacto" id="contacto" placeholder="CONTACTO" value="{{ contacto }}">
                         </form>
                     </th>
-                    <th>
-                        <form method="GET" action="{% url 'listar_unidades' %}" class="search-form">
-                            <input type="text" name="tarifa" id="tarifa" placeholder="TARIFA" value="{{ tarifa }}">
-                        </form>
-                    </th>
                     <th>Vencimiento SOAT </th>
                     <th>Vencimiento CIVM </th>
                     <th>
@@ -109,7 +100,6 @@
                     <td data-label="PLACA">{{ unidad.placa_display }}</td>
                     <td data-label="LOCADOR">{{ unidad.responsable_display }}</td>
                     <td data-label="CONTACTO">{{ unidad.contacto_display }}</td>
-                    <td data-label="TARIFA">{{ unidad.id_tarifa__nombre_tarifa_display }}</td>
                     <td data-label="SOAT VENCIMIENTO">{{ unidad.vencimiento_soat |date:"d/m/Y"  }}</td>
                     <td data-label="CIVM VENCIMIENTO">{{ unidad.vencimiento_civm |date:"d/m/Y"  }}</td>
                     <td data-label="ESTADO">{{ unidad.estado_display }}</td>

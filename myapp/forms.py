@@ -8,7 +8,7 @@ from datetime import date
 class UnidadTransporteForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
-        fields = ['numero_unidad', 'socio', 'id_tarifa', 'placa', 'responsable', 'contacto', 'estado', 'vencimiento_soat', 'vencimiento_civm']
+        fields = ['numero_unidad', 'socio', 'placa', 'responsable', 'contacto', 'estado', 'vencimiento_soat', 'vencimiento_civm']
         widgets = {
             'vencimiento_soat': forms.DateInput(attrs={
                 'type': 'date',
@@ -26,37 +26,13 @@ class UnidadTransporteForm(forms.ModelForm):
             }),
         }
         labels = {
-            'id_tarifa': 'Tarifa',
             'responsable' : 'Locador'
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['id_tarifa'].required = False
-
-    def clean(self):
-        # Obtener datos limpios del formulario
-        cleaned_data = super().clean()
-        socio = cleaned_data.get('socio')
-        if socio is not None:
-            tarifa_asignada = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
-            if not tarifa_asignada:
-                raise forms.ValidationError("No se encontró una tarifa válida para el socio.")
-            cleaned_data['id_tarifa'] = tarifa_asignada
-        return cleaned_data
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        socio = self.cleaned_data.get('socio')
-        instance.id_tarifa = tarifa.objects.filter(nombre_tarifa="PREMIUM" if socio else "STANDAR").first()
-        if commit:
-            instance.save()
-        return instance
     
 class editarUnidad(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
-        fields = ['numero_unidad', 'placa', 'socio', 'id_tarifa', 'responsable', 'contacto','estado', 'vencimiento_soat', 'vencimiento_civm']
+        fields = ['numero_unidad', 'placa', 'socio', 'responsable', 'contacto','estado', 'vencimiento_soat', 'vencimiento_civm']
         widgets = {
             'vencimiento_soat': forms.DateInput(attrs={'type': 'date'}),
             'vencimiento_civm': forms.DateInput(attrs={'type': 'date'}),

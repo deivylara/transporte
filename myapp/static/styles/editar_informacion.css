@@ -63,18 +63,7 @@ input[type="checkbox"]:checked {
     background-color: #0e6d75e5;
 }
 
-input[type="checkbox"]::before {
-    content: '';
-    position: absolute;
-    width: 16px; 
-    height: 16px;
-    border-radius: 50%;
-    background-color: white;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 4px;
-    transition: transform 0.3s ease;
-}
+
 
 input[type="checkbox"]:checked::before {
     left: 20px;
