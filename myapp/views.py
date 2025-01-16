@@ -222,7 +222,8 @@ def listar_control_unidades(request):
             controles = controles.filter(fecha_vuelta__date__gte=date_from, fecha_vuelta__date__lte=date_to)
         except ValueError:
             pass
-
+      # Ordenar los registros por fecha (descendente) para que el más reciente se muestre primero
+    controles = controles.order_by('-fecha_vuelta')  # Este es el cambio
     # Preparar datos adicionales para el template
     for control in controles:
         control.unidad_display = control.unidad.numero_unidad
