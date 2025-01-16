@@ -59,10 +59,12 @@ class UnidadTransporte(models.Model):
     def __str__(self):
         return f'Unidad {self.numero_unidad}'
 
+
+
 class controlUnidades(models.Model):
     id_control = models.AutoField(primary_key=True)
     unidad = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
-    vuelta = models.DecimalField(max_digits=12, decimal_places=2)
+    vuelta = models.IntegerField(null=True, blank=True)
     fecha_vuelta = models.DateTimeField(auto_now_add=True)
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -70,24 +72,6 @@ class controlUnidades(models.Model):
         db_table = 'control_unidades'
         verbose_name_plural = 'control de unidades'
 
-    def calcular_siguiente_vuelta(self):
-        ultimo_control = (
-            controlUnidades.objects.filter(unidad=self.unidad)
-            .order_by('-vuelta')
-            .first()
-        )
-        return (ultimo_control.vuelta + 1) if ultimo_control else 1
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.vuelta = self.calcular_siguiente_vuelta()
-        if not self.usuario:
-            from django.contrib.auth import get_user_model
-            self.usuario = get_user_model().objects.get(id=kwargs.get('user_id'))
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f'Control {self.id_control} - Unidad {self.unidad.numero_unidad} - Vuelta {self.vuelta}'
     
 class pagos(models.Model):
     id_pago = models.AutoField(primary_key=True)

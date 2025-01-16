@@ -68,7 +68,7 @@
                     <td data-label="Nº CONTROL">{{ control.id_control }}</td>
                     <td data-label="Nº UNIDAD">{{ control.unidad_display }}</td>
                     <td data-label="VUELTA">{{ control.vuelta_display }}</td>
-                    <td data-label="FECHA VUELTA">{{ control.fecha_vuelta|date:"d/m/Y H:i" }}</td>
+                    <td data-label="FECHA VUELTA">{{ control.fecha_vuelta|date:"d/m/Y H:i:s" }}</td>
                     <td data-label="USUARIO">{{ control.usuario }}</td>
                     <td data-label="EDITAR"><button type="button"><a class="link-registros" href="{% url 'editar_control_unidad' control.id_control %}">Editar</a></button></td>
                 </tr>

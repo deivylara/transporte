@@ -43,40 +43,12 @@ class editarUnidad(forms.ModelForm):
 class ControlUnidadesForm(forms.ModelForm):
     class Meta:
         model = controlUnidades
-        fields = ['unidad', 'vuelta']
+        fields = ['unidad', 'vuelta']  # Asegúrate de que 'vuelta' esté incluido
         widgets = {
-            'vuelta': forms.Select(attrs={'class': 'form-control', 'disabled': 'disabled'}),
             'unidad': forms.Select(attrs={'class': 'form-control'}),
+            # No es necesario el widget para 'vuelta' si ya se maneja en el HTML
         }
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)  # Obtiene el usuario de los kwargs
-        super().__init__(*args, **kwargs)
-        self.fields['vuelta'].required = False
-        # Filtrar el campo 'unidad' para mostrar solo unidades activas o suspendidas
-        self.fields['unidad'].queryset = UnidadTransporte.objects.filter(
-            estado__in=[True]  # Ajusta el filtro según tus necesidades
-        )
-
-    def clean(self):
-        cleaned_data = super().clean()
-        unidad = cleaned_data.get('unidad')
-        if unidad is not None:
-            siguiente_vuelta = controlUnidades(unidad=unidad).calcular_siguiente_vuelta()
-            cleaned_data['vuelta'] = siguiente_vuelta
-        return cleaned_data
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        if self.user:
-            instance.usuario = self.user
-        unidad = self.cleaned_data.get('unidad')
-        if unidad is not None:
-            siguiente_vuelta = controlUnidades(unidad=unidad).calcular_siguiente_vuelta()
-            instance.vuelta = siguiente_vuelta
-        if commit:
-            instance.save()
-        return instance
 
 class editaControl(forms.ModelForm):
     class Meta:

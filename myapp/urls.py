@@ -22,4 +22,5 @@ urlpatterns = [
     path('unidades/editar/<int:id_transporte>/', views.editar_unidad, name='editar_unidad'),
     path('control_unidades/editar/<int:id_control>/', views.editar_control_unidad, name='editar_control_unidad'),
     path('pagos/editar/<int:id_pago>/', views.editar_pago, name='editar_pago'),
+    path('api/get_vuelta/<int:unidad_id>/', views.obtener_vuelta_actual, name='get_vuelta_actual'),
 ]

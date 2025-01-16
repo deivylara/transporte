@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>crear unidades</title>
+    <title>Crear Control Unidad</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,12 +15,49 @@
     <h1>AGREGAR CONTROL UNIDAD</h1>
     <form method="POST">
       {% csrf_token %}
-      {{ form.as_p }}  
+
+      <!-- Campo de unidad de transporte -->
+      <div class="form-group">
+        <label for="id_unidad">Unidad de Transporte:</label>
+        {{ form.unidad }}  <!-- Este es el campo de selección de unidad -->
+      </div>
+
+      <div class="form-group">
+        <label for="vuelta_actual">Número de Vuelta:</label>
+        <input type="text" id="vuelta_actual" value="{{ vuelta_actual }}" readonly>
+        <input type="hidden" name="vuelta" id="vuelta_actual_input" value="{{ vuelta_actual }}">
+      </div>
+      
+
+      <!-- Otros campos del formulario -->
       <div class="button-container">
         <button type="submit">AGREGAR</button> 
       </div>     
     </form>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+  const unidadSelect = document.getElementById("id_unidad");
+  const vueltaInput = document.getElementById("vuelta_actual");
+  const vueltaInputHidden = document.getElementById("vuelta_actual_input");
+
+  unidadSelect.addEventListener("change", function() {
+    const unidadId = unidadSelect.value;
+
+    if (unidadId) {
+      fetch(`/api/get_vuelta/${unidadId}/`)
+        .then(response => response.json())
+        .then(data => {
+          vueltaInput.value = data.vuelta_actual;
+          vueltaInputHidden.value = data.vuelta_actual;  // Enviar el valor con el formulario
+        })
+        .catch(error => console.error("Error:", error));
+    }
+  });
+});
+  </script>
 </body>
 </html>
 {% endblock %}
+

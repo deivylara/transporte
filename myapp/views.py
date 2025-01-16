@@ -4,12 +4,15 @@ from django.shortcuts import render , redirect , get_object_or_404
 from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoForm, LicenciaForm, editarUnidad, editaControl, EditarPagoForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from django.utils import timezone
 import xlsxwriter
 from django.contrib import messages
 from io import BytesIO
 from datetime import datetime
-from datetime import date
+from django.utils.timezone import now
+from django.http import JsonResponse
+from django.utils import timezone
+from django.db.models import Max
+from django.contrib.auth.models import User
 # Create your views here.
 
 @login_required
@@ -237,28 +240,70 @@ def listar_control_unidades(request):
         'usuario': usuario,
     })
 
+
 @login_required
 def crear_control_unidad(request):
     if request.method == 'POST':
-        form = ControlUnidadesForm(request.POST, user=request.user)
+        form = ControlUnidadesForm(request.POST)
         if form.is_valid():
-            control_unidad = form.save(commit=False)
-            control_unidad.save()
+            control = form.save(commit=False)
+            control.usuario = request.user
+
+            # Asignamos la vuelta actual al campo `vuelta`
+            vuelta_actual = request.POST.get('vuelta_actual')
+            if vuelta_actual:
+                control.vuelta = vuelta_actual  # Asignamos el valor de vuelta
+
+            control.save()
             return redirect('listar_control_unidades')
     else:
-        initial_data = {}
-        if 'unidad' in request.GET:
-            unidad_id = request.GET.get('unidad')
-            try:
-                unidad = UnidadTransporte.objects.get(id=unidad_id)
-                ultimo_control = controlUnidades.objects.filter(unidad=unidad).order_by('-vuelta').first()
-                initial_data['vuelta'] = (ultimo_control.vuelta + 1) if ultimo_control else 1
-            except UnidadTransporte.DoesNotExist:
-                pass
-        
-        form = ControlUnidadesForm(initial=initial_data, user=request.user)
+        form = ControlUnidadesForm()
+
+    vuelta_actual = None
+    unidad_id = request.GET.get('unidad_id')
+    if unidad_id:
+        try:
+            unidad = UnidadTransporte.objects.get(pk=unidad_id)
+            ultimo_control = (
+                controlUnidades.objects.filter(unidad=unidad)
+                .order_by('-fecha_vuelta')
+                .first()
+            )
+            vuelta_actual = (ultimo_control.vuelta + 1) if ultimo_control else 1
+        except UnidadTransporte.DoesNotExist:
+            pass
+
+    return render(
+        request,
+        'control_unidades/crear_control.html',
+        {'form': form, 'vuelta_actual': vuelta_actual or 1},
+    )
+
     
-    return render(request, 'control_unidades/crear_control.html', {'form': form})
+
+
+
+
+
+
+
+def obtener_vuelta_actual(request, unidad_id):
+    try:
+        # Usamos el campo 'id_transporte' para obtener la unidad
+        unidad = UnidadTransporte.objects.get(id_transporte=unidad_id)
+        fecha_actual = now().date()
+        
+        # Contamos el número de registros de la unidad para ese día
+        vuelta_actual = controlUnidades.objects.filter(
+            unidad=unidad,
+            fecha_vuelta__date=fecha_actual
+        ).count() + 1  # El +1 es para contar la vuelta actual
+        
+        return JsonResponse({'vuelta_actual': vuelta_actual})
+    
+    except UnidadTransporte.DoesNotExist:
+        return JsonResponse({'error': 'Unidad no encontrada'}, status=404)
+
 
 @login_required       
 def editar_control_unidad(request, id_control):
