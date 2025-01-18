@@ -348,7 +348,6 @@ def listar_pagos(request):
     numero_pago = request.GET.get('numero_pago', '').strip()
     vuelta = request.GET.get('vuelta', '').strip()
     numero_unidad = request.GET.get('numero_unidad', '').strip()
-    nombre_tarifa = request.GET.get('nombre_tarifa', '').strip()
     metodo_pago = request.GET.get('metodo_pago', '').strip()
     date_filterp_desde = request.GET.get('date_filterp_desde', date.today().strftime('%Y-%m-%d'))
     date_filterp_hasta = request.GET.get('date_filterp_hasta', date.today().strftime('%Y-%m-%d'))
@@ -358,7 +357,6 @@ def listar_pagos(request):
     # Consulta base
     pagos_list = pagos.objects.select_related(
         'id_control__unidad', 
-        'id_control__unidad__id_tarifa', 
         'id_metodo', 
         'usuario'
     ).all()
@@ -370,8 +368,6 @@ def listar_pagos(request):
         pagos_list = pagos_list.filter(id_control__vuelta__icontains=vuelta)
     if numero_unidad:
         pagos_list = pagos_list.filter(id_control__unidad__numero_unidad__icontains=numero_unidad)
-    if nombre_tarifa:
-        pagos_list = pagos_list.filter(id_control__unidad__id_tarifa__nombre_tarifa__icontains=nombre_tarifa)
     if metodo_pago:
         pagos_list = pagos_list.filter(id_metodo__tipo__icontains=metodo_pago)
     if detalle:
@@ -392,7 +388,6 @@ def listar_pagos(request):
     for pago in pagos_list:
         pago.vuelta_display = pago.id_control.vuelta if pago.id_control else "N/A"
         pago.numero_unidad_display = pago.id_control.unidad.numero_unidad if pago.id_control and pago.id_control.unidad else "N/A"
-        pago.nombre_tarifa_display = pago.id_control.unidad.id_tarifa.nombre_tarifa if pago.id_control and pago.id_control.unidad and pago.id_control.unidad.id_tarifa else "N/A"
         pago.metodo_pago_display = pago.id_metodo.tipo if pago.id_metodo else "N/A"
         pago.detalle_display = pago.detalle
         pago.usuario_display = pago.usuario.username if pago.usuario else "N/A"
@@ -403,7 +398,6 @@ def listar_pagos(request):
         'numero_pago': numero_pago,
         'vuelta': vuelta,
         'numero_unidad': numero_unidad,
-        'nombre_tarifa': nombre_tarifa,
         'metodo_pago': metodo_pago,
         'date_filterp_desde': date_filterp_desde,
         'date_filterp_hasta': date_filterp_hasta,

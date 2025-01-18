@@ -34,8 +34,14 @@ class editarUnidad(forms.ModelForm):
         model = UnidadTransporte
         fields = ['numero_unidad', 'placa', 'socio', 'responsable', 'contacto','estado', 'vencimiento_soat', 'vencimiento_civm']
         widgets = {
-            'vencimiento_soat': forms.DateInput(attrs={'type': 'date'}),
-            'vencimiento_civm': forms.DateInput(attrs={'type': 'date'}),
+            'vencimiento_soat': forms.DateInput(attrs={'type': 'date', 
+            'class': 'custom-date-input',
+            'placeholder': 'Selecciona una fecha'
+        }),
+            'vencimiento_civm': forms.DateInput(attrs={'type': 'date',
+            'class': 'custom-date-input',
+            'placeholder': 'Selecciona una fecha'
+        }),
         }
 
 #SECCION CONTROL DE UNIDADES
@@ -79,9 +85,13 @@ class EditarPagoForm(forms.ModelForm):
         model = pagos
         fields = ['id_control', 'id_metodo', 'id_transporte', 'fecha_pago', 'detalle', 'usuario']
         widgets = {
-            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_pago': forms.DateInput(attrs={'type': 'date',
+            'class': 'custom-date-input',
+            'placeholder': 'Selecciona una fecha'
+            }),
         }
-        
+#SECCION LICENCIAS
+
 class LicenciaForm(forms.ModelForm):
     class Meta:
         model = Licencia
@@ -89,14 +99,14 @@ class LicenciaForm(forms.ModelForm):
         widgets = {
             'fecha_emision': forms.DateInput(attrs={
               'type': 'date',
-              'class': 'custom-date-input',
-              'placeholder': 'Selecciona una fecha',
+                'class': 'custom-date-input',
+                'placeholder': 'Selecciona una fecha'
             }),
 
             'fecha_expiracion': forms.DateInput(attrs={
               'type': 'date',
-              'class': 'custom-date-input',
-              'placeholder': 'Selecciona una fecha',
+                'class': 'custom-date-input',
+                'placeholder': 'Selecciona una fecha'
               
             }),  
         }

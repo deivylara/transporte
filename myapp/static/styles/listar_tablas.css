@@ -10,17 +10,14 @@ body {
 /* Contenedor del encabezado */
 .header-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: right;
     align-items: center;
-    padding: 20px;
-    background-color: #0a1e35;
 }
 
-.header-container h1 {
-    margin: 0;
+h1 {
+    padding: 10px;
     color: white;
     font-size: 24px;
-    flex-grow: 1;
     text-align: center;
 }
 
@@ -37,8 +34,7 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    margin-right: 60px;
-    margin-top: 30px;
+    margin-right: 70px;
 }
 
 .dropdown-toggle:hover {
@@ -178,7 +174,7 @@ table.unidad tr:nth-child(even) {
 }
 
 table.unidad tr:hover {
-    background-color: #b0c4de; /* Fondo al pasar el cursor */
+    background-color: #b6ceee; /* Fondo al pasar el cursor */
     color: #000000; /* Cambiar texto al pasar el cursor */
 }
 

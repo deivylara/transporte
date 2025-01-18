@@ -11,8 +11,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon.ico">
 </head>
 <body>
+    <h1>LISTADO DE LICENCIAS</h1>
     <div class="header-container">
-        <h1>LISTADO DE LICENCIAS</h1>
         <div class="dropdown">
             <button class="dropdown-toggle" id="dropdownButton">Opciones</button>
             <div class="dropdown-menu" id="dropdownMenu">
@@ -69,7 +69,7 @@
                     </th>
                     <th>
                         <form method="GET" action="{% url 'listar_licencias' %}" class="search-form">
-                            <input type="text" name="tipo_licencia" id="tipo_licencia" placeholder="TIPO" value="{{ tipo_licencia }}">
+                            <input type="text" name="tipo_licencia" id="tipo_licencia" placeholder="EMISION" value="{{ tipo_licencia }}">
                         </form>
                     </th>
                     <th>
@@ -77,7 +77,7 @@
                             <input type="text" name="date_filterp" id="date_filterp" placeholder="EXPIRACION " value="{{ date_filterp }}">
                         </form>
                     </th>
-                    <th>Conductor de Unidad</th>
+                    <th>Tipo Licencia</th>
                     <th>Unidad</th>
                     <th>Acciones</th>
                 </tr>
