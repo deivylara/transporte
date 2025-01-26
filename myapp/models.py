@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 
+
 # Create your models here.
 class Project(models.Model):
     name = models.CharField(max_length=200)
@@ -17,17 +18,9 @@ class Task(models.Model):
 
     def __str__(self): 
         return self.title + " - " + self.project.name
+       
     
-class metodo_pago(models.Model):
-    id_metodo = models.AutoField(primary_key=True)
-    tipo = models.CharField(max_length=50)
 
-    class Meta:
-        db_table = 'metodo_pago'
-        verbose_name_plural = 'metodos de pago'
-
-    def __str__(self):
-        return f' {self.tipo}'
 
 class tarifa(models.Model):
     id_tarifa = models.AutoField(primary_key=True)
@@ -61,7 +54,7 @@ class UnidadTransporte(models.Model):
 
 
 
-class controlUnidades(models.Model):
+class ControlUnidades(models.Model):
     id_control = models.AutoField(primary_key=True)
     unidad = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
     vuelta = models.IntegerField(null=True, blank=True)
@@ -69,27 +62,11 @@ class controlUnidades(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
-        db_table = 'control_unidades'
+        db_table = 'control_unidades'  # Esto asegura que la tabla siga con el nombre correcto
         verbose_name_plural = 'control de unidades'
 
+
     
-class pagos(models.Model):
-    id_pago = models.AutoField(primary_key=True)
-    id_control = models.ForeignKey(controlUnidades, on_delete=models.CASCADE)
-    id_metodo = models.ForeignKey(metodo_pago, on_delete=models.CASCADE)
-    id_transporte = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
-    fecha_pago = models.DateField(default=date.today)
-    detalle = models.TextField(max_length=60, default='sin detalle')
-    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    
-    class Meta:
-        db_table = 'pagos'
-        verbose_name_plural = 'registro de pagos'
-    
-    def __str__(self):
-        return f'pago {self.id_registro} - unidad {self.id_transporte.numero_unidad}'
-    def formatted_fecha_pago(self):
-        return self.fecha_pago.strftime(format='%d/%m/%Y')
     
 
 
@@ -129,3 +106,45 @@ class Licencia(models.Model):
     def __str__(self):
         return f"{self.numero_licencia} - {self.nombre} ({self.get_tipo_licencia_display()})"
 
+
+
+# Modelo Ruta
+class Ruta(models.Model):
+    id_ruta = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'rutas'
+        verbose_name_plural = 'Rutas'
+
+    def __str__(self):
+        return self.nombre
+
+# Modelo Metodo_Pago
+class Metodo_Pago(models.Model):
+    id_metodo = models.AutoField(primary_key=True)
+    tipo = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'metodo_pago'
+        verbose_name_plural = 'Metodos de Pago'
+
+    def __str__(self):
+        return self.tipo
+
+
+
+# Modelo PagoDiario
+class PagoDiario(models.Model):
+    unidad_transporte = models.ForeignKey(UnidadTransporte, on_delete=models.CASCADE)
+    ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE)
+    metodo_pago = models.ForeignKey(Metodo_Pago, on_delete=models.CASCADE)
+    monto_pagado = models.DecimalField(max_digits=6, decimal_places=2)
+    fecha_pago = models.DateField(default=date.today)
+    observaciones = models.TextField(null=True, blank=True)
+    registrado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    numero_vuelta = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'pagos_diarios'
+        verbose_name_plural = 'Pagos Diarios'

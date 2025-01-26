@@ -1,5 +1,5 @@
 from django import forms
-from .models import UnidadTransporte, controlUnidades, pagos, Licencia, tarifa
+from .models import UnidadTransporte, ControlUnidades, Licencia, PagoDiario
 from django.forms import modelformset_factory
 from datetime import date
 
@@ -48,7 +48,7 @@ class editarUnidad(forms.ModelForm):
 
 class ControlUnidadesForm(forms.ModelForm):
     class Meta:
-        model = controlUnidades
+        model = ControlUnidades
         fields = ['unidad', 'vuelta']  # Asegúrate de que 'vuelta' esté incluido
         widgets = {
             'unidad': forms.Select(attrs={'class': 'form-control'}),
@@ -58,38 +58,10 @@ class ControlUnidadesForm(forms.ModelForm):
 
 class editaControl(forms.ModelForm):
     class Meta:
-        model = controlUnidades
+        model = ControlUnidades
         fields = ['unidad', 'vuelta', 'usuario']
 
-#SECCION PAGOS
 
-class PagoForm(forms.ModelForm):
-    class Meta:
-        model = pagos
-        fields = ['id_transporte','id_control', 'id_metodo', 'detalle']
-        labels = {
-            'id_transporte': 'Unidad de Transporte',
-            'id_control': 'Vuelta',
-            'id_metodo': 'Método de Pago',
-            'detalle': 'Detalle',
-        }
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['id_transporte'].queryset = UnidadTransporte.objects.filter(
-            estado__in=[True]  
-        )
-
-class EditarPagoForm(forms.ModelForm):
-    class Meta:
-        model = pagos
-        fields = ['id_control', 'id_metodo', 'id_transporte', 'fecha_pago', 'detalle', 'usuario']
-        widgets = {
-            'fecha_pago': forms.DateInput(attrs={'type': 'date',
-            'class': 'custom-date-input',
-            'placeholder': 'Selecciona una fecha'
-            }),
-        }
 #SECCION LICENCIAS
 
 class LicenciaForm(forms.ModelForm):
@@ -110,3 +82,35 @@ class LicenciaForm(forms.ModelForm):
               
             }),  
         }
+
+
+
+class PagoDiarioForm(forms.ModelForm):
+    class Meta:
+        model = PagoDiario
+        fields = ['unidad_transporte', 'ruta', 'metodo_pago', 'observaciones']
+
+    def save(self, commit=True):
+        pago = super().save(commit=False)
+
+        # Obtener información de la unidad de transporte
+        unidad = pago.unidad_transporte
+        ruta = pago.ruta
+
+        # Calcular el monto a pagar
+        if ruta.nombre == 'P13':
+            pago.monto_pagado = 15 if unidad.socio else 20
+        elif ruta.nombre == 'C13':
+            pago.monto_pagado = 15
+
+        # Determinar la vuelta más reciente
+        ultima_vuelta = ControlUnidades.objects.filter(
+            unidad=unidad,
+            fecha_vuelta__date=pago.fecha_pago
+        ).order_by('-fecha_vuelta').first()
+        if ultima_vuelta:
+            pago.numero_vuelta = ultima_vuelta.vuelta
+
+        if commit:
+            pago.save()
+        return pago

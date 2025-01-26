@@ -31,18 +31,18 @@
     <div class="filter-container">
         <select id="filter-select">
             <option value="">Seleccione un filtro</option>
-            <option value="numero_pago">N° PAGO</option>
+            <option value="id">ID PAGO</option>
             <option value="vuelta">VUELTA</option>
             <option value="numero_unidad">N° UNIDAD</option>
             <option value="metodo_pago">METODO DE PAGO</option>
             <option value="date_filterp">FECHA DE PAGO(MM/AAAA)</option>
             <option value="detalle">DETALLE</option>
+            <option value="ruta">RUTA</option>
+            <option value="monto_pagado">MONTO_PAGADO</option>
+             <!-- Agregado filtro para ruta -->
         </select>
     </div>
     <div class="filters">
-        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
-            <input type="text" name="numero_pago" id="numero_pago" placeholder="N° PAGO" value="{{ numero_pago }}" class="filter-input" style="display: none;">
-        </form>
         <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
             <input type="text" name="vuelta" id="vuelta" placeholder="VUELTA" value="{{ vuelta }}" class="filter-input" style="display: none;">
         </form>
@@ -58,6 +58,12 @@
         <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
             <input type="text" name="detalle" id="detalle" placeholder="DETALLE" value="{{ detalle }}" class="filter-input" style="display: none;">
         </form>
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="ruta" id="ruta" placeholder="RUTA" value="{{ ruta }}" class="filter-input" style="display: none;">
+        </form>
+        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+            <input type="text" name="monto_pagado" id="monto_pagado" placeholder="MONTO_PAGADO" value="{{ monto_pagado }}" class="filter-input" style="display: none;">
+        </form>
     </div>
     <div class="container">
         <table class="unidad">
@@ -65,7 +71,7 @@
                 <tr>
                     <th>
                         <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
-                            <input type="text" name="numero_pago" id="numero_pago" placeholder="N° PAGO" value="{{ numero_pago }}">
+                            <input type="text" name="id" id="id" placeholder="N° PAGO" value="{{ id }}">
                         </form>
                     </th>
                     <th>
@@ -98,27 +104,39 @@
                             <input type="text" name="usuario" id="usuario" placeholder="USUARIO" class="filter-input" value="{{ usuario }}">
                         </form>
                     </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="ruta" id="ruta" placeholder="RUTA" value="{{ ruta }}" class="filter-input">
+                        </form>
+
+                    </th>
+                    <th>
+                        <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
+                            <input type="text" name="monto_pagado" id="monto_pagado" placeholder="MONTO" value="{{ monto_pagado }}" class="filter-input">
+                        </form>
+                    </th> <!-- Columna de ruta agregada -->
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {% for pago in pagos_list %}
                     <tr>
-                        <td data-label="Nº PAGO">{{ pago.id_pago }}</td>
+                        <td data-label="Nº PAGO">{{ pago.id }}</td>
                         <td data-label="VUELTA">{{ pago.vuelta_display }}</td>
                         <td data-label="Nº UNIDAD">{{ pago.numero_unidad_display }}</td>
                         <td data-label="METODO PAGO">{{ pago.metodo_pago_display }}</td>
                         <td data-label="FECHA PAGO">{{ pago.fecha_pago_display }}</td>
                         <td data-label="DETALLE">{{ pago.detalle_display }}</td>
                         <td data-label="USUARIO">{{ pago.usuario_display }}</td>
-                        <td data-label="EDITAR"><button type="button"><a class="link-registros" href="{% url 'editar_pago' pago.id_pago %}">Editar</a></button></td>
+                        <td data-label="RUTA">{{ pago.ruta_display }}</td> 
+                        <td data-label="MONTO_PAGADO">{{pago.monto_pagado_display }}</td> <!-- Aquí se muestra la ruta -->
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     <script>
-                const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownButton = document.getElementById('dropdownButton');
         const dropdownMenu = document.getElementById('dropdownMenu');
     
         dropdownButton.addEventListener('click', () => {
@@ -150,43 +168,7 @@
             });
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const desdeInput = document.getElementById('date_filterp_desde');
-            const hastaInput = document.getElementById('date_filterp_hasta');
-        
-            const fetchAndUpdateTable = () => {
-                const desde = desdeInput.value;
-                const hasta = hastaInput.value;
-        
-                // Construye la URL con los parámetros
-                const url = `{% url 'listar_pagos' %}?date_filterp_desde=${desde}&date_filterp_hasta=${hasta}`;
-        
-                // Realiza la solicitud
-                fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Error en la solicitud: ' + response.statusText);
-                        }
-                        return response.text();
-                    })
-                    .then(html => {
-                        // Extrae y reemplaza el contenido de la tabla
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const newContent = doc.querySelector('.container').innerHTML;
-                        document.querySelector('.container').innerHTML = newContent;
-                    })
-                    .catch(error => console.error('Error al actualizar los datos:', error));
-            };
-        
-            // Agrega el evento de cambio a los inputs
-            [desdeInput, hastaInput].forEach(input => {
-                input.addEventListener('change', fetchAndUpdateTable);
-            });
-        });
-        </script>
-        
 </body>
 </html>
+
 {% endblock %}

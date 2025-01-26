@@ -1,7 +1,7 @@
 from django.http import HttpResponse
-from .models import UnidadTransporte, controlUnidades, tarifa ,metodo_pago, pagos, Licencia
+from .models import UnidadTransporte, ControlUnidades, tarifa , Metodo_Pago, Licencia, PagoDiario
 from django.shortcuts import render , redirect , get_object_or_404
-from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoForm, LicenciaForm, editarUnidad, editaControl, EditarPagoForm
+from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoDiarioForm, LicenciaForm, editarUnidad, editaControl
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 import xlsxwriter
@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Max
 from django.contrib.auth.models import User
+from datetime import date
 # Create your views here.
 
 @login_required
@@ -204,7 +205,7 @@ def listar_control_unidades(request):
     if not date_filterp_hasta:
         date_filterp_hasta = today.strftime('%Y-%m-%d')
 
-    controles = controlUnidades.objects.all()
+    controles = ControlUnidades.objects.all()
 
     # Filtros dinámicos
     if numero_control:
@@ -266,7 +267,7 @@ def crear_control_unidad(request):
         try:
             unidad = UnidadTransporte.objects.get(pk=unidad_id)
             ultimo_control = (
-                controlUnidades.objects.filter(unidad=unidad)
+                ControlUnidades.objects.filter(unidad=unidad)
                 .order_by('-fecha_vuelta')
                 .first()
             )
@@ -295,7 +296,7 @@ def obtener_vuelta_actual(request, unidad_id):
         fecha_actual = now().date()
         
         # Contamos el número de registros de la unidad para ese día
-        vuelta_actual = controlUnidades.objects.filter(
+        vuelta_actual = ControlUnidades.objects.filter(
             unidad=unidad,
             fecha_vuelta__date=fecha_actual
         ).count() + 1  # El +1 es para contar la vuelta actual
@@ -308,7 +309,7 @@ def obtener_vuelta_actual(request, unidad_id):
 
 @login_required       
 def editar_control_unidad(request, id_control):
-    control = get_object_or_404(controlUnidades, id_control=id_control)
+    control = get_object_or_404(ControlUnidades, id_control=id_control)
     if request.method == 'POST':
         form = editaControl(request.POST, instance=control)
         if form.is_valid():
@@ -333,7 +334,7 @@ def listar_tarifas(request):
        
 @login_required
 def lista_metodos_pago(request):
-    listar_metodos_pago = metodo_pago.objects.all()
+    listar_metodos_pago = Metodo_Pago.objects.all()
     for metodo in listar_metodos_pago:
         metodo.id_metodo_display = metodo.id_metodo
         metodo.tipo_display = metodo.tipo
@@ -342,10 +343,8 @@ def lista_metodos_pago(request):
 # SECCION PAGOS
 
 def listar_pagos(request):
-    from datetime import date
-
     # Filtros
-    numero_pago = request.GET.get('numero_pago', '').strip()
+    id = request.GET.get('id', '').strip()
     vuelta = request.GET.get('vuelta', '').strip()
     numero_unidad = request.GET.get('numero_unidad', '').strip()
     metodo_pago = request.GET.get('metodo_pago', '').strip()
@@ -355,26 +354,27 @@ def listar_pagos(request):
     usuario = request.GET.get('usuario', '').strip()
 
     # Consulta base
-    pagos_list = pagos.objects.select_related(
-        'id_control__unidad', 
-        'id_metodo', 
-        'usuario'
+    pagos_list = PagoDiario.objects.select_related(
+        'unidad_transporte',  
+        'ruta',  
+        'metodo_pago',  
+        'registrado_por'  
     ).all()
 
     # Aplicar filtros
-    if numero_pago:
-        pagos_list = pagos_list.filter(id_pago__icontains=numero_pago)
+    if id:
+        pagos_list = pagos_list.filter(id__icontains=id)
     if vuelta:
-        pagos_list = pagos_list.filter(id_control__vuelta__icontains=vuelta)
+        pagos_list = pagos_list.filter(numero_vuelta__icontains=vuelta)
     if numero_unidad:
-        pagos_list = pagos_list.filter(id_control__unidad__numero_unidad__icontains=numero_unidad)
+        pagos_list = pagos_list.filter(unidad_transporte__numero_unidad__icontains=numero_unidad)
     if metodo_pago:
-        pagos_list = pagos_list.filter(id_metodo__tipo__icontains=metodo_pago)
+        pagos_list = pagos_list.filter(metodo_pago__tipo__icontains=metodo_pago)
     if detalle:
-        pagos_list = pagos_list.filter(detalle__icontains=detalle)
+        pagos_list = pagos_list.filter(observaciones__icontains=detalle)
     if usuario:
-        pagos_list = pagos_list.filter(usuario__username__icontains=usuario)
-    
+        pagos_list = pagos_list.filter(registrado_por__username__icontains=usuario)
+
     # Filtro por rango de fechas
     if date_filterp_desde and date_filterp_hasta:
         try:
@@ -382,20 +382,22 @@ def listar_pagos(request):
                 fecha_pago__range=[date_filterp_desde, date_filterp_hasta]
             )
         except ValueError:
-            pass  # Manejo de error en caso de fechas no válidas
+            pass
 
-    # Agregar datos relacionados al objeto
+    # Agregar datos relacionados
     for pago in pagos_list:
-        pago.vuelta_display = pago.id_control.vuelta if pago.id_control else "N/A"
-        pago.numero_unidad_display = pago.id_control.unidad.numero_unidad if pago.id_control and pago.id_control.unidad else "N/A"
-        pago.metodo_pago_display = pago.id_metodo.tipo if pago.id_metodo else "N/A"
-        pago.detalle_display = pago.detalle
-        pago.usuario_display = pago.usuario.username if pago.usuario else "N/A"
-        pago.fecha_pago_display = pago.fecha_pago.strftime('%d/%m/%Y') if pago.fecha_pago else "N/A"  # Formato de fecha
+        pago.vuelta_display = pago.numero_vuelta if pago.numero_vuelta else "N/A"
+        pago.numero_unidad_display = pago.unidad_transporte.numero_unidad if pago.unidad_transporte else "N/A"
+        pago.metodo_pago_display = pago.metodo_pago.tipo if pago.metodo_pago else "N/A"
+        pago.detalle_display = pago.observaciones if pago.observaciones else "N/A"
+        pago.usuario_display = pago.registrado_por.username if pago.registrado_por else "N/A"
+        pago.fecha_pago_display = pago.fecha_pago.strftime('%d/%m/%Y') if pago.fecha_pago else "N/A"
+        pago.ruta_display = pago.ruta.nombre if pago.ruta else "N/A"
+        pago.monto_pagado_display = pago.monto_pagado if pago.monto_pagado else "N/A"  # Nueva columna
 
     return render(request, 'pagos/listar_pagos.html', {
         'pagos_list': pagos_list,
-        'numero_pago': numero_pago,
+        'id': id,
         'vuelta': vuelta,
         'numero_unidad': numero_unidad,
         'metodo_pago': metodo_pago,
@@ -407,35 +409,29 @@ def listar_pagos(request):
     })
 
 
+
+
+
+
+
+
+
 @login_required
 def crear_pago(request):
     if request.method == 'POST':
-        form = PagoForm(request.POST)
+        form = PagoDiarioForm(request.POST)
         if form.is_valid():
             pago = form.save(commit=False)
-            pago.usuario = request.user
+            pago.registrado_por = request.user
             pago.save()
             return redirect('listar_pagos')
     else:
-        form = PagoForm()
+        form = PagoDiarioForm()
     return render(request, 'pagos/crear_pagos.html', {'form': form})
 
-@login_required
-def editar_pago(request, id_pago):
-    pago = get_object_or_404(pagos, id_pago=id_pago)
 
-    if request.method == 'POST':
-        form = EditarPagoForm(request.POST, instance=pago)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'El pago se actualizó correctamente.')
-            return redirect('listar_pagos')
-        else:
-            messages.error(request, 'Por favor corrige los errores en el formulario.')
-    else:
-        form = EditarPagoForm(instance=pago)
 
-    return render(request, 'pagos/editar_pago.html', {'form': form, 'pago': pago})
+
 
 # SECCION LICENCIAS
 
