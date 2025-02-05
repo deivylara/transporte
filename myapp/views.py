@@ -359,7 +359,7 @@ def listar_pagos(request):
         'ruta',  
         'metodo_pago',  
         'registrado_por'  
-    ).all()
+    ).all().order_by('-id')
 
     # Aplicar filtros
     if id:

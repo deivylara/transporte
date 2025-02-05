@@ -165,7 +165,7 @@ table.unidad th, table.unidad td {
 
 table.unidad th {
     background-color: #0a1e35; /* Fondo de encabezados */
-    color: white; /* Texto de encabezados */
+    color: black; /* Texto de encabezados */
     font-weight: bold;
 }
 
@@ -174,7 +174,7 @@ table.unidad tr:nth-child(even) {
 }
 
 table.unidad tr:hover {
-    background-color: #b6ceee; /* Fondo al pasar el cursor */
+    background-color: #4b6688; /* Fondo al pasar el cursor */
     color: #000000; /* Cambiar texto al pasar el cursor */
 }
 
@@ -223,7 +223,8 @@ table.unidad tr:hover {
         justify-content: center;
     }
     tr:hover {
-        background-color: #3170c3; /* Fondo al pasar el cursor */
+        background-color: #3170c3; /* Fondo al pasar el cursor */ 
+    }
     }
     .add-button {
         width: 50%;
