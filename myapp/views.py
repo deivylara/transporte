@@ -14,6 +14,13 @@ from django.utils import timezone
 from django.db.models import Max
 from django.contrib.auth.models import User
 from datetime import date
+from django.db.models import Sum
+import matplotlib.pyplot as plt
+from io import BytesIO
+import seaborn as sns
+import pandas as pd
+import base64
+
 # Create your views here.
 
 @login_required
@@ -583,3 +590,125 @@ def hello(request, username):
 def exit(request):
     logout(request)
     return redirect('login')
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import base64
+from io import BytesIO
+from datetime import datetime
+from django.shortcuts import render
+from django.db.models import Sum
+from .models import PagoDiario
+
+def reporte_mensual_control(request):
+    mes_actual = datetime.now().month
+    año_actual = datetime.now().year
+
+    pagos_mes = PagoDiario.objects.filter(fecha_pago__year=año_actual, fecha_pago__month=mes_actual)
+
+    # 📊 Total recaudado en el mes
+    total_recaudado_mes = pagos_mes.aggregate(total=Sum('monto_pagado'))['total'] or 0
+
+    # 📊 Total recaudado por unidad (verificando el campo correcto)
+    total_por_unidad = pagos_mes.values('unidad_transporte__id_transporte', 'unidad_transporte__numero_unidad').annotate(total=Sum('monto_pagado'))
+
+    # 📊 Total recaudado por ruta
+    total_por_ruta = pagos_mes.values('ruta__nombre').annotate(total=Sum('monto_pagado'))
+
+    # 📊 Cantidad de pagos realizados en el mes
+    cantidad_pagos = pagos_mes.count()
+
+    # 📊 Generar gráfico con Matplotlib (Pie Chart)
+    fig, ax = plt.subplots(figsize=(6, 6))
+    if total_por_unidad:
+        unidades = [str(item['unidad_transporte__numero_unidad']) for item in total_por_unidad]
+        montos = [float(item['total']) for item in total_por_unidad]
+
+        # Generar gráfico de torta (pie chart)
+        ax.pie(montos, labels=unidades, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
+
+        ax.set_title("Distribución del Recaudo por Unidad")
+
+        # Guardar gráfico como imagen en base64
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        imagen_grafico = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        buffer.close()
+    else:
+        imagen_grafico = None
+
+    contexto = {
+        "total_recaudado_mes": total_recaudado_mes,
+        "total_por_unidad": total_por_unidad,
+        "total_por_ruta": total_por_ruta,
+        "cantidad_pagos": cantidad_pagos,
+        "grafico_base64": imagen_grafico,
+    }
+
+    return render(request, "control_unidades/reporte_mensual.html", contexto)
+
+
+
+
+
+
+def exportar_excel(request):
+    mes_actual = datetime.now().month
+    año_actual = datetime.now().year
+    pagos_mes = PagoDiario.objects.filter(fecha_pago__year=año_actual, fecha_pago__month=mes_actual)
+
+    # 📄 Crear lista con los datos
+    data = []
+    for pago in pagos_mes:
+        data.append([
+            pago.unidad_transporte.nombre,
+            pago.ruta.nombre,
+            pago.metodo_pago.nombre,
+            float(pago.monto_pagado),
+            pago.fecha_pago.strftime('%Y-%m-%d'),
+            pago.registrado_por.username if pago.registrado_por else "Desconocido",
+            pago.numero_vuelta if pago.numero_vuelta else "-"
+        ])
+
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet("Reporte de Pagos")
+
+    # 🎨 Formato
+    bold = workbook.add_format({'bold': True, 'bg_color': '#D3D3D3', 'border': 1})
+    money_format = workbook.add_format({'num_format': 'S/. 0.00', 'border': 1})
+    border_format = workbook.add_format({'border': 1})
+
+    # 🔹 Encabezados
+    headers = ["Unidad Transporte", "Ruta", "Método de Pago", "Monto Pagado", "Fecha Pago", "Registrado Por", "Número de Vuelta"]
+    for col_num, header in enumerate(headers):
+        worksheet.write(0, col_num, header, bold)
+
+    # 📊 Insertar datos
+    for row_num, row_data in enumerate(data, start=1):
+        for col_num, cell_data in enumerate(row_data):
+            if col_num == 3:
+                worksheet.write(row_num, col_num, cell_data, money_format)
+            else:
+                worksheet.write(row_num, col_num, cell_data, border_format)
+
+    # 🔹 Ajustar columnas
+    worksheet.set_column(0, 0, 20)
+    worksheet.set_column(1, 1, 15)
+    worksheet.set_column(2, 2, 15)
+    worksheet.set_column(3, 3, 12)
+    worksheet.set_column(4, 4, 12)
+    worksheet.set_column(5, 5, 18)
+    worksheet.set_column(6, 6, 12)
+
+    workbook.close()
+    output.seek(0)
+
+    # 📎 Responder con archivo Excel
+    response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="Reporte_Pagos.xlsx"'
+
+    return response
+
