@@ -592,14 +592,10 @@ def exit(request):
     return redirect('login')
 
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-import base64
-from io import BytesIO
-from datetime import datetime
-from django.shortcuts import render
-from django.db.models import Sum
-from .models import PagoDiario
+
+
+
+
 
 def reporte_mensual_control(request):
     mes_actual = datetime.now().month
@@ -610,7 +606,7 @@ def reporte_mensual_control(request):
     # 📊 Total recaudado en el mes
     total_recaudado_mes = pagos_mes.aggregate(total=Sum('monto_pagado'))['total'] or 0
 
-    # 📊 Total recaudado por unidad (verificando el campo correcto)
+    # 📊 Total recaudado por unidad
     total_por_unidad = pagos_mes.values('unidad_transporte__id_transporte', 'unidad_transporte__numero_unidad').annotate(total=Sum('monto_pagado'))
 
     # 📊 Total recaudado por ruta
@@ -619,18 +615,55 @@ def reporte_mensual_control(request):
     # 📊 Cantidad de pagos realizados en el mes
     cantidad_pagos = pagos_mes.count()
 
-    # 📊 Generar gráfico con Matplotlib (Pie Chart)
-    fig, ax = plt.subplots(figsize=(6, 6))
+    # 📈 Ingresos por día (Gráfico de líneas)
+    ingresos_por_dia = pagos_mes.values('fecha_pago').annotate(total=Sum('monto_pagado')).order_by('fecha_pago')
+    fechas = [item['fecha_pago'].strftime('%d-%m') for item in ingresos_por_dia]
+    montos_dia = [float(item['total']) for item in ingresos_por_dia]
+    
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.plot(fechas, montos_dia, marker='o', linestyle='-', color='b')
+    ax.set_title("Ingresos por Día")
+    ax.set_xlabel("Día")
+    ax.set_ylabel("Monto Recaudado")
+    ax.grid(True)
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    buffer.seek(0)
+    grafico_ingresos_dia = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    buffer.close()
+
+    # 📊 Mejor unidad del mes (Tabla con la más rentable)
+    mejor_unidad = max(total_por_unidad, key=lambda x: x['total'], default=None)
+
+    # 📊 Rendimiento por ruta (Gráfico de torta)
+    if total_por_ruta:
+        rutas = [item['ruta__nombre'] for item in total_por_ruta]
+        montos_ruta = [float(item['total']) for item in total_por_ruta]
+        
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.pie(montos_ruta, labels=rutas, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
+        ax.set_title("Rendimiento por Ruta")
+        
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        grafico_rutas = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        buffer.close()
+    else:
+        grafico_rutas = None
+
+    # 👋 Días con menos ingresos (Tabla)
+    dias_menor_ingreso = sorted(ingresos_por_dia, key=lambda x: x['total'])[:5]
+
+    # 📊 Generar gráfico con Matplotlib (Pie Chart) - Distribución por unidad
+    fig, ax = plt.subplots(figsize=(4, 4))
     if total_por_unidad:
         unidades = [str(item['unidad_transporte__numero_unidad']) for item in total_por_unidad]
         montos = [float(item['total']) for item in total_por_unidad]
 
-        # Generar gráfico de torta (pie chart)
         ax.pie(montos, labels=unidades, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
-
         ax.set_title("Distribución del Recaudo por Unidad")
 
-        # Guardar gráfico como imagen en base64
         buffer = BytesIO()
         plt.savefig(buffer, format="png")
         buffer.seek(0)
@@ -645,9 +678,15 @@ def reporte_mensual_control(request):
         "total_por_ruta": total_por_ruta,
         "cantidad_pagos": cantidad_pagos,
         "grafico_base64": imagen_grafico,
+        "grafico_ingresos_dia": grafico_ingresos_dia,
+        "mejor_unidad": mejor_unidad,
+        "grafico_rutas": grafico_rutas,
+        "dias_menor_ingreso": dias_menor_ingreso,
     }
 
-    return render(request, "control_unidades/reporte_mensual.html", contexto)
+    return render(request, "pagos/reporte_mensual.html", contexto)
+
+
 
 
 
