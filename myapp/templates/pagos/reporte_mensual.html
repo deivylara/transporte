@@ -1,0 +1,113 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Mensual</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .btn { padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .btn:hover { background-color: #0056b3; }
+        .chart-container { text-align: center; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <h2>Reporte Mensual</h2>
+    <p>Total recaudado este mes: <strong>S/. {{ total_recaudado_mes }}</strong></p>
+    <p>Cantidad de pagos realizados: <strong>{{ cantidad_pagos }}</strong></p>
+
+    <h3>Total recaudado por Unidad</h3>
+    <table>
+        <tr>
+            <th>Número de Unidad</th>
+            <th>Total Recaudado</th>
+        </tr>
+        {% for item in total_por_unidad %}
+        <tr>
+            <td>{{ item.unidad_transporte__id_transporte }}</td> 
+            <td>S/. {{ item.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- 📊 Gráfico de Distribución por Unidad -->
+    <h3>Distribución del Recaudo por Unidad</h3>
+    <div class="chart-container">
+        {% if grafico_base64 %}
+            <img src="data:image/png;base64,{{ grafico_base64 }}" alt="Gráfico de Distribución por Unidad">
+        {% else %}
+            <p>No hay datos suficientes para generar el gráfico.</p>
+        {% endif %}
+    </div>
+
+    <h3>Total recaudado por Ruta</h3>
+    <table>
+        <tr><th>Ruta</th><th>Monto</th></tr>
+        {% for ruta in total_por_ruta %}
+        <tr>
+            <td>{{ ruta.ruta__nombre }}</td>
+            <td>S/. {{ ruta.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <a href="{% url 'exportar_excel' %}" class="btn">📥 Exportar a Excel</a>
+
+    <!-- 📈 Gráfico de ingresos por día -->
+    <h3>Ingresos por Día</h3>
+    <div class="chart-container">
+        {% if grafico_ingresos_dia %}
+            <img src="data:image/png;base64,{{ grafico_ingresos_dia }}" alt="Gráfico de ingresos por día">
+        {% else %}
+            <p>No hay datos suficientes para generar el gráfico.</p>
+        {% endif %}
+    </div>
+
+    <!-- 📊 Tabla de la mejor unidad del mes -->
+    <h3>Mejor Unidad del Mes</h3>
+    <table>
+        <tr><th>Unidad</th><th>Total Recaudado</th></tr>
+        {% if mejor_unidad %}
+        <tr>
+            <td>{{ mejor_unidad.unidad_transporte__numero_unidad }}</td>
+            <td>S/. {{ mejor_unidad.total }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="2">No hay suficientes datos.</td></tr>
+        {% endif %}
+    </table>
+
+    <!-- 📊 Gráfico de rendimiento por ruta -->
+    <h3>Rendimiento por Ruta</h3>
+    <div class="chart-container">
+        {% if grafico_rutas %}
+            <img src="data:image/png;base64,{{ grafico_rutas }}" alt="Gráfico de rendimiento por ruta">
+        {% else %}
+            <p>No hay datos suficientes para generar el gráfico.</p>
+        {% endif %}
+    </div>
+
+    <!-- 📋 Tabla de días con menos ingresos -->
+    <h3>Días con Menos Ingresos</h3>
+    <table>
+        <tr><th>Fecha</th><th>Ingreso (S/.)</th></tr>
+        {% for dia in dias_menor_ingreso %}
+        <tr>
+            <td>{{ dia.fecha_pago }}</td>
+            <td>S/. {{ dia.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>
+{% endblock %}
+
