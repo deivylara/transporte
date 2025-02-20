@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from .models import UnidadTransporte, ControlUnidades, tarifa , Metodo_Pago, Licencia, PagoDiario
 from django.shortcuts import render , redirect , get_object_or_404
 from .forms import UnidadTransporteForm, ControlUnidadesForm, PagoDiarioForm, LicenciaForm, editarUnidad, editaControl
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import logout
 import xlsxwriter
 from django.contrib import messages
@@ -32,6 +32,22 @@ def transporte(request):
     return render(request, 'transporte.html')
 
 @login_required
+def redirigir_usuario(request):
+    if request.user.groups.filter(name='Administrador').exists():
+        return redirect('index')
+    elif request.user.groups.filter(name='operadores').exists():
+        return redirect('transporte')
+    else:
+        return redirect('hello')
+    
+def es_administrador(user):
+    return user.groups.filter(name='Administrador').exists()
+    
+    
+    
+    
+
+@login_required
 def crear_unidad(request):
     if request.method == 'POST':
         form = UnidadTransporteForm(request.POST)
@@ -45,6 +61,7 @@ def crear_unidad(request):
 #SECCION UNIDADES DE TRANSPORTE
 
 @login_required
+@user_passes_test(es_administrador, login_url='inicio')
 def listar_unidades(request):
     numero_unidad = request.GET.get('numero_unidad', '').strip()
     socio = request.GET.get('socio', '').strip()
@@ -295,7 +312,7 @@ def crear_control_unidad(request):
 
 
 
-
+@login_required
 def obtener_vuelta_actual(request, unidad_id):
     try:
         # Usamos el campo 'id_transporte' para obtener la unidad
@@ -348,7 +365,7 @@ def lista_metodos_pago(request):
     return render(request, 'RegistrosCertificado/listar_metodos_pago.html', {'listar_metodos_pago':listar_metodos_pago})
 
 # SECCION PAGOS
-
+@login_required
 def listar_pagos(request):
     # Filtros
     id = request.GET.get('id', '').strip()
@@ -476,7 +493,7 @@ def listar_licencias(request):
         'tipo_licencia': tipo_licencia,
         'date_filterp': date_filterp,
     })
-    
+@login_required   
 def exportar_licencias_excel(request):
     numero_licencia = request.GET.get('numero_licencia', '').strip()
     nombre = request.GET.get('nombre', '').strip()
@@ -596,7 +613,7 @@ def exit(request):
 
 
 
-
+@login_required
 def reporte_mensual_control(request):
     mes_actual = datetime.now().month
     año_actual = datetime.now().year
@@ -620,7 +637,7 @@ def reporte_mensual_control(request):
     fechas = [item['fecha_pago'].strftime('%d-%m') for item in ingresos_por_dia]
     montos_dia = [float(item['total']) for item in ingresos_por_dia]
     
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(4, 4))
     ax.plot(fechas, montos_dia, marker='o', linestyle='-', color='b')
     ax.set_title("Ingresos por Día")
     ax.set_xlabel("Día")
@@ -640,7 +657,7 @@ def reporte_mensual_control(request):
         rutas = [item['ruta__nombre'] for item in total_por_ruta]
         montos_ruta = [float(item['total']) for item in total_por_ruta]
         
-        fig, ax = plt.subplots(figsize=(6, 4))
+        fig, ax = plt.subplots(figsize=(4, 4))
         ax.pie(montos_ruta, labels=rutas, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
         ax.set_title("Rendimiento por Ruta")
         
@@ -692,7 +709,7 @@ def reporte_mensual_control(request):
 
 
 
-
+@login_required
 def exportar_excel(request):
     mes_actual = datetime.now().month
     año_actual = datetime.now().year

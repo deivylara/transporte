@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/get_vuelta/<int:unidad_id>/', views.obtener_vuelta_actual, name='get_vuelta_actual'),
     path('reporte-mensual-control/', views.reporte_mensual_control, name='reporte_mensual_control'),
     path('exportar-excel/', views.exportar_excel, name='exportar_excel'),
+    path('redirigir/', views.redirigir_usuario, name='redirigir_usuario'),
 ]

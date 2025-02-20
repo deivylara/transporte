@@ -20,13 +20,18 @@
         <!-- Menú -->
         <ul class="menu">
             <li><a href="{% url 'index' %}">INICIO</a></li>
-            <li><a href="{% url 'listar_unidades' %}">UNIDADES</a></li>
-            <li><a href="{% url 'listar_licencias' %}">LICENCIAS</a></li>
-            <li><a href="{% url 'listar_control_unidades' %}">CONTROL</a></li>
-            <li><a href="{% url 'listar_pagos' %}">PAGOS</a></li>
-            <li><a href="{% url 'reporte_mensual_control' %}">REPORTES</a></li>
-
-
+        
+            {% if 'Administrador' in grupos_usuario %}
+                <li><a href="{% url 'listar_unidades' %}">UNIDADES</a></li>
+                <li><a href="{% url 'listar_licencias' %}">LICENCIAS</a></li>
+                <li><a href="{% url 'listar_control_unidades' %}">CONTROL</a></li>
+                <li><a href="{% url 'listar_pagos' %}">PAGOS</a></li>
+                <li><a href="{% url 'reporte_mensual_control' %}">REPORTES</a></li>
+            {% elif 'operadores' in grupos_usuario %}
+                <li><a href="{% url 'listar_control_unidades' %}">CONTROL</a></li>
+                <li><a href="{% url 'listar_pagos' %}">PAGOS</a></li>
+            {% endif %}
+        
             <li><a href="{% url 'exit' %}">SALIR</a></li>
         </ul>
     </nav>

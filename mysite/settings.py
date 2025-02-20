@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myapp.context_processors.agregar_grupos_usuario',
             ],
         },
     },
@@ -139,4 +140,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #.. VARIABLE DE REDIRECCION DE LOGOUT
 LOGOUT_REDIRECT_URL = 'login'
-LOGIN_REDIRECT_URL = '/'
+#LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'redirigir_usuario'
