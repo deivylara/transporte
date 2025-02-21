@@ -21,7 +21,7 @@
         <ul class="menu">
             <li><a href="{% url 'index' %}">INICIO</a></li>
         
-            {% if 'Administrador' in grupos_usuario %}
+            {% if 'administrador' in grupos_usuario %}
                 <li><a href="{% url 'listar_unidades' %}">UNIDADES</a></li>
                 <li><a href="{% url 'listar_licencias' %}">LICENCIAS</a></li>
                 <li><a href="{% url 'listar_control_unidades' %}">CONTROL</a></li>

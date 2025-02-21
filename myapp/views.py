@@ -33,7 +33,7 @@ def transporte(request):
 
 @login_required
 def redirigir_usuario(request):
-    if request.user.groups.filter(name='Administrador').exists():
+    if request.user.groups.filter(name='administrador').exists():
         return redirect('index')
     elif request.user.groups.filter(name='operadores').exists():
         return redirect('transporte')
@@ -41,7 +41,7 @@ def redirigir_usuario(request):
         return redirect('hello')
     
 def es_administrador(user):
-    return user.groups.filter(name='Administrador').exists()
+    return user.groups.filter(name='administrador').exists()
     
     
     
