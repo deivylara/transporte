@@ -11,7 +11,7 @@
         body { font-family: Arial, sans-serif; margin: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        th { background-color: #f2f2f2; }
+        th { background-color: #34495e; }
         .btn { padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
         .btn:hover { background-color: #0056b3; }
         .chart-container { text-align: center; margin: 20px 0; }
@@ -35,7 +35,39 @@
             <td>S/. {{ item.total }}</td>
         </tr>
         {% endfor %}
+        
     </table>
+    <h2>Método de pago más usado:</h2>
+     {% if metodo_mas_usado %}
+    <p><strong>{{ metodo_mas_usado.metodo_pago__tipo }}</strong> con {{ metodo_mas_usado.cantidad }} pagos.</p>
+     {% else %}
+    <p>No hay datos disponibles.</p>
+     {% endif %}
+
+    <h2>Total recaudado por método de pago:</h2>
+    <table>
+    <tr>
+        <th>Método</th>
+        <th>Total Recaudado</th>
+    </tr>
+    {% for metodo in total_por_metodo %}
+    <tr>
+        <td>{{ metodo.metodo_pago__tipo }}</td>
+        <td>S/ {{ metodo.total }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+    
+    <h2>Distribución de pagos por método:</h2>
+    <div class="chart-container">
+       {% if grafico_base64 %}
+            <img src="data:image/png;base64,{{ grafico_metodos_pago }}" alt="Gráfico Métodos de Pago">
+       {% else %}
+          <p>No hay datos suficientes para generar el gráfico.</p>
+       {% endif %}
+    </div>
+    
 
     <!-- 📊 Gráfico de Distribución por Unidad -->
     <h3>Distribución del Recaudo por Unidad</h3>

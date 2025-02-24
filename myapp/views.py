@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.db.models import Max
 from django.contrib.auth.models import User
 from datetime import date
-from django.db.models import Sum
+from django.db.models import Count, Sum
 import matplotlib.pyplot as plt
 from io import BytesIO
 import seaborn as sns
@@ -622,7 +622,30 @@ def reporte_mensual_control(request):
 
     # 📊 Total recaudado en el mes
     total_recaudado_mes = pagos_mes.aggregate(total=Sum('monto_pagado'))['total'] or 0
+    
+    # 📊 Total recaudado por método de pago
+    total_por_metodo = pagos_mes.values('metodo_pago__tipo').annotate(total=Sum('monto_pagado')).order_by('-total')
 
+    # 📊 Método de pago más usado (por cantidad de pagos)
+    metodo_mas_usado = pagos_mes.values('metodo_pago__tipo').annotate(cantidad=Count('id')).order_by('-cantidad').first()
+
+    # 📊 Gráfico de métodos de pago (Pie Chart)
+    if total_por_metodo:
+        metodos = [item['metodo_pago__tipo'] for item in total_por_metodo]
+        montos_metodo = [float(item['total']) for item in total_por_metodo]
+        
+        fig, ax = plt.subplots(figsize=(3, 3))
+        ax.pie(montos_metodo, labels=metodos, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
+        ax.set_title("Recaudación por Método de Pago")
+
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        grafico_metodos_pago = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        buffer.close()
+    else:
+        grafico_metodos_pago = None
+        
     # 📊 Total recaudado por unidad
     total_por_unidad = pagos_mes.values('unidad_transporte__id_transporte', 'unidad_transporte__numero_unidad').annotate(total=Sum('monto_pagado'))
 
@@ -631,13 +654,20 @@ def reporte_mensual_control(request):
 
     # 📊 Cantidad de pagos realizados en el mes
     cantidad_pagos = pagos_mes.count()
+    total_por_metodo = pagos_mes.values('metodo_pago__tipo').annotate(
+        total=Sum('monto_pagado'),
+        cantidad=Count('id')
+    ).order_by('-total')  # Ordenado de mayor a menor recaudación
+
+    # 📊 Método de pago más usado (el primero en la lista ordenada)
+    metodo_mas_usado = total_por_metodo[0] if total_por_metodo else None
 
     # 📈 Ingresos por día (Gráfico de líneas)
     ingresos_por_dia = pagos_mes.values('fecha_pago').annotate(total=Sum('monto_pagado')).order_by('fecha_pago')
     fechas = [item['fecha_pago'].strftime('%d-%m') for item in ingresos_por_dia]
     montos_dia = [float(item['total']) for item in ingresos_por_dia]
     
-    fig, ax = plt.subplots(figsize=(4, 4))
+    fig, ax = plt.subplots(figsize=(3, 3))
     ax.plot(fechas, montos_dia, marker='o', linestyle='-', color='b')
     ax.set_title("Ingresos por Día")
     ax.set_xlabel("Día")
@@ -657,7 +687,7 @@ def reporte_mensual_control(request):
         rutas = [item['ruta__nombre'] for item in total_por_ruta]
         montos_ruta = [float(item['total']) for item in total_por_ruta]
         
-        fig, ax = plt.subplots(figsize=(4, 4))
+        fig, ax = plt.subplots(figsize=(3, 3))
         ax.pie(montos_ruta, labels=rutas, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
         ax.set_title("Rendimiento por Ruta")
         
@@ -673,7 +703,7 @@ def reporte_mensual_control(request):
     dias_menor_ingreso = sorted(ingresos_por_dia, key=lambda x: x['total'])[:5]
 
     # 📊 Generar gráfico con Matplotlib (Pie Chart) - Distribución por unidad
-    fig, ax = plt.subplots(figsize=(4, 4))
+    fig, ax = plt.subplots(figsize=(3, 3))
     if total_por_unidad:
         unidades = [str(item['unidad_transporte__numero_unidad']) for item in total_por_unidad]
         montos = [float(item['total']) for item in total_por_unidad]
@@ -699,6 +729,9 @@ def reporte_mensual_control(request):
         "mejor_unidad": mejor_unidad,
         "grafico_rutas": grafico_rutas,
         "dias_menor_ingreso": dias_menor_ingreso,
+        "total_por_metodo": total_por_metodo,
+        "metodo_mas_usado": metodo_mas_usado,
+        "grafico_metodos_pago": grafico_metodos_pago,
     }
 
     return render(request, "pagos/reporte_mensual.html", contexto)
