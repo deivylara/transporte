@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 import xlsxwriter
 from django.contrib import messages
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils.timezone import now
 from django.http import JsonResponse
 from django.utils import timezone
@@ -613,125 +613,135 @@ def exit(request):
 
 
 
+
+
+def generar_grafico_pie(datos, etiquetas, titulo):
+    """Genera gráficos de torta en base64."""
+    if not datos:
+        return None
+
+    fig, ax = plt.subplots(figsize=(3, 3))
+    ax.pie(datos, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("dark"), textprops={'color': 'white'})
+    
+    
+    ax.set_title(titulo, color= "white")
+    
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png", transparent=True )
+    buffer.seek(0)
+    imagen_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    buffer.close()
+    return imagen_base64
+
+
+
+
 @login_required
 def reporte_mensual_control(request):
-    mes_actual = datetime.now().month
-    año_actual = datetime.now().year
+    ahora = datetime.now()
+    mes_actual, año_actual = ahora.month, ahora.year
 
-    pagos_mes = PagoDiario.objects.filter(fecha_pago__year=año_actual, fecha_pago__month=mes_actual)
+    pagos_mes = PagoDiario.objects.filter(
+        fecha_pago__year=año_actual, fecha_pago__month=mes_actual
+    ).select_related("metodo_pago", "unidad_transporte", "ruta")
 
-    # 📊 Total recaudado en el mes
-    total_recaudado_mes = pagos_mes.aggregate(total=Sum('monto_pagado'))['total'] or 0
-    
-    # 📊 Total recaudado por método de pago
-    total_por_metodo = pagos_mes.values('metodo_pago__tipo').annotate(total=Sum('monto_pagado')).order_by('-total')
+    total_recaudado_mes = pagos_mes.aggregate(total=Sum("monto_pagado"))["total"] or 0
+    total_por_metodo = pagos_mes.values("metodo_pago__tipo").annotate(
+        total=Sum("monto_pagado"), cantidad=Count("id")
+    ).order_by("-total")
 
-    # 📊 Método de pago más usado (por cantidad de pagos)
-    metodo_mas_usado = pagos_mes.values('metodo_pago__tipo').annotate(cantidad=Count('id')).order_by('-cantidad').first()
-
-    # 📊 Gráfico de métodos de pago (Pie Chart)
-    if total_por_metodo:
-        metodos = [item['metodo_pago__tipo'] for item in total_por_metodo]
-        montos_metodo = [float(item['total']) for item in total_por_metodo]
-        
-        fig, ax = plt.subplots(figsize=(3, 3))
-        ax.pie(montos_metodo, labels=metodos, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
-        ax.set_title("Recaudación por Método de Pago")
-
-        buffer = BytesIO()
-        plt.savefig(buffer, format="png")
-        buffer.seek(0)
-        grafico_metodos_pago = base64.b64encode(buffer.getvalue()).decode("utf-8")
-        buffer.close()
-    else:
-        grafico_metodos_pago = None
-        
-    # 📊 Total recaudado por unidad
-    total_por_unidad = pagos_mes.values('unidad_transporte__id_transporte', 'unidad_transporte__numero_unidad').annotate(total=Sum('monto_pagado'))
-
-    # 📊 Total recaudado por ruta
-    total_por_ruta = pagos_mes.values('ruta__nombre').annotate(total=Sum('monto_pagado'))
-
-    # 📊 Cantidad de pagos realizados en el mes
-    cantidad_pagos = pagos_mes.count()
-    total_por_metodo = pagos_mes.values('metodo_pago__tipo').annotate(
-        total=Sum('monto_pagado'),
-        cantidad=Count('id')
-    ).order_by('-total')  # Ordenado de mayor a menor recaudación
-
-    # 📊 Método de pago más usado (el primero en la lista ordenada)
     metodo_mas_usado = total_por_metodo[0] if total_por_metodo else None
 
-    # 📈 Ingresos por día (Gráfico de líneas)
-    ingresos_por_dia = pagos_mes.values('fecha_pago').annotate(total=Sum('monto_pagado')).order_by('fecha_pago')
-    fechas = [item['fecha_pago'].strftime('%d-%m') for item in ingresos_por_dia]
-    montos_dia = [float(item['total']) for item in ingresos_por_dia]
-    
-    fig, ax = plt.subplots(figsize=(3, 3))
-    ax.plot(fechas, montos_dia, marker='o', linestyle='-', color='b')
-    ax.set_title("Ingresos por Día")
-    ax.set_xlabel("Día")
+    total_por_unidad = pagos_mes.values("unidad_transporte__numero_unidad").annotate(
+        total=Sum("monto_pagado")
+    )
+    mejor_unidad = max(total_por_unidad, key=lambda x: x["total"], default=None)
+
+    total_por_ruta = pagos_mes.values("ruta__nombre").annotate(
+        total=Sum("monto_pagado")
+    )
+
+    ingresos_por_dia = pagos_mes.values("fecha_pago").annotate(
+        total=Sum("monto_pagado")
+    ).order_by("fecha_pago")
+
+    fechas = [item["fecha_pago"].strftime("%d-%m") for item in ingresos_por_dia]
+    montos_dia = [float(item["total"]) for item in ingresos_por_dia]
+
+    # ✅ CORRECCIÓN: Definir `dias_menor_ingreso` correctamente
+    dias_menor_ingreso = sorted(ingresos_por_dia, key=lambda x: x["total"])[:5] if ingresos_por_dia else []
+
+    ig, ax = plt.subplots(figsize=(6, 3))
+    ax.plot(fechas, montos_dia, marker="o", linestyle="-", color="b", linewidth=2)
+    ax.set_title("Ingresos por Día", fontsize=12)
+    ax.set_xlabel("Día del Mes")
     ax.set_ylabel("Monto Recaudado")
-    ax.grid(True)
+    ax.tick_params(axis="x", rotation=45)
+    ax.grid(True, linestyle="--", alpha=0.6)
+
     buffer = BytesIO()
+    plt.tight_layout()
     plt.savefig(buffer, format="png")
     buffer.seek(0)
     grafico_ingresos_dia = base64.b64encode(buffer.getvalue()).decode("utf-8")
     buffer.close()
 
-    # 📊 Mejor unidad del mes (Tabla con la más rentable)
-    mejor_unidad = max(total_por_unidad, key=lambda x: x['total'], default=None)
+    unidades = UnidadTransporte.objects.values("id_transporte", "numero_unidad")
 
-    # 📊 Rendimiento por ruta (Gráfico de torta)
-    if total_por_ruta:
-        rutas = [item['ruta__nombre'] for item in total_por_ruta]
-        montos_ruta = [float(item['total']) for item in total_por_ruta]
-        
-        fig, ax = plt.subplots(figsize=(3, 3))
-        ax.pie(montos_ruta, labels=rutas, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
-        ax.set_title("Rendimiento por Ruta")
-        
-        buffer = BytesIO()
-        plt.savefig(buffer, format="png")
-        buffer.seek(0)
-        grafico_rutas = base64.b64encode(buffer.getvalue()).decode("utf-8")
-        buffer.close()
-    else:
-        grafico_rutas = None
+    primer_dia_mes = ahora.replace(day=1)
+    ultimo_dia_mes = (
+        (primer_dia_mes + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    )
 
-    # 👋 Días con menos ingresos (Tabla)
-    dias_menor_ingreso = sorted(ingresos_por_dia, key=lambda x: x['total'])[:5]
+    faltas_por_unidad = {
+        unidad["id_transporte"]: {
+            "numero_unidad": unidad["numero_unidad"],
+            "faltas": 0,
+        }
+        for unidad in unidades
+    }
 
-    # 📊 Generar gráfico con Matplotlib (Pie Chart) - Distribución por unidad
-    fig, ax = plt.subplots(figsize=(3, 3))
-    if total_por_unidad:
-        unidades = [str(item['unidad_transporte__numero_unidad']) for item in total_por_unidad]
-        montos = [float(item['total']) for item in total_por_unidad]
+    pagos_realizados = pagos_mes.values("unidad_transporte__id_transporte", "fecha_pago").distinct()
 
-        ax.pie(montos, labels=unidades, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("pastel"))
-        ax.set_title("Distribución del Recaudo por Unidad")
+    for unidad in unidades:
+        id_unidad = unidad["id_transporte"]
+        dias_pagados = {
+            pago["fecha_pago"] for pago in pagos_realizados if pago["unidad_transporte__id_transporte"] == id_unidad
+        }
 
-        buffer = BytesIO()
-        plt.savefig(buffer, format="png")
-        buffer.seek(0)
-        imagen_grafico = base64.b64encode(buffer.getvalue()).decode("utf-8")
-        buffer.close()
-    else:
-        imagen_grafico = None
+        dias_sin_pago = [
+            dia
+            for dia in (primer_dia_mes + timedelta(days=i) for i in range((ultimo_dia_mes - primer_dia_mes).days + 1))
+            if dia.date() not in dias_pagados
+        ]
+        faltas_por_unidad[id_unidad]["faltas"] = len(dias_sin_pago)
+
+    unidades_mas_faltas = sorted(
+        faltas_por_unidad.values(), key=lambda x: x["faltas"], reverse=True
+    )[:5]
 
     contexto = {
         "total_recaudado_mes": total_recaudado_mes,
         "total_por_unidad": total_por_unidad,
         "total_por_ruta": total_por_ruta,
-        "cantidad_pagos": cantidad_pagos,
-        "grafico_base64": imagen_grafico,
-        "grafico_ingresos_dia": grafico_ingresos_dia,
+        "cantidad_pagos": pagos_mes.count(),
+        "grafico_base64": grafico_ingresos_dia,
         "mejor_unidad": mejor_unidad,
-        "grafico_rutas": grafico_rutas,
+        "grafico_rutas": generar_grafico_pie(
+            datos=[float(item["total"]) for item in total_por_ruta],
+            etiquetas=[item["ruta__nombre"] for item in total_por_ruta],
+            titulo="Rendimiento por Ruta",
+        ),
         "dias_menor_ingreso": dias_menor_ingreso,
         "total_por_metodo": total_por_metodo,
         "metodo_mas_usado": metodo_mas_usado,
-        "grafico_metodos_pago": grafico_metodos_pago,
+        "grafico_metodos_pago": generar_grafico_pie(
+            datos=[float(item["total"]) for item in total_por_metodo],
+            etiquetas=[item["metodo_pago__tipo"] for item in total_por_metodo],
+            titulo="Recaudación por Método de Pago",
+        ),
+        "unidades_mas_faltas": unidades_mas_faltas,
     }
 
     return render(request, "pagos/reporte_mensual.html", contexto)
@@ -742,62 +752,36 @@ def reporte_mensual_control(request):
 
 
 
+
+
 @login_required
 def exportar_excel(request):
-    mes_actual = datetime.now().month
-    año_actual = datetime.now().year
-    pagos_mes = PagoDiario.objects.filter(fecha_pago__year=año_actual, fecha_pago__month=mes_actual)
+    ahora = datetime.now()
+    mes_actual, año_actual = ahora.month, ahora.year
+    pagos_mes = PagoDiario.objects.filter(
+        fecha_pago__year=año_actual, fecha_pago__month=mes_actual
+    ).select_related("metodo_pago", "unidad_transporte", "ruta")
 
-    # 📄 Crear lista con los datos
-    data = []
-    for pago in pagos_mes:
-        data.append([
-            pago.unidad_transporte.nombre,
-            pago.ruta.nombre,
-            pago.metodo_pago.nombre,
-            float(pago.monto_pagado),
-            pago.fecha_pago.strftime('%Y-%m-%d'),
-            pago.registrado_por.username if pago.registrado_por else "Desconocido",
-            pago.numero_vuelta if pago.numero_vuelta else "-"
-        ])
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    nombre_archivo = f"reporte_mensual_{mes_actual}_{año_actual}.xlsx"
+    response["Content-Disposition"] = f'attachment; filename="{nombre_archivo}"'
 
-    output = BytesIO()
-    workbook = xlsxwriter.Workbook(output)
-    worksheet = workbook.add_worksheet("Reporte de Pagos")
+    workbook = xlsxwriter.Workbook(response, {'in_memory': True})
+    worksheet = workbook.add_worksheet("Reporte Mensual")
 
-    # 🎨 Formato
-    bold = workbook.add_format({'bold': True, 'bg_color': '#D3D3D3', 'border': 1})
-    money_format = workbook.add_format({'num_format': 'S/. 0.00', 'border': 1})
-    border_format = workbook.add_format({'border': 1})
+    bold_format = workbook.add_format({'bold': True, 'align': 'center'})
+    money_format = workbook.add_format({'num_format': '0.00'})
 
-    # 🔹 Encabezados
-    headers = ["Unidad Transporte", "Ruta", "Método de Pago", "Monto Pagado", "Fecha Pago", "Registrado Por", "Número de Vuelta"]
-    for col_num, header in enumerate(headers):
-        worksheet.write(0, col_num, header, bold)
+    encabezados = ["Fecha de Pago", "Unidad", "Ruta", "Método de Pago", "Monto Pagado"]
+    for col_num, encabezado in enumerate(encabezados):
+        worksheet.write(0, col_num, encabezado, bold_format)
 
-    # 📊 Insertar datos
-    for row_num, row_data in enumerate(data, start=1):
-        for col_num, cell_data in enumerate(row_data):
-            if col_num == 3:
-                worksheet.write(row_num, col_num, cell_data, money_format)
-            else:
-                worksheet.write(row_num, col_num, cell_data, border_format)
-
-    # 🔹 Ajustar columnas
-    worksheet.set_column(0, 0, 20)
-    worksheet.set_column(1, 1, 15)
-    worksheet.set_column(2, 2, 15)
-    worksheet.set_column(3, 3, 12)
-    worksheet.set_column(4, 4, 12)
-    worksheet.set_column(5, 5, 18)
-    worksheet.set_column(6, 6, 12)
+    for fila, pago in enumerate(pagos_mes, start=1):
+        worksheet.write(fila, 0, pago.fecha_pago.strftime("%Y-%m-%d"))
+        worksheet.write(fila, 1, pago.unidad_transporte.numero_unidad)
+        worksheet.write(fila, 2, pago.ruta.nombre)
+        worksheet.write(fila, 3, pago.metodo_pago.tipo)
+        worksheet.write(fila, 4, pago.monto_pagado, money_format)
 
     workbook.close()
-    output.seek(0)
-
-    # 📎 Responder con archivo Excel
-    response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="Reporte_Pagos.xlsx"'
-
     return response
-
