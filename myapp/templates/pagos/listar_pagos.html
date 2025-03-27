@@ -27,7 +27,8 @@
         <label for="date_filterp_hasta">Hasta:</label>
         <input type="date" id="date_filterp_hasta" name="date_filterp_hasta" value="{{ date_filterp_hasta|default:today }}">
     </form>
-    
+   
+
     <div class="filter-container">
         <select id="filter-select">
             <option value="">Seleccione un filtro</option>
@@ -42,6 +43,7 @@
              <!-- Agregado filtro para ruta -->
         </select>
     </div>
+    
     <div class="filters">
         <form method="GET" action="{% url 'listar_pagos' %}" class="search-form">
             <input type="text" name="vuelta" id="vuelta" placeholder="VUELTA" value="{{ vuelta }}" class="filter-input" style="display: none;">
@@ -133,8 +135,30 @@
                     </tr>
                 {% endfor %}
             </tbody>
+            
         </table>
+
     </div>
+    <h2>Total Recaudado</h2>
+    <table class="totales">
+    <thead>
+        <tr>
+            <th>Método de Pago</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for metodo in total_por_metodo %}
+        <tr>
+            <td>{{ metodo.metodo_pago__tipo }}</td>
+            <td>S/. {{ metodo.total|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">No hay datos disponibles.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
     <script>
         const dropdownButton = document.getElementById('dropdownButton');
         const dropdownMenu = document.getElementById('dropdownMenu');

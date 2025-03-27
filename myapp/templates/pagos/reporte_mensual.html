@@ -14,7 +14,19 @@
         th { background-color: #34495e; }
         .btn { padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
         .btn:hover { background-color: #0056b3; }
-        .chart-container { text-align: center; margin: 20px 0; }
+        .chart-container {
+              text-align: center;
+              margin: 20px 0;}
+
+        .chart-grafica {
+              text-align: center;
+              margin: 20px 0;}
+
+        .chart-grafica img {
+             max-width: 90%;  /* Ajusta el tamaño de la imagen */
+             height: auto;  /* Mantiene la proporción */
+             width: 98%;  /* Reduce el tamaño al 80% del contenedor */
+            }
     </style>
 </head>
 <body>
@@ -71,7 +83,7 @@
 
     <!-- 📊 Gráfico de Distribución por Unidad -->
     <h3>Distribución del Recaudo por Unidad</h3>
-    <div class="chart-container">
+    <div class="chart-grafica">
         {% if grafico_base64 %}
             <img src="data:image/png;base64,{{ grafico_base64 }}" alt="Gráfico de Distribución por Unidad">
         {% else %}

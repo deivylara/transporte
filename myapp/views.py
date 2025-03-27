@@ -20,7 +20,7 @@ from io import BytesIO
 import seaborn as sns
 import pandas as pd
 import base64
-
+import matplotlib.ticker as mticker 
 # Create your views here.
 
 @login_required
@@ -418,7 +418,13 @@ def listar_pagos(request):
         pago.fecha_pago_display = pago.fecha_pago.strftime('%d/%m/%Y') if pago.fecha_pago else "N/A"
         pago.ruta_display = pago.ruta.nombre if pago.ruta else "N/A"
         pago.monto_pagado_display = pago.monto_pagado if pago.monto_pagado else "N/A"  # Nueva columna
+    
+    # Calcular total recaudado por método de pago
+    total_por_metodo = pagos_list.values('metodo_pago__tipo').annotate(total=Sum('monto_pagado'))
 
+    # Calcular total general recaudado
+    total_general = pagos_list.aggregate(Sum('monto_pagado'))['monto_pagado__sum'] or 0
+    
     return render(request, 'pagos/listar_pagos.html', {
         'pagos_list': pagos_list,
         'id': id,
@@ -430,6 +436,8 @@ def listar_pagos(request):
         'detalle': detalle,
         'usuario': usuario,
         'today': date.today().strftime('%Y-%m-%d'),
+        'total_por_metodo': total_por_metodo,
+        'total_general': total_general,
     })
 
 
@@ -608,31 +616,42 @@ def exit(request):
     logout(request)
     return redirect('login')
 
-
-
-
-
-
-
-
-def generar_grafico_pie(datos, etiquetas, titulo):
-    """Genera gráficos de torta en base64."""
+def generar_grafico_dona(datos, etiquetas, titulo):
+    """Genera gráficos de dona con colores fluorescentes en base64."""
     if not datos:
         return None
 
     fig, ax = plt.subplots(figsize=(3, 3))
-    ax.pie(datos, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors=sns.color_palette("dark"), textprops={'color': 'white'})
-    
-    
-    ax.set_title(titulo, color= "white")
-    
+
+    # Paleta fluorescente
+    colors = ["#4200FA","#F50087","#9300FA", "#F50087", "#E000F5", "#4200FA", "#4200FA", "#F50300", "#E645F5"]
+
+    wedges, texts, autotexts = ax.pie(
+        datos, labels=etiquetas, autopct='%1.1f%%', startangle=90, 
+        colors=colors, textprops={'color': 'white'},
+        wedgeprops={'edgecolor': 'black'}
+    )
+
+    # Agregar círculo al centro para hacer la dona
+    centro = plt.Circle((0, 0), 0.3, fc='#0a1e35')  
+    ax.add_patch(centro)
+
+    ax.set_title(titulo, color="white")
 
     buffer = BytesIO()
-    plt.savefig(buffer, format="png", transparent=True )
+    plt.savefig(buffer, format="png", transparent=True)
     buffer.seek(0)
     imagen_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     buffer.close()
+    
     return imagen_base64
+
+
+
+
+
+
+
 
 
 
@@ -672,17 +691,36 @@ def reporte_mensual_control(request):
     # ✅ CORRECCIÓN: Definir `dias_menor_ingreso` correctamente
     dias_menor_ingreso = sorted(ingresos_por_dia, key=lambda x: x["total"])[:5] if ingresos_por_dia else []
 
-    ig, ax = plt.subplots(figsize=(6, 3))
-    ax.plot(fechas, montos_dia, marker="o", linestyle="-", color="b", linewidth=2)
-    ax.set_title("Ingresos por Día", fontsize=12)
-    ax.set_xlabel("Día del Mes")
-    ax.set_ylabel("Monto Recaudado")
-    ax.tick_params(axis="x", rotation=45)
+        # Define los colores personalizados
+    color_linea = "#ecf0f1"  # Azul
+    color_relleno = "#85c1e9"  # Azul claro
+
+    ig, ax = plt.subplots(figsize=(6, 4))
+
+    # Dibujar la línea de ingresos con color personalizado
+    ax.plot(fechas, montos_dia, marker="o", linestyle="-", color=color_linea, linewidth=2)
+
+    # Rellenar el área debajo de la línea con color personalizado
+    ax.fill_between(fechas, montos_dia, color=color_relleno, alpha=0.5)
+
+    # Configuración de etiquetas y estilo
+    ax.set_title("Ingresos por Día", fontsize=12, color=color_linea)
+    ax.set_xlabel("Día del Mes", color=color_linea)
+    ax.set_ylabel("Monto Recaudado (S/)", color=color_linea)
+    ax.tick_params(axis="x", rotation=45, colors=color_linea)
+    ax.tick_params(axis="y", colors=color_linea)
     ax.grid(True, linestyle="--", alpha=0.6)
 
+    # ✅ Agregar el formato de moneda con S/
+    def formato_soles(x, pos):
+        return f"S/ {x:,.2f}"  # Formato con separador de miles y 2 decimales
+
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(formato_soles))
+
+    # Guardar la imagen como Base64
     buffer = BytesIO()
     plt.tight_layout()
-    plt.savefig(buffer, format="png")
+    plt.savefig(buffer, format="png", transparent=True)  # Fondo transparente opcional
     buffer.seek(0)
     grafico_ingresos_dia = base64.b64encode(buffer.getvalue()).decode("utf-8")
     buffer.close()
@@ -728,7 +766,7 @@ def reporte_mensual_control(request):
         "cantidad_pagos": pagos_mes.count(),
         "grafico_base64": grafico_ingresos_dia,
         "mejor_unidad": mejor_unidad,
-        "grafico_rutas": generar_grafico_pie(
+        "grafico_rutas": generar_grafico_dona(
             datos=[float(item["total"]) for item in total_por_ruta],
             etiquetas=[item["ruta__nombre"] for item in total_por_ruta],
             titulo="Rendimiento por Ruta",
@@ -736,7 +774,7 @@ def reporte_mensual_control(request):
         "dias_menor_ingreso": dias_menor_ingreso,
         "total_por_metodo": total_por_metodo,
         "metodo_mas_usado": metodo_mas_usado,
-        "grafico_metodos_pago": generar_grafico_pie(
+        "grafico_metodos_pago": generar_grafico_dona(
             datos=[float(item["total"]) for item in total_por_metodo],
             etiquetas=[item["metodo_pago__tipo"] for item in total_por_metodo],
             titulo="Recaudación por Método de Pago",
@@ -782,6 +820,20 @@ def exportar_excel(request):
         worksheet.write(fila, 2, pago.ruta.nombre)
         worksheet.write(fila, 3, pago.metodo_pago.tipo)
         worksheet.write(fila, 4, pago.monto_pagado, money_format)
+    
+    # Gráficos en base64
+    total_por_metodo = pagos_mes.values("metodo_pago__tipo").annotate(
+        total=Sum("monto_pagado"), cantidad=Count("id")
+    ).order_by("-total")
 
+    grafico_metodos = generar_grafico_dona(
+        datos=[float(item["total"]) for item in total_por_metodo],
+        etiquetas=[item["metodo_pago__tipo"] for item in total_por_metodo],
+        titulo="Recaudación por Método de Pago"
+    )
+
+    worksheet.insert_image(1, 6, "grafico_metodos.png", {'image_data': BytesIO(base64.b64decode(grafico_metodos))})
+    
     workbook.close()
     return response
+
